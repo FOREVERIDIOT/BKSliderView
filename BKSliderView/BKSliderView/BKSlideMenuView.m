@@ -527,8 +527,36 @@ typedef enum {
     }
     
 //    ********************************************
-//    防止滑动过快 字体 颜色 变形
+//    防止滑动过快 字体 颜色 长度 变形
+    [self preventDeformationWithScrollView:slideView fromCellIndex:fromIndex toCellIndex:toIndex];
+//    ********************************************
     
+    if (self.contentSize.height > self.frame.size.width) {
+//    动画格式 并且改变 self contentOffset.y距离
+        [self moveChangeAnimation:self.changeStyle];
+    }
+    
+//    改变selectView滑动位置
+    [self selectViewChangeWithScrollView:slideView fromCellIndex:fromIndex toCellIndex:toIndex move:moveLength];
+    
+    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
+//    改变滑动中 即将取消选择 和 选择的 cell 字号
+        [self scrollSlideViewMagnifyFontWithFromCellIndex:fromIndex toCellIndex:toIndex scrollView:slideView];
+    }
+    
+    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
+//    改变滑动中 即将取消选择 和 选择的 cell 字体颜色
+        [self scrollSlideViewChangeSelectColorWithFromCellIndex:fromIndex toCellIndex:toIndex scrollView:slideView];
+    }
+    
+    moveLength = slideView.contentOffset.y;
+}
+
+/**
+ *     防止滑动过快 字体 颜色 长度 变形
+ **/
+-(void)preventDeformationWithScrollView:(BKSlideView*)slideView fromCellIndex:(NSInteger)fromIndex toCellIndex:(NSInteger)toIndex
+{
     if (!isScrollFlag) {
         isScrollFlag = YES;
         
@@ -560,31 +588,18 @@ typedef enum {
                 [_menuTitleColorArr replaceObjectAtIndex:scroll_toIndex withObject:_normalMenuTitleColor];
             }
             
+            CGFloat cellHeight = [_rowHeightArr[scroll_fromIndex] floatValue];
+            CGFloat cellY = [_rowYArr[scroll_fromIndex] floatValue];
+            
+            CGRect selectViewFrame = _selectView.frame;
+            selectViewFrame.size.height = cellHeight;
+            selectViewFrame.origin.y = cellY;
+            _selectView.frame = selectViewFrame;
+            
             scroll_fromIndex = fromIndex;
             scroll_toIndex = toIndex;
         }
     }
-//    ********************************************
-    
-    if (self.contentSize.height > self.frame.size.width) {
-//    动画格式 并且改变 self contentOffset.y距离
-        [self moveChangeAnimation:self.changeStyle];
-    }
-    
-//    改变selectView滑动位置
-    [self selectViewChangeWithScrollView:slideView fromCellIndex:fromIndex toCellIndex:toIndex move:moveLength];
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-//    改变滑动中 即将取消选择 和 选择的 cell 字号
-        [self scrollSlideViewMagnifyFontWithFromCellIndex:fromIndex toCellIndex:toIndex scrollView:slideView];
-    }
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-//    改变滑动中 即将取消选择 和 选择的 cell 字体颜色
-        [self scrollSlideViewChangeSelectColorWithFromCellIndex:fromIndex toCellIndex:toIndex scrollView:slideView];
-    }
-    
-    moveLength = slideView.contentOffset.y;
 }
 
 /**
@@ -844,6 +859,41 @@ typedef enum {
 -(void)scrollSlideViewMagnifyFontWithFromCellIndex:(NSInteger)fromCellIndex toCellIndex:(NSInteger)toCellIndex scrollView:(BKSlideView*)slideView
 {
     if (slideView.contentOffset.y <= 0 || slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
+        
+        if (fromCellIndex != toCellIndex) {
+            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:fromCellIndex inSection:0];
+            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
+            
+            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            fromMenuTitleLab.transform = CGAffineTransformMakeScale(1, 1);
+            
+            [_menuTitleZoomArr replaceObjectAtIndex:fromCellIndex withObject:@"1"];
+        }else{
+            NSInteger from_index;
+            if (slideView.contentOffset.y <= 0) {
+                from_index = toCellIndex + 1;
+            }else if (slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
+                from_index = toCellIndex - 1;
+            }
+            
+            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:from_index inSection:0];
+            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
+            
+            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            fromMenuTitleLab.transform = CGAffineTransformMakeScale(1, 1);
+            
+            [_menuTitleZoomArr replaceObjectAtIndex:from_index withObject:@"1"];
+            
+            NSIndexPath * toIndexPath = [NSIndexPath indexPathForRow:toCellIndex inSection:0];
+            UITableViewCell * toCell = [self cellForRowAtIndexPath:toIndexPath];
+            
+            UILabel * toMenuTitleLab = (UILabel*)[toCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
+            toMenuTitleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
+            
+            [_menuTitleZoomArr replaceObjectAtIndex:toCellIndex withObject:[NSString stringWithFormat:@"%f",fontGap]];
+        }
+        
         return;
     }
     
@@ -906,6 +956,40 @@ typedef enum {
 -(void)scrollSlideViewChangeSelectColorWithFromCellIndex:(NSInteger)fromCellIndex toCellIndex:(NSInteger)toCellIndex scrollView:(BKSlideView*)slideView
 {
     if (slideView.contentOffset.y <= 0 || slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
+        
+        if (fromCellIndex != toCellIndex) {
+            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:fromCellIndex inSection:0];
+            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
+            
+            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            fromMenuTitleLab.textColor = _normalMenuTitleColor;
+            
+            [_menuTitleColorArr replaceObjectAtIndex:fromCellIndex withObject:_normalMenuTitleColor];
+        }else{
+            NSInteger from_index;
+            if (slideView.contentOffset.y <= 0) {
+                from_index = toCellIndex + 1;
+            }else if (slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
+                from_index = toCellIndex - 1;
+            }
+            
+            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:from_index inSection:0];
+            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
+            
+            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            fromMenuTitleLab.textColor = _normalMenuTitleColor;
+            
+            [_menuTitleColorArr replaceObjectAtIndex:from_index withObject:_normalMenuTitleColor];
+            
+            NSIndexPath * toIndexPath = [NSIndexPath indexPathForRow:toCellIndex inSection:0];
+            UITableViewCell * toCell = [self cellForRowAtIndexPath:toIndexPath];
+            
+            UILabel * toMenuTitleLab = (UILabel*)[toCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            toMenuTitleLab.textColor = _selectMenuTitleColor;
+            
+            [_menuTitleColorArr replaceObjectAtIndex:toCellIndex withObject:_selectMenuTitleColor];
+        }
+        
         return;
     }
     
