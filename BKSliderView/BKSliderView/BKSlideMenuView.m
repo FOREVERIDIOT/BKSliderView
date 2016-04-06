@@ -25,15 +25,21 @@ typedef enum {
 //    判断是否是点击事件
     BOOL isMenuTapFlag;
 //    点击 menu 的index
-    CGFloat tapIndex;
+    NSInteger tapIndex;
 //    上一次点击的 menu 的index
-    CGFloat oldTapIndex;
+    NSInteger oldTapIndex;
 //    上一次点击的 menu
     UILabel * oldSelectLab;
     
 //    滑动
 //    SlideView 移动的距离
     CGFloat moveLength;
+//    是否滑动中
+    BOOL isScrollFlag;
+//    滑动 fromIndex
+    NSInteger scroll_fromIndex;
+//    滑动 toIndex
+    NSInteger scroll_toIndex;
     
 //    自定义selectView
 //    是否自定义selectView
@@ -467,6 +473,9 @@ typedef enum {
     
     moveLength = moveLength - slideView.contentOffset.y;
     
+//    ********************************************
+//    取得 toIndex & fromIndex
+    
     NSInteger toIndex = 0;
     NSInteger fromIndex = 0;
     if (slideView.contentOffset.y <= 0 || slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
@@ -517,8 +526,45 @@ typedef enum {
         }
     }
     
-    CGFloat fromCellHeight = [_rowHeightArr[fromIndex] floatValue];
-    CGFloat toCellHeight = [_rowHeightArr[toIndex] floatValue];
+//    ********************************************
+//    防止滑动过快 字体 颜色 变形
+    
+    if (!isScrollFlag) {
+        isScrollFlag = YES;
+        
+        scroll_fromIndex = fromIndex;
+        scroll_toIndex = toIndex;
+    }else{
+        if (scroll_toIndex != fromIndex && scroll_toIndex != toIndex && scroll_fromIndex == fromIndex) {
+            
+            NSIndexPath * from_indexPath = [NSIndexPath indexPathForRow:scroll_fromIndex inSection:0];
+            NSIndexPath * to_indexPath = [NSIndexPath indexPathForRow:scroll_toIndex inSection:0];
+            UITableViewCell * from_cell = [self cellForRowAtIndexPath:from_indexPath];
+            UITableViewCell * to_cell = [self cellForRowAtIndexPath:to_indexPath];
+            
+            UILabel * from_titleLab = (UILabel*)[from_cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            UILabel * to_titleLab = (UILabel*)[to_cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+            
+            if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
+                CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
+                from_titleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
+                to_titleLab.transform = CGAffineTransformMakeScale(1, 1);
+                [_menuTitleZoomArr replaceObjectAtIndex:scroll_fromIndex withObject:[NSString stringWithFormat:@"%f",fontGap]];
+                [_menuTitleZoomArr replaceObjectAtIndex:scroll_toIndex withObject:@"1"];
+            }
+            
+            if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
+                from_titleLab.textColor = _selectMenuTitleColor;
+                to_titleLab.textColor = _normalMenuTitleColor;
+                [_menuTitleColorArr replaceObjectAtIndex:scroll_fromIndex withObject:_selectMenuTitleColor];
+                [_menuTitleColorArr replaceObjectAtIndex:scroll_toIndex withObject:_normalMenuTitleColor];
+            }
+            
+            scroll_fromIndex = fromIndex;
+            scroll_toIndex = toIndex;
+        }
+    }
+//    ********************************************
     
     if (self.contentSize.height > self.frame.size.width) {
 //    动画格式 并且改变 self contentOffset.y距离
@@ -526,7 +572,7 @@ typedef enum {
     }
     
 //    改变selectView滑动位置
-    [self selectViewChangeWithScrollView:slideView fromCellHeight:fromCellHeight toCellHeight:toCellHeight move:moveLength];
+    [self selectViewChangeWithScrollView:slideView fromCellIndex:fromIndex toCellIndex:toIndex move:moveLength];
     
     if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
 //    改变滑动中 即将取消选择 和 选择的 cell 字号
@@ -544,8 +590,11 @@ typedef enum {
 /**
  *     selectView 改变滑动位置
  **/
--(void)selectViewChangeWithScrollView:(BKSlideView*)slideView fromCellHeight:(CGFloat)fromCellHeight toCellHeight:(CGFloat)toCellHeight move:(CGFloat)length
+-(void)selectViewChangeWithScrollView:(BKSlideView*)slideView fromCellIndex:(NSInteger)fromIndex toCellIndex:(NSInteger)toIndex move:(CGFloat)length
 {
+    CGFloat fromCellHeight = [_rowHeightArr[fromIndex] floatValue];
+    CGFloat toCellHeight = [_rowHeightArr[toIndex] floatValue];
+    
     CGRect selectViewFrame = _selectView.frame;
     
     switch (_titleWidthStyle) {
@@ -588,6 +637,10 @@ typedef enum {
         return;
     }
     
+    if (isScrollFlag) {
+        isScrollFlag = NO;
+    }
+    
     NSInteger selectIndex = [[NSString stringWithFormat:@"%f",slideView.contentOffset.y/slideView.frame.size.width] integerValue];
     
     CGFloat cellHeight = [_rowHeightArr[selectIndex] floatValue];
@@ -598,20 +651,32 @@ typedef enum {
     selectViewFrame.origin.y = cellY;
     _selectView.frame = selectViewFrame;
     
+    
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:selectIndex inSection:0];
+    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
+    
+    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+    
 //    更改选中title 样式
     
     if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
+        
+        CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
+        titleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
+        
         [_menuTitleZoomArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:@"1"];
             
             if (idx == selectIndex) {
-                CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
                 [_menuTitleZoomArr replaceObjectAtIndex:selectIndex withObject:[NSString stringWithFormat:@"%f",fontGap]];
             }
         }];
     }
     
     if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
+        
+        titleLab.textColor = _selectMenuTitleColor;
+        
         [_menuTitleColorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [_menuTitleColorArr replaceObjectAtIndex:idx withObject:_normalMenuTitleColor];
             
@@ -623,12 +688,6 @@ typedef enum {
     
 //    ********************************************
 //    更换旧的选中title
-    
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:selectIndex inSection:0];
-    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-    
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    
     oldSelectLab = titleLab;
     oldTapIndex = selectIndex;
     
