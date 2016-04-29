@@ -235,6 +235,7 @@ typedef enum {
     
     _selectView.frame = CGRectMake(0,0,2,[_rowHeightArr[0] floatValue]);
     
+    [self reloadData];
 }
 
 -(void)setMenuTitleLength:(CGFloat)menuTitleLength
@@ -274,6 +275,8 @@ typedef enum {
     _rowYArr = YArr;
     
     _selectView.frame = CGRectMake(0,0,2,[_rowHeightArr[0] floatValue]);
+    
+    [self reloadData];
 }
 
 #pragma mark - 初始
