@@ -35,7 +35,7 @@
     menuView.customDelegate = self;
     [self.view addSubview:menuView];
     
-    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count]];
+    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
     slideView.customDelegate = self;
     [self.view addSubview:slideView];
 }

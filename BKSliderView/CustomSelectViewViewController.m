@@ -40,7 +40,7 @@
     menuView.normalMenuTitleColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
     [self.view addSubview:menuView];
     
-    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count]];
+    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
     slideView.customDelegate = self;
     [self.view addSubview:slideView];
 }

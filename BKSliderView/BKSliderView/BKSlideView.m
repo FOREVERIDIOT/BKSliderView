@@ -14,13 +14,14 @@
 @implementation BKSlideView
 @synthesize pageNum = _pageNum;
 
--(instancetype)initWithFrame:(CGRect)frame allPageNum:(NSInteger)pageNum
+-(instancetype)initWithFrame:(CGRect)frame allPageNum:(NSInteger)pageNum delegate:(id<BKSlideViewDelegate>)customDelegate
 {
     self = [super initWithFrame:CGRectMake((frame.size.width-frame.size.height)/2.0f+frame.origin.x, (frame.size.height-frame.size.width)/2.0f+frame.origin.y, frame.size.height, frame.size.width) style:UITableViewStylePlain];
     
     if (self) {
         
         _pageNum = pageNum;
+        _customDelegate = customDelegate;
         
         self.showsHorizontalScrollIndicator = NO;
         self.showsVerticalScrollIndicator = NO;

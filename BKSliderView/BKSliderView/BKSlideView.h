@@ -43,7 +43,7 @@
 /**
   *     创建方法 pageNum 是页数
  **/
--(instancetype)initWithFrame:(CGRect)frame allPageNum:(NSInteger)pageNum;
+-(instancetype)initWithFrame:(CGRect)frame allPageNum:(NSInteger)pageNum delegate:(id<BKSlideViewDelegate>)customDelegate;
 
 /**
  *     移动 SlideView 至第 index 页
