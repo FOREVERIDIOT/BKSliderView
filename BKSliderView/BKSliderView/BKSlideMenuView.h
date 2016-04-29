@@ -123,6 +123,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,strong) UIColor * selectMenuTitleColor;
 
 /**
+ *     改变选中
+ **/
+@property (nonatomic,assign) NSInteger selectNum;
+
+/**
  *     选BKSlideMenuViewTitleWidthStyleDefault时 该值是两个menuTitle 中间的距离 默认是20
  *     选BKSlideMenuViewTitleWidthStyleSame时 该值是每个menuTitle的宽度 默认100
  **/

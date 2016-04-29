@@ -137,6 +137,58 @@ typedef enum {
     }
 }
 
+#pragma mark - 改变选中
+
+-(void)setSelectNum:(NSInteger)selectNum
+{
+    _selectNum = selectNum;
+    
+    CGFloat cellHeight = [_rowHeightArr[_selectNum] floatValue];
+    CGFloat cellY = [_rowYArr[_selectNum] floatValue];
+    
+    CGRect selectViewFrame = _selectView.frame;
+    selectViewFrame.size.height = cellHeight;
+    selectViewFrame.origin.y = cellY;
+    _selectView.frame = selectViewFrame;
+    
+    //    更改选中title 样式
+    
+    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
+        [_menuTitleZoomArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:@"1"];
+            
+            if (idx == _selectNum) {
+                CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
+                [_menuTitleZoomArr replaceObjectAtIndex:_selectNum withObject:[NSString stringWithFormat:@"%f",fontGap]];
+            }
+        }];
+    }
+    
+    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
+        [_menuTitleColorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [_menuTitleColorArr replaceObjectAtIndex:idx withObject:_normalMenuTitleColor];
+            
+            if (idx == _selectNum) {
+                [_menuTitleColorArr replaceObjectAtIndex:_selectNum withObject:_selectMenuTitleColor];
+            }
+        }];
+    }
+    
+    [self reloadData];
+    //    ********************************************
+    //    更换旧的选中title
+    
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:_selectNum inSection:0];
+    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
+    
+    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+    
+    oldSelectLab = titleLab;
+    oldTapIndex = _selectNum;
+    
+    //    ********************************************
+}
+
 #pragma mark - menuTitle 距离
 
 -(void)setTitleWidthStyle:(BKSlideMenuViewTitleWidthStyle)titleWidthStyle
