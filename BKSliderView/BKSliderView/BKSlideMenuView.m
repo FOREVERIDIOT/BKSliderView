@@ -623,17 +623,23 @@ typedef enum {
  **/
 -(void)preventDeformationWithScrollView:(BKSlideView*)slideView withChangeIndex:(NSInteger)index  fromIndex:(NSInteger)fromIndex
 {
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+    UILabel * titleLab;
+    if (!(index < 0) && !(index > [_menuTitleArray count] - 1)) {
+        NSIndexPath * indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+        UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
+        titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
+    }
     
     NSIndexPath * from_indexPath = [NSIndexPath indexPathForRow:fromIndex inSection:0];
     UITableViewCell * from_cell = [self cellForRowAtIndexPath:from_indexPath];
     UILabel * from_titleLab = (UILabel*)[from_cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
     
     if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-        titleLab.transform = CGAffineTransformMakeScale(1, 1);
-        [_menuTitleZoomArr replaceObjectAtIndex:index withObject:@"1"];
+        
+        if (!(index < 0) && !(index > [_menuTitleArray count] - 1)) {
+            titleLab.transform = CGAffineTransformMakeScale(1, 1);
+            [_menuTitleZoomArr replaceObjectAtIndex:index withObject:@"1"];
+        }
         
         CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
         from_titleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
@@ -641,8 +647,11 @@ typedef enum {
     }
     
     if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-        titleLab.textColor = _normalMenuTitleColor;
-        [_menuTitleColorArr replaceObjectAtIndex:index withObject:_normalMenuTitleColor];
+        
+        if (!(index < 0) && !(index > [_menuTitleArray count] - 1)) {
+            titleLab.textColor = _normalMenuTitleColor;
+            [_menuTitleColorArr replaceObjectAtIndex:index withObject:_normalMenuTitleColor];
+        }
         
         from_titleLab.textColor = _selectMenuTitleColor;
         [_menuTitleColorArr replaceObjectAtIndex:fromIndex withObject:_selectMenuTitleColor];
