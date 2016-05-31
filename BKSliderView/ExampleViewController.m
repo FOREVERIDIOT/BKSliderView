@@ -150,49 +150,66 @@ typedef enum {
 // 以下是上拉、下拉 加载更多 可以用自己的上拉加载 下拉刷新
 #pragma mark - UIScrollDelegate
 
--(void)scrollViewDidScroll:(UIScrollView *)scrollView
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    if (isRefresh) {
-        return;
-    }
-    
-    UITableViewCell * cell = [slideView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:num inSection:0]];
-    UITableView * exampleTableView = (UITableView*)[cell viewWithTag:ExampleView_ExampleTableView_Tag];
-    UILabel * headerLoadLab = (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_HeaderLoadLab_Tag];
-    UILabel * footerLoadLab =  (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_FooterLoadLab_Tag];
-    
-    if ([scrollView isEqual:exampleTableView]) {
-        if (exampleTableView.contentSize.height > exampleTableView.frame.size.height) {
-            if (exampleTableView.contentOffset.y + exampleTableView.frame.size.height > exampleTableView.contentSize.height) {
-                footerLoadLab.text = @"加载中";
-                [self changeTextUIOnView:exampleTableView WithloadLab:footerLoadLab direction:@"footer"];
-            }else if (exampleTableView.contentOffset.y < -40) {
-                headerLoadLab.text = @"加载中";
-                [self changeTextUIOnView:exampleTableView WithloadLab:headerLoadLab direction:@"header"];
+    if (decelerate) {
+        if (isRefresh) {
+            return;
+        }
+        
+        UITableViewCell * cell = [slideView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:num inSection:0]];
+        UITableView * exampleTableView = (UITableView*)[cell viewWithTag:ExampleView_ExampleTableView_Tag];
+        UILabel * headerLoadLab = (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_HeaderLoadLab_Tag];
+        UILabel * footerLoadLab =  (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_FooterLoadLab_Tag];
+        
+        if ([scrollView isEqual:exampleTableView]) {
+            if (exampleTableView.contentSize.height > exampleTableView.frame.size.height) {
+                if (exampleTableView.contentOffset.y + exampleTableView.frame.size.height > exampleTableView.contentSize.height) {
+                    footerLoadLab.text = @"加载中";
+                    [self changeTextUIOnView:exampleTableView refreshNum:[NSString stringWithFormat:@"%ld",num] WithloadLab:footerLoadLab direction:@"footer"];
+                }else if (exampleTableView.contentOffset.y < -40) {
+                    headerLoadLab.text = @"加载中";
+                    
+                    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                        
+                        UIEdgeInsets edge = exampleTableView.contentInset;
+                        edge.top += 40;
+                        exampleTableView.contentInset = edge;
+                        
+                    } completion:^(BOOL finished) {
+                        [self changeTextUIOnView:exampleTableView refreshNum:[NSString stringWithFormat:@"%ld",num] WithloadLab:headerLoadLab direction:@"header"];
+                    }];
+                }else{
+                    headerLoadLab.text = @"下拉加载更多";
+                    footerLoadLab.text = @"上拉加载更多";
+                }
             }else{
-                headerLoadLab.text = @"下拉加载更多";
-                footerLoadLab.text = @"上拉加载更多";
-            }
-        }else{
-            if (exampleTableView.contentOffset.y > 40) {
-                footerLoadLab.text = @"加载中";
-                [self changeTextUIOnView:exampleTableView WithloadLab:footerLoadLab direction:@"footer"];
-            }else if (exampleTableView.contentOffset.y < -40) {
-                headerLoadLab.text = @"加载中";
-                [self changeTextUIOnView:exampleTableView WithloadLab:headerLoadLab direction:@"header"];
-            }else{
-                headerLoadLab.text = @"下拉加载更多";
-                footerLoadLab.text = @"上拉加载更多";
+                if (exampleTableView.contentOffset.y > 40) {
+                    footerLoadLab.text = @"加载中";
+                    [self changeTextUIOnView:exampleTableView refreshNum:[NSString stringWithFormat:@"%ld",num] WithloadLab:footerLoadLab direction:@"footer"];
+                }else if (exampleTableView.contentOffset.y < -40) {
+                    headerLoadLab.text = @"加载中";
+                    
+                    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                        
+                        UIEdgeInsets edge = exampleTableView.contentInset;
+                        edge.top += 40;
+                        exampleTableView.contentInset = edge;
+                        
+                    } completion:^(BOOL finished) {
+                        [self changeTextUIOnView:exampleTableView refreshNum:[NSString stringWithFormat:@"%ld",num] WithloadLab:headerLoadLab direction:@"header"];
+                    }];
+                }else{
+                    headerLoadLab.text = @"下拉加载更多";
+                    footerLoadLab.text = @"上拉加载更多";
+                }
             }
         }
     }
 }
 
--(void)changeTextUIOnView:(UIView*)view WithloadLab:(UILabel*)label direction:(NSString*)direction
+-(void)changeTextUIOnView:(UIView*)view refreshNum:(NSString*)numStr WithloadLab:(UILabel*)label direction:(NSString*)direction
 {
-    if (isRefresh) {
-        return;
-    }
     isRefresh = YES;
     
     dispatch_group_t group = dispatch_group_create();
@@ -206,13 +223,22 @@ typedef enum {
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                         isRefresh = NO;
                         UITableView * exampleTableView = (UITableView*)view;
-                        NSString * numStr = [NSString stringWithFormat:@"%ld",num];
                         NSMutableArray * dataArr = [NSMutableArray arrayWithArray:dataDic[numStr]];
                         if ([direction isEqualToString:@"header"]) {
-                            label.text = @"下拉加载更多";
+                            label.text = @"加载成功";
                             [dataArr insertObject:[NSString stringWithFormat:@"%ld",[dataArr count]] atIndex:0];
                             [dataDic setObject:dataArr forKey:numStr];
                             [exampleTableView reloadData];
+                            
+                            [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+                                
+                                UIEdgeInsets edge = exampleTableView.contentInset;
+                                edge.top -= 40;
+                                exampleTableView.contentInset = edge;
+                                
+                            } completion:^(BOOL finished) {
+                                label.text = @"下拉加载更多";
+                            }];
                         }else if ([direction isEqualToString:@"footer"]) {
                             label.text = @"上拉加载更多";
                             [dataArr insertObject:[NSString stringWithFormat:@"%ld",[dataArr count]] atIndex:[dataArr count]];
