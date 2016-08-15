@@ -1,38 +1,36 @@
 
 # BKSliderView 基本用法
 
-- (void)viewDidLoad {
-
-    <br>[super viewDidLoad];
-
-    <br>NSArray * titleArray = @[@"第一个",@"第二个",@"第三个",@"第四个",@"这是一个很长的title",@"~~~~~~",@"倒数第二个",@"倒一"];
-    <br>menuView = [[BKSlideMenuView alloc]initWithFrame:(CGRect) menuTitleArray:titleArray];
-    <br>menuView.customDelegate = self;
-    <br>[self.view addSubview:menuView];
-    <br>theSlideView = [[BKSlideView alloc]initWithFrame:(CGRect) allPageNum:[titleArray count] delegate:self];
-    <br>theSlideView.customDelegate = self;
-    <br>[self.view addSubview:theSlideView];
-}
+TabTab- (void)viewDidLoad {
+TabTab    [super viewDidLoad];
+TabTab    NSArray * titleArray = @[@"第一个",@"第二个",@"第三个",@"第四个",@"这是一个很长的title",@"~~~~~~",@"倒数第二个",@"倒一"];
+TabTab    menuView = [[BKSlideMenuView alloc]initWithFrame:(CGRect) menuTitleArray:titleArray];
+TabTab    menuView.customDelegate = self;
+TabTab    [self.view addSubview:menuView];
+TabTab    theSlideView = [[BKSlideView alloc]initWithFrame:(CGRect) allPageNum:[titleArray count] delegate:self];
+TabTab    theSlideView.customDelegate = self;
+TabTab    [self.view addSubview:theSlideView];
+TabTab}
 
 ## SlideViewDelegate
 -(void)scrollSlideView:(UICollectionView *)slideView {
-    <br>if ([theSlideView.slideView isEqual:slideView]) {
-    <br>    [menuView scrollWith:theSlideView.slideView];
-    <br>}
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView scrollWith:theSlideView.slideView];
+    }
 }
 
 -(void)endScrollSlideView:(UICollectionView *)slideView {
-    <br>if ([theSlideView.slideView isEqual:slideView]) {
-    <br>    [menuView endScrollWith:theSlideView.slideView];
-    <br>}
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView endScrollWith:theSlideView.slideView];
+    }
 }
 
 -(void)initInView:(UIView *)view atIndex:(NSInteger)index {
-    <br>//创建View
+    //创建View
 }
 
 ## SlideMenuViewDelegate
 
 -(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {
-    <br>[theSlideView rollSlideViewToIndexView:index];
+    [theSlideView rollSlideViewToIndexView:index];
 }
