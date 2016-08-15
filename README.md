@@ -18,44 +18,37 @@
     theSlideView.customDelegate = self;
 
     [self.view addSubview:theSlideView];
+
 }
 
 ## SlideViewDelegate
 
--(void)scrollSlideView:(UICollectionView *)slideView
-{
+-(void)scrollSlideView:(UICollectionView *)slideView {
 
     if ([theSlideView.slideView isEqual:slideView]) {
 
         [menuView scrollWith:theSlideView.slideView];
 
     }
-
 }
 
--(void)endScrollSlideView:(UICollectionView *)slideView
-{
+-(void)endScrollSlideView:(UICollectionView *)slideView {
 
     if ([theSlideView.slideView isEqual:slideView]) {
 
         [menuView endScrollWith:theSlideView.slideView];
 
     }
-
 }
 
--(void)initInView:(UIView *)view atIndex:(NSInteger)index
-{
+-(void)initInView:(UIView *)view atIndex:(NSInteger)index {
 
     //创建View
-
 }
 
 ## SlideMenuViewDelegate
 
--(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index
-{
+-(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {
 
     [theSlideView rollSlideViewToIndexView:index];
-
 }
