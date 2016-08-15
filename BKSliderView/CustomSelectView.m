@@ -41,26 +41,21 @@
 {
     [super drawRect:rect];
     
-    //拿到当前视图准备好的画板
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    //利用path进行绘制三角形
+    CGContextBeginPath(context);
     
-    CGContextBeginPath(context);//标记
+    CGContextMoveToPoint(context, 0, self.frame.size.height);
     
-    CGContextMoveToPoint(context, 0, 0);//设置起点
+    CGContextAddLineToPoint(context, self.frame.size.width/2.0f, self.frame.size.height/2.0f);
     
-    CGContextAddLineToPoint(context, self.frame.size.width, self.frame.size.height/2.0f);
+    CGContextAddLineToPoint(context, self.frame.size.width, self.frame.size.height);
     
-    CGContextAddLineToPoint(context, 0, self.frame.size.height);
+    CGContextClosePath(context);
     
-    CGContextClosePath(context);//路径结束标志，不写默认封闭
+    [[UIColor blackColor] setFill];
     
-    [[UIColor blackColor] setFill]; //设置填充色
-    
-    [[UIColor grayColor] setStroke]; //设置边框颜色
-    
-    CGContextDrawPath(context, kCGPathFillStroke);//绘制路径path
+    CGContextDrawPath(context, kCGPathFillStroke);
 }
 
 

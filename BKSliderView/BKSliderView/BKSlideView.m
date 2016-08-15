@@ -7,100 +7,111 @@
 
 #import "BKSlideView.h"
 
-@interface BKSlideView()<UITableViewDataSource,UITableViewDelegate>
+@interface BKSlideView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 
 @end
 
 @implementation BKSlideView
+@synthesize slideView = _slideView;
 @synthesize pageNum = _pageNum;
 
 -(instancetype)initWithFrame:(CGRect)frame allPageNum:(NSInteger)pageNum delegate:(id<BKSlideViewDelegate>)customDelegate
 {
-    self = [super initWithFrame:CGRectMake((frame.size.width-frame.size.height)/2.0f+frame.origin.x, (frame.size.height-frame.size.width)/2.0f+frame.origin.y, frame.size.height, frame.size.width) style:UITableViewStylePlain];
+    self = [super initWithFrame:frame];
     
     if (self) {
         
         _pageNum = pageNum;
         _customDelegate = customDelegate;
         
-        self.showsHorizontalScrollIndicator = NO;
-        self.showsVerticalScrollIndicator = NO;
-        self.transform = CGAffineTransformMakeRotation(-M_PI / 2);
-        self.delegate = self;
-        self.dataSource = self;
-        self.tableFooterView = [UIView new];
-        self.pagingEnabled = YES;
-        self.separatorStyle = UITableViewCellSeparatorStyleNone;
-        
+        [self initSlideView];
     }
+    
     return self;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+-(void)initSlideView
 {
-    return self.pageNum;
+    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc]init];
+    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    layout.itemSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height);
+    layout.minimumLineSpacing = 0;
+    layout.minimumInteritemSpacing = 0;
+    
+    _slideView = [[UICollectionView alloc]initWithFrame:self.bounds collectionViewLayout:layout];
+    _slideView.showsHorizontalScrollIndicator = NO;
+    _slideView.showsVerticalScrollIndicator = NO;
+    _slideView.delegate = self;
+    _slideView.dataSource = self;
+    _slideView.backgroundColor = [UIColor clearColor];
+    _slideView.pagingEnabled = YES;
+    [self addSubview:_slideView];
+    
+    [_slideView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"slideView"];
 }
 
--(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - UICollectionViewDataSource
+
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    static NSString * identifier = @"SlideTableViewCell";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        
-        if ([self.customDelegate respondsToSelector:@selector(initCell:withIndex:)]) {
-            [self.customDelegate initCell:cell withIndex:indexPath];
-        }
+    return _pageNum;
+}
+
+-(UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UICollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"slideView" forIndexPath:indexPath];
+    
+    [[cell subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj removeFromSuperview];
+    }];
+    
+    if ([_customDelegate respondsToSelector:@selector(initInView:atIndex:)]) {
+        [_customDelegate initInView:cell atIndex:indexPath.item];
     }
-    
-    if ([self.customDelegate respondsToSelector:@selector(reuseCell:withIndex:)]) {
-        [self.customDelegate reuseCell:cell withIndex:indexPath];
-    }
-    
-    cell.transform = CGAffineTransformMakeRotation(M_PI / 2);
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     return cell;
-}
-
-#pragma mark - UITableViewDelegate
-
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return self.frame.size.width;
 }
 
 #pragma mark - UIScrollDelegate
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (scrollView == self) {
+    if (scrollView == _slideView) {
         if ([self.customDelegate respondsToSelector:@selector(scrollSlideView:)]) {
-            [self.customDelegate scrollSlideView:self];
+            [self.customDelegate scrollSlideView:_slideView];
         }
     }
 }
 
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    if (scrollView == self) {
+    if (scrollView == _slideView) {
         if ([self.customDelegate respondsToSelector:@selector(endScrollSlideView:)]) {
-            [self.customDelegate endScrollSlideView:self];
+            [self.customDelegate endScrollSlideView:_slideView];
         }
     }
 }
 
 /**
  *     移动 SlideView 至第 index 页
- **/
+ */
 -(void)rollSlideViewToIndexView:(NSInteger)index
 {
-    CGFloat rollLength = self.frame.size.width*index;
+    CGFloat rollLength = _slideView.frame.size.width * (index-1);
+    [_slideView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+}
+
+/**
+ *  获取当前显示View
+ */
+-(UIView*)getDisplayView
+{
+    CGPoint pInView = [self convertPoint:_slideView.center toView:_slideView];
+    NSIndexPath *indexPathNow = [_slideView indexPathForItemAtPoint:pInView];
+    NSInteger item = indexPathNow.item;
     
-    [self setContentOffset:CGPointMake(0, rollLength) animated:NO];
+    UICollectionViewCell * view = [_slideView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:item inSection:0]];
+    return view;
 }
 
 @end

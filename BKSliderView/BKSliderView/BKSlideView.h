@@ -10,44 +10,57 @@
 
 @protocol BKSlideViewDelegate <NSObject>
 
-@optional
-/**
- *     创建Cell 相当于 UITableViewCell里的 if{} 括号内
- **/
--(void)initCell:(UITableViewCell*)cell withIndex:(NSIndexPath*)indexPath;
-
-/**
- *     复用Cell 相当于 UITableViewCell里的 if{} 括号外
- **/
--(void)reuseCell:(UITableViewCell*)cell withIndex:(NSIndexPath*)indexPath;
-
 @required
 /**
  *     滑动 slideView
- **/
--(void)scrollSlideView:(BKSlideView*)theSlideView;
+ */
+-(void)scrollSlideView:(UICollectionView*)slideView;
 
 /**
  *     结束滑动 slideView
- **/
--(void)endScrollSlideView:(BKSlideView*)theSlideView;
+ */
+-(void)endScrollSlideView:(UICollectionView*)slideView;
+
+/**
+ *  创建UI
+ *
+ *  @param view  第几页上的view （创建UI在这里创建）
+ *  @param index 第几页
+ */
+-(void)initInView:(UIView*)view atIndex:(NSInteger)index;
 
 @end
 
-@interface BKSlideView : UITableView
+@interface BKSlideView : UIView
 
+/**
+ *  基础view
+ */
+@property (nonatomic,strong,readonly) UICollectionView * slideView;
+
+/**
+ *  一共几页 从1开始
+ */
 @property (nonatomic,assign,readonly) NSInteger pageNum;
 
+/**
+ *  自定义delegate
+ */
 @property (nonatomic,assign) id <BKSlideViewDelegate>customDelegate;
 
 /**
-  *     创建方法 pageNum 是页数
- **/
+ *     创建方法 pageNum 是页数
+ */
 -(instancetype)initWithFrame:(CGRect)frame allPageNum:(NSInteger)pageNum delegate:(id<BKSlideViewDelegate>)customDelegate;
 
 /**
  *     移动 SlideView 至第 index 页
- **/
+ */
 -(void)rollSlideViewToIndexView:(NSInteger)index;
+
+/**
+ *  获取当前显示View
+ */
+-(UIView*)getDisplayView;
 
 @end

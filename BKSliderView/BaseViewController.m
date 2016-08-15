@@ -11,7 +11,7 @@
 
 @interface BaseViewController ()<BKSlideViewDelegate,BKSlideMenuViewDelegate>
 {
-    BKSlideView * slideView;
+    BKSlideView * theSlideView;
     BKSlideMenuView * menuView;
 }
 
@@ -35,37 +35,39 @@
     menuView.customDelegate = self;
     [self.view addSubview:menuView];
     
-    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
-    slideView.customDelegate = self;
-    [self.view addSubview:slideView];
+    theSlideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
+    theSlideView.customDelegate = self;
+    [self.view addSubview:theSlideView];
 }
 
 #pragma mark - SlideViewDelegate
 
--(void)scrollSlideView:(BKSlideView *)theSlideView
+-(void)scrollSlideView:(UICollectionView *)slideView
 {
-    if ([theSlideView isEqual:slideView]) {
-        [menuView scrollWith:theSlideView];
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView scrollWith:theSlideView.slideView];
     }
 }
 
--(void)endScrollSlideView:(BKSlideView *)theSlideView
+-(void)endScrollSlideView:(UICollectionView *)slideView
 {
-    if ([theSlideView isEqual:slideView]) {
-        [menuView endScrollWith:theSlideView];
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView endScrollWith:theSlideView.slideView];
     }
 }
 
--(void)reuseCell:(UITableViewCell *)cell withIndex:(NSIndexPath *)indexPath
+-(void)initInView:(UIView *)view atIndex:(NSInteger)index
 {
-    cell.backgroundColor = [UIColor colorWithRed:arc4random()%255/255.0f green:arc4random()%255/255.0f blue:arc4random()%255/255.0f alpha:1];
+    UIView * subView = [[UIView alloc]initWithFrame:view.bounds];
+    subView.backgroundColor = [UIColor colorWithRed:(arc4random()%255)/255.0f green:(arc4random()%255)/255.0f blue:(arc4random()%255)/255.0f alpha:1];
+    [view addSubview:subView];
 }
 
 #pragma mark - SlideMenuViewDelegate
 
 -(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index
 {
-    [slideView rollSlideViewToIndexView:index];
+    [theSlideView rollSlideViewToIndexView:index];
 }
 
 

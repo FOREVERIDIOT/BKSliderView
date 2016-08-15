@@ -11,7 +11,6 @@
 		2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CD31C95735700D04EFF /* AppDelegate.m */; };
 		2A1B3CDC1C95735700D04EFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDB1C95735700D04EFF /* Assets.xcassets */; };
 		2A1B3CDF1C95735700D04EFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDD1C95735700D04EFF /* LaunchScreen.storyboard */; };
-		2A1B3CEB1C95737900D04EFF /* BKSlideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CE81C95737900D04EFF /* BKSlideMenuView.m */; };
 		2A1B3CEC1C95737900D04EFF /* BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CEA1C95737900D04EFF /* BKSlideView.m */; };
 		2A1B3CF81C9573E400D04EFF /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CEE1C9573E400D04EFF /* BaseViewController.m */; };
 		2A1B3CF91C9573E400D04EFF /* CustomSelectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF01C9573E400D04EFF /* CustomSelectView.m */; };
@@ -19,6 +18,7 @@
 		2A1B3CFB1C9573E400D04EFF /* ExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF41C9573E400D04EFF /* ExampleViewController.m */; };
 		2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF61C9573E400D04EFF /* ViewController.m */; };
 		2A1B3CFD1C9573E400D04EFF /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF71C9573E400D04EFF /* ViewController.xib */; };
+		889A67851D5B30F800C4A3D0 /* BKSlideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 889A67841D5B30F800C4A3D0 /* BKSlideMenuView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,8 +29,6 @@
 		2A1B3CDB1C95735700D04EFF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A1B3CDE1C95735700D04EFF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2A1B3CE01C95735700D04EFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2A1B3CE71C95737900D04EFF /* BKSlideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideMenuView.h; sourceTree = "<group>"; };
-		2A1B3CE81C95737900D04EFF /* BKSlideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideMenuView.m; sourceTree = "<group>"; };
 		2A1B3CE91C95737900D04EFF /* BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideView.h; sourceTree = "<group>"; };
 		2A1B3CEA1C95737900D04EFF /* BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideView.m; sourceTree = "<group>"; };
 		2A1B3CED1C9573E400D04EFF /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
@@ -44,6 +42,8 @@
 		2A1B3CF51C9573E400D04EFF /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2A1B3CF61C9573E400D04EFF /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2A1B3CF71C9573E400D04EFF /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
+		889A67831D5B30F800C4A3D0 /* BKSlideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideMenuView.h; sourceTree = "<group>"; };
+		889A67841D5B30F800C4A3D0 /* BKSlideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideMenuView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,8 +109,8 @@
 		2A1B3CE61C95737900D04EFF /* BKSliderView */ = {
 			isa = PBXGroup;
 			children = (
-				2A1B3CE71C95737900D04EFF /* BKSlideMenuView.h */,
-				2A1B3CE81C95737900D04EFF /* BKSlideMenuView.m */,
+				889A67831D5B30F800C4A3D0 /* BKSlideMenuView.h */,
+				889A67841D5B30F800C4A3D0 /* BKSlideMenuView.m */,
 				2A1B3CE91C95737900D04EFF /* BKSlideView.h */,
 				2A1B3CEA1C95737900D04EFF /* BKSlideView.m */,
 			);
@@ -193,7 +193,7 @@
 				2A1B3CFA1C9573E400D04EFF /* CustomSelectViewViewController.m in Sources */,
 				2A1B3CF91C9573E400D04EFF /* CustomSelectView.m in Sources */,
 				2A1B3CF81C9573E400D04EFF /* BaseViewController.m in Sources */,
-				2A1B3CEB1C95737900D04EFF /* BKSlideMenuView.m in Sources */,
+				889A67851D5B30F800C4A3D0 /* BKSlideMenuView.m in Sources */,
 				2A1B3CFB1C9573E400D04EFF /* ExampleViewController.m in Sources */,
 				2A1B3CD11C95735700D04EFF /* main.m in Sources */,
 				2A1B3CEC1C95737900D04EFF /* BKSlideView.m in Sources */,

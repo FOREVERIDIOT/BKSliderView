@@ -1,102 +1,86 @@
 //
 //  BKSlideMenuView.m
 //
-//  Created on 16/2/3.
+//  Created on 16/2/2
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
 #define NORMAL_TITLE_FONT 14.0f
-#define SELECT_TITLE_FONT 16.0f
+#define FONT_GAP 1.1
+
 #define NORMAL_TITLE_COLOR [UIColor colorWithRed:153.0/255.0f green:153.0/255.0f blue:153.0/255.0f alpha:0.6]
 #define SELECT_TITLE_COLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:1]
-#define Left_RIGHT_GAP 20.0f
+
+#define TITLE_GAP 20.0f
 #define MENU_TITLE_WIDTH 100.0f
+
+#define DEFAULT_SELECTVIEW_HEIGHT 2
 
 #import "BKSlideMenuView.h"
 #import "BKSlideView.h"
 
-typedef enum {
-    BKSlideMenuViewCell_tilteLab_tag = 100,
-}BKSlideMenuViewCellTag;
-
-@interface BKSlideMenuView()<UITableViewDataSource,UITableViewDelegate>
+@interface BKSlideMenuView()<UIScrollViewDelegate>
 {
-//    点击
-//    判断是否是点击事件
-    BOOL isMenuTapFlag;
-//    点击 menu 的index
-    NSInteger tapIndex;
-//    上一次点击的 menu 的index
-    NSInteger oldTapIndex;
-//    上一次点击的 menu
-    UILabel * oldSelectLab;
+    /**
+     *  是否初始化完毕
+     */
+    BOOL isInitFinishFlag;
     
-//    滑动
-//    SlideView 移动的距离
-    CGFloat moveLength;
-//    滑动 fromIndex
-    NSInteger scroll_fromIndex;
-//    滑动 toIndex
-    NSInteger scroll_toIndex;
+    /**
+     *  间距
+     */
+    CGFloat menuTitleLength;
     
-//    自定义selectView
-//    是否自定义selectView
+    /**
+     *  选中的titleBtn
+     */
+    UIButton * selectTitleBtn;
+    
+    /**
+     *  是否点击menuTitle翻页
+     */
+    BOOL isTapMenuTitleFlag;
+    
+    //    自定义selectView
+    //    是否自定义selectView
     BOOL isCustomSelectView;
+    
+    
 }
-
-//    menu title font 数组
-@property (nonatomic,strong) NSMutableArray * menuTitleZoomArr;
-//    menu title color 数组
-@property (nonatomic,strong) NSMutableArray * menuTitleColorArr;
 
 @end
 
 @implementation BKSlideMenuView
 @synthesize menuTitleArray = _menuTitleArray;
-@synthesize rowHeightArr = _rowHeightArr;
-@synthesize rowYArr = _rowYArr;
+
+#pragma mark - 刷新
+
+-(void)reloadView
+{
+    if (isInitFinishFlag) {
+        
+        [[self subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.tag != 0 && [obj isKindOfClass:[UIButton class]]) {
+                [obj removeFromSuperview];
+            }
+        }];
+        
+        [self initAnyButton];
+    }
+}
 
 #pragma mark - 字体
 
 -(void)setNormalMenuTitleFont:(UIFont *)normalMenuTitleFont
 {
     _normalMenuTitleFont = normalMenuTitleFont;
-    [self initMenuTitleFontArrWithNormalFont:normalMenuTitleFont selectFont:_selectMenuTitleFont];
+    [self reloadView];
 }
 
--(void)setSelectMenuTitleFont:(UIFont *)selectMenuTitleFont
+-(void)setFontGap:(CGFloat)fontGap
 {
-    _selectMenuTitleFont = selectMenuTitleFont;
-    [self initMenuTitleFontArrWithNormalFont:_normalMenuTitleFont selectFont:selectMenuTitleFont];
-}
-
--(void)initMenuTitleFontArrWithNormalFont:(UIFont*)normalMenuTitleFont selectFont:(UIFont*)selectMenuTitleFont
-{
-    if (!_menuTitleZoomArr) {
-        _menuTitleZoomArr = [NSMutableArray array];
-        [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (idx == 0) {
-                CGFloat fontMagnifyGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-                [_menuTitleZoomArr addObject:[NSString stringWithFormat:@"%f",fontMagnifyGap]];
-            }else{
-                CGFloat fontGap = _normalMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-                [_menuTitleZoomArr addObject:[NSString stringWithFormat:@"%f",fontGap]];
-            }
-        }];
-    }else{
-        
-        if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-            CGFloat fontMagnifyGap = selectMenuTitleFont.pointSize / normalMenuTitleFont.pointSize;
-            CGFloat fontGap = normalMenuTitleFont.pointSize / normalMenuTitleFont.pointSize;
-            
-            [_menuTitleZoomArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:[NSString stringWithFormat:@"%f",fontGap]];
-                if (idx == oldTapIndex) {
-                    [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:[NSString stringWithFormat:@"%f",fontMagnifyGap]];
-                }
-            }];
-        }
-    }
+    _fontGap = fontGap;
+    [self reloadView];
 }
 
 #pragma mark - 颜色
@@ -104,89 +88,21 @@ typedef enum {
 -(void)setNormalMenuTitleColor:(UIColor *)normalMenuTitleColor
 {
     _normalMenuTitleColor = normalMenuTitleColor;
-    [self initMenuTitleColorArrWithNormalColor:normalMenuTitleColor selectColor:_selectMenuTitleColor];
+    [self reloadView];
 }
 
 -(void)setSelectMenuTitleColor:(UIColor *)selectMenuTitleColor
 {
     _selectMenuTitleColor = selectMenuTitleColor;
-    [self initMenuTitleColorArrWithNormalColor:_normalMenuTitleColor selectColor:selectMenuTitleColor];
-}
-
--(void)initMenuTitleColorArrWithNormalColor:(UIColor*)normalMenuTitleColor selectColor:(UIColor*)selectMenuTitleColor
-{
-    if (!_menuTitleColorArr) {
-        _menuTitleColorArr = [NSMutableArray array];
-        [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (idx == 0) {
-                [_menuTitleColorArr addObject:selectMenuTitleColor];
-            }else{
-                [_menuTitleColorArr addObject:normalMenuTitleColor];
-            }
-        }];
-    }else{
-        
-        if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-            [_menuTitleColorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                [_menuTitleColorArr replaceObjectAtIndex:idx withObject:normalMenuTitleColor];
-                if (idx == oldTapIndex) {
-                    [_menuTitleColorArr replaceObjectAtIndex:idx withObject:selectMenuTitleColor];
-                }
-            }];
-        }
-    }
+    [self reloadView];
 }
 
 #pragma mark - 改变选中
 
--(void)setSelectNum:(NSInteger)selectNum
+-(void)setSelectIndex:(NSInteger)selectIndex
 {
-    _selectNum = selectNum;
-    
-    CGFloat cellHeight = [_rowHeightArr[_selectNum] floatValue];
-    CGFloat cellY = [_rowYArr[_selectNum] floatValue];
-    
-    CGRect selectViewFrame = _selectView.frame;
-    selectViewFrame.size.height = cellHeight;
-    selectViewFrame.origin.y = cellY;
-    _selectView.frame = selectViewFrame;
-    
-    //    更改选中title 样式
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-        [_menuTitleZoomArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:@"1"];
-            
-            if (idx == _selectNum) {
-                CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-                [_menuTitleZoomArr replaceObjectAtIndex:_selectNum withObject:[NSString stringWithFormat:@"%f",fontGap]];
-            }
-        }];
-    }
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-        [_menuTitleColorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [_menuTitleColorArr replaceObjectAtIndex:idx withObject:_normalMenuTitleColor];
-            
-            if (idx == _selectNum) {
-                [_menuTitleColorArr replaceObjectAtIndex:_selectNum withObject:_selectMenuTitleColor];
-            }
-        }];
-    }
-    
-    [self reloadData];
-    //    ********************************************
-    //    更换旧的选中title
-    
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:_selectNum inSection:0];
-    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-    
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    
-    oldSelectLab = titleLab;
-    oldTapIndex = _selectNum;
-    
-    //    ********************************************
+    _selectIndex = selectIndex;
+    [self reloadView];
 }
 
 #pragma mark - menuTitle 距离
@@ -194,96 +110,28 @@ typedef enum {
 -(void)setTitleWidthStyle:(BKSlideMenuViewTitleWidthStyle)titleWidthStyle
 {
     _titleWidthStyle = titleWidthStyle;
-    
-    NSMutableArray * heightArr = [NSMutableArray array];
-    __block CGFloat Y = 0;
-    NSMutableArray * YArr = [NSMutableArray array];
-    [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        
-        [YArr addObject:[NSString stringWithFormat:@"%f",Y]];
-        
-        CGFloat width = 0;
-        switch (titleWidthStyle) {
-            case BKSlideMenuViewTitleWidthStyleDefault:
-            {
-                _menuTitleLength = Left_RIGHT_GAP;
-                
-                NSString * string = obj;
-                CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT,self.frame.size.height)
-                                                   options:NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin
-                                                attributes:@{NSFontAttributeName:_normalMenuTitleFont}
-                                                   context:nil];
-                width = rect.size.width+_menuTitleLength;
-            }
-                break;
-            case BKSlideMenuViewTitleWidthStyleSame:
-            {
-                _menuTitleLength = MENU_TITLE_WIDTH;
-                width = _menuTitleLength;
-            }
-                break;
-            default:
-                break;
+    switch (titleWidthStyle) {
+        case TitleWidthStyleDefault:
+        {
+            menuTitleLength = TITLE_GAP;
         }
-        
-        [heightArr addObject:[NSString stringWithFormat:@"%f",width]];
-        
-        Y = Y + width;
-    }];
-    _rowHeightArr = heightArr;
-    _rowYArr = YArr;
-    
-    _selectView.frame = CGRectMake(0,0,2,[_rowHeightArr[0] floatValue]);
-    
-    [self reloadData];
-}
-
--(void)setMenuTitleLength:(CGFloat)menuTitleLength
-{
-    CGFloat gap = menuTitleLength - _menuTitleLength;
-    
-    _menuTitleLength = menuTitleLength;
-    
-    NSMutableArray * heightArr = [NSMutableArray arrayWithArray:_rowHeightArr];
-    __block CGFloat Y = 0;
-    NSMutableArray * YArr = [NSMutableArray array];
-    [heightArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        
-        [YArr addObject:[NSString stringWithFormat:@"%f",Y]];
-        
-        switch (_titleWidthStyle) {
-            case BKSlideMenuViewTitleWidthStyleDefault:
-            {
-                [heightArr replaceObjectAtIndex:idx withObject:[NSString stringWithFormat:@"%f",[obj floatValue]+gap]];
-                
-                Y = Y + [obj floatValue] + gap;
-            }
-                break;
-            case BKSlideMenuViewTitleWidthStyleSame:
-            {
-                [heightArr replaceObjectAtIndex:idx withObject:[NSString stringWithFormat:@"%f",menuTitleLength]];
-                
-                Y = Y + menuTitleLength;
-            }
-                break;
-            default:
-                break;
+            break;
+        case TitleWidthStyleSame:
+        {
+            menuTitleLength = MENU_TITLE_WIDTH;
         }
-    }];
-    
-    _rowHeightArr = heightArr;
-    _rowYArr = YArr;
-    
-    _selectView.frame = CGRectMake(0,0,2,[_rowHeightArr[0] floatValue]);
-    
-    [self reloadData];
+            break;
+        default:
+            break;
+    }
+    [self reloadView];
 }
 
 #pragma mark - 初始
 
 -(instancetype)initWithFrame:(CGRect)frame menuTitleArray:(NSArray*)titleArray
 {
-    self = [super initWithFrame:CGRectMake((frame.size.width-frame.size.height)/2.0f+frame.origin.x, (frame.size.height-frame.size.width)/2.0f+frame.origin.y, frame.size.height, frame.size.width) style:UITableViewStylePlain];
+    self = [super initWithFrame:frame];
     
     if (self) {
         
@@ -291,38 +139,30 @@ typedef enum {
         
         [self initData];
         [self initSelfProperty];
+        [self initAnyButton];
         
         if (!self.customDelegate) {
             [self initSelectView];
         }
+        
+        isInitFinishFlag = YES;
     }
     return self;
 }
 
 -(void)initData
 {
-    moveLength = 0;
+    _selectIndex = 1;
     
     _normalMenuTitleFont = [UIFont systemFontOfSize:NORMAL_TITLE_FONT];
-    _selectMenuTitleFont = [UIFont systemFontOfSize:SELECT_TITLE_FONT];
-    [self initMenuTitleFontArrWithNormalFont:_normalMenuTitleFont selectFont:_selectMenuTitleFont];
+    _fontGap = FONT_GAP;
     
     _normalMenuTitleColor = NORMAL_TITLE_COLOR;
     _selectMenuTitleColor = SELECT_TITLE_COLOR;
-    [self initMenuTitleColorArrWithNormalColor:_normalMenuTitleColor selectColor:_selectMenuTitleColor];
-    
-    self.titleWidthStyle = BKSlideMenuViewTitleWidthStyleDefault;
-}
 
--(void)initSelectView
-{
-    _selectStyle = BKSlideMenuViewSelectStyleHaveLine | BKSlideMenuViewSelectStyleChangeFont | BKSlideMenuViewSelectStyleChangeColor;
+    self.titleWidthStyle = TitleWidthStyleDefault;
     
-    _selectView = [[UIView alloc]initWithFrame:CGRectMake(0,0,2,[_rowHeightArr[0] floatValue])];
-    _selectView.backgroundColor = [UIColor blackColor];
-    _selectView.layer.cornerRadius = _selectView.bounds.size.width/2.0f;
-    _selectView.clipsToBounds = YES;
-    [self addSubview:_selectView];
+    _selectStyle = SelectStyleHaveLine | SelectStyleChangeFont | SelectStyleChangeColor;
 }
 
 -(void)initSelfProperty
@@ -330,85 +170,100 @@ typedef enum {
     self.backgroundColor = [UIColor whiteColor];
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
-    self.transform = CGAffineTransformMakeRotation(-M_PI / 2);
     self.delegate = self;
-    self.dataSource = self;
-    self.tableFooterView = [UIView new];
-    self.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+-(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
 {
-    return [self.menuTitleArray count];
+    CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
+                                       options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
+                                    attributes:@{NSFontAttributeName:font}
+                                       context:nil];
+    
+    return rect.size;
 }
 
--(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+-(CGFloat)changeWidthView:(UILabel*)view
 {
-    static NSString * identifier = @"SlideMenuTableViewCell";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        
-        UILabel * titleLab = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 0, self.frame.size.height)];
-        titleLab.textAlignment = NSTextAlignmentCenter;
-        titleLab.backgroundColor = [UIColor clearColor];
-        titleLab.tag = BKSlideMenuViewCell_tilteLab_tag;
-        [cell addSubview:titleLab];
+    CGSize viewSize = [self sizeWithString:view.text UIHeight:view.frame.size.height font:view.font];
+    CGFloat width = viewSize.width;
+    return width;
+}
+
+-(void)initAnyButton
+{
+    __block UIView * lastView;
+    
+    switch (_titleWidthStyle) {
+        case TitleWidthStyleDefault:
+        {
+            [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                
+                UIButton * titleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+                titleBtn.frame = CGRectMake((lastView?CGRectGetMaxX(lastView.frame)+menuTitleLength:menuTitleLength/2.0f), 0, 0, self.frame.size.height);
+                [titleBtn setBackgroundColor:[UIColor clearColor]];
+                [titleBtn setTitle:obj forState:UIControlStateNormal];
+                [titleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+                titleBtn.titleLabel.font = _normalMenuTitleFont;
+                titleBtn.adjustsImageWhenHighlighted = NO;
+                titleBtn.tag = idx + 1;
+                
+                CGRect titleRect = titleBtn.frame;
+                titleRect.size.width = [self changeWidthView:titleBtn.titleLabel];
+                titleBtn.frame = titleRect;
+                
+                [titleBtn addTarget:self action:@selector(titleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+                if (titleBtn.tag == _selectIndex) {
+                    [self titleBtnClick:titleBtn];
+                }
+                [self addSubview:titleBtn];
+                
+                lastView = titleBtn;
+            }];
+            
+            self.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame)+menuTitleLength/2.0f, self.frame.size.height);
+        }
+            break;
+        case TitleWidthStyleSame:
+        {
+            [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                
+                UIButton * titleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+                titleBtn.frame = CGRectMake((lastView?CGRectGetMaxX(lastView.frame):0), 0, menuTitleLength, self.frame.size.height);
+                [titleBtn setBackgroundColor:[UIColor clearColor]];
+                [titleBtn setTitle:obj forState:UIControlStateNormal];
+                [titleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+                titleBtn.titleLabel.font = _normalMenuTitleFont;
+                titleBtn.adjustsImageWhenHighlighted = NO;
+                titleBtn.tag = idx + 1;
+                [titleBtn addTarget:self action:@selector(titleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+                if (titleBtn.tag == _selectIndex) {
+                    [self titleBtnClick:titleBtn];
+                }
+                [self addSubview:titleBtn];
+                
+                lastView = titleBtn;
+                
+            }];
+            
+            self.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), self.frame.size.height);
+        }
+            break;
+        default:
+            break;
     }
-    
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    CGRect titleLabFrame = titleLab.frame;
-    titleLabFrame.origin.x = 0;
-    titleLabFrame.size.width = [_rowHeightArr[indexPath.row] floatValue];
-    titleLab.frame = titleLabFrame;
-    titleLab.font = _normalMenuTitleFont;
-    titleLab.transform = CGAffineTransformMakeScale([_menuTitleZoomArr[indexPath.row] floatValue], [_menuTitleZoomArr[indexPath.row] floatValue]);
-    titleLab.text = _menuTitleArray[indexPath.row];
-    titleLab.textColor = _menuTitleColorArr[indexPath.row];
-    
-    if (!oldSelectLab) {
-        oldSelectLab = titleLab;
-        oldTapIndex = 0;
-    }
-    
-    cell.backgroundColor = [UIColor clearColor];
-    
-    cell.transform = CGAffineTransformMakeRotation(M_PI / 2);
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    return cell;
 }
 
-#pragma mark - UITableViewDelegate
-
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)initSelectView
 {
-    return [_rowHeightArr[indexPath.row] floatValue];
-}
-
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    isMenuTapFlag = YES;
-    tapIndex = indexPath.row;
-    
-    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
-    
-    CGRect selectViewFrame = _selectView.frame;
-    selectViewFrame.origin.y = cell.frame.origin.y;
-    selectViewFrame.size.height = [_rowHeightArr[indexPath.row] floatValue];
-    
-    if ([self.customDelegate respondsToSelector:@selector(selectMenuSlide:relativelyViewWithViewIndex:)]) {
-        [self.customDelegate selectMenuSlide:self relativelyViewWithViewIndex:indexPath.row];
-    }
-    
-    [UIView animateWithDuration:0.25f delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        _selectView.frame = selectViewFrame;
-    } completion:^(BOOL finished) {
-        isMenuTapFlag = NO;
-    }];
+    _selectView = [[UIView alloc]initWithFrame:CGRectMake(0,self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT,selectTitleBtn.frame.size.width + menuTitleLength,DEFAULT_SELECTVIEW_HEIGHT)];
+    CGPoint selectViewCenter = _selectView.center;
+    selectViewCenter.x = selectTitleBtn.center.x;
+    _selectView.center = selectViewCenter;
+    _selectView.backgroundColor = [UIColor blackColor];
+    _selectView.layer.cornerRadius = _selectView.bounds.size.height/2.0f;
+    _selectView.clipsToBounds = YES;
+    [self addSubview:_selectView];
 }
 
 #pragma mark - 自定义selectView
@@ -417,39 +272,32 @@ typedef enum {
 {
     _selectStyle = selectStyle;
     
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-
+    if (_selectStyle & SelectStyleChangeFont) {
+        
     }else{
-        [_menuTitleZoomArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:@"1"];
-            
-            if (idx == [_menuTitleZoomArr count]-1) {
-                [self reloadData];
-            }
-        }];
+        _fontGap = 1;
+        [self reloadView];
     }
     
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
+    if (_selectStyle & SelectStyleChangeColor) {
         
     }else{
-        [_menuTitleColorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [_menuTitleColorArr replaceObjectAtIndex:idx withObject:_normalMenuTitleColor];
-            
-            if (idx == [_menuTitleColorArr count]-1) {
-                [self reloadData];
-            }
-        }];
+        _selectMenuTitleColor = _normalMenuTitleColor;
+        [self reloadView];
     }
- 
-    if (selectStyle & BKSlideMenuViewSelectStyleHaveLine) {
+    
+    if (selectStyle & SelectStyleHaveLine) {
         
     }else{
-        _selectView.frame = CGRectMake(0, 0, self.frame.size.height, [_rowHeightArr[0] floatValue]);
+        _selectView.frame = CGRectMake(0, 0, selectTitleBtn.frame.size.width, self.frame.size.height);
+        CGPoint selectViewCenter = _selectView.center;
+        selectViewCenter.x = selectTitleBtn.center.x;
+        _selectView.center = selectViewCenter;
         _selectView.backgroundColor = [UIColor clearColor];
         _selectView.layer.cornerRadius = 0;
         _selectView.clipsToBounds = NO;
         
-        if (selectStyle & BKSlideMenuViewSelectStyleCustom) {
+        if (selectStyle & SelectStyleCustom) {
             [self refreshChangeSelectView];
         }
     }
@@ -481,367 +329,362 @@ typedef enum {
     }
 }
 
+#pragma mark - UIButton
+
+-(void)titleBtnClick:(UIButton*)button
+{
+    if (isTapMenuTitleFlag || button == selectTitleBtn) {
+        return;
+    }
+    isTapMenuTitleFlag = YES;
+    
+    if (_selectView) {
+        CGRect selectViewRect = button.frame;
+        CGPoint selectViewCenter = _selectView.center;
+        switch (_titleWidthStyle) {
+            case TitleWidthStyleDefault:
+            {
+                selectViewRect.size.width = button.frame.size.width * _fontGap + menuTitleLength;
+                selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
+                selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
+                
+                selectViewCenter.x = button.center.x;
+            }
+                break;
+            case TitleWidthStyleSame:
+            {
+                selectViewRect.size.width = button.frame.size.width * _fontGap;
+                selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
+                selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
+                
+                selectViewCenter.x = button.center.x;
+            }
+                break;
+            default:
+                break;
+        }
+        
+        if (_selectStyle & SelectStyleCustom) {
+            selectViewRect.origin.y = 0;
+            selectViewRect.size.height = self.frame.size.height;
+        }
+        
+        [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+        [button setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
+        
+        [UIView animateWithDuration:0.25f delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            
+            _selectView.frame = selectViewRect;
+            _selectView.center = selectViewCenter;
+            
+            selectTitleBtn.transform = CGAffineTransformMakeScale(1, 1);
+            button.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
+            
+        } completion:^(BOOL finished) {
+            
+            selectTitleBtn = button;
+        
+            isTapMenuTitleFlag = NO;
+
+        }];
+    }else{
+        selectTitleBtn.transform = CGAffineTransformMakeScale(1, 1);
+        [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+        selectTitleBtn = button;
+        [selectTitleBtn setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
+        selectTitleBtn.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
+        
+        isTapMenuTitleFlag = NO;
+    }
+    
+    _selectIndex = button.tag;
+    
+    if ([self.customDelegate respondsToSelector:@selector(selectMenuSlide:relativelyViewWithViewIndex:)]) {
+        [self.customDelegate selectMenuSlide:self relativelyViewWithViewIndex:_selectIndex];
+    }
+}
+
 #pragma mark - selectView 滑动动画
 
 /**
- *     随着 SlideView 滑动的距离滑动
- **/
--(void)scrollWith:(BKSlideView*)slideView
+ *  略微调整选中状态的显示
+ *
+ *  @param item 选中的item
+ */
+-(void)fineTuneAndSelectItem:(NSInteger)item
 {
-    if (_selectStyle == BKSlideMenuViewSelectStyleNone) {
-        return;
-    }
-    
-    if (isMenuTapFlag) {
-        moveLength = slideView.contentOffset.y;
-        
-//    更改选中title 样式
-        if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-            [self cellTitleLabFontMagnifyWithNewIndex:tapIndex];
+    [[self subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (obj.tag != 0 && [obj isKindOfClass:[UIButton class]]) {
+            UIButton * button = (UIButton*)obj;
+            
+            if (item == button.tag) {
+                selectTitleBtn = button;
+                _selectIndex = item;
+                
+                [selectTitleBtn setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
+                selectTitleBtn.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
+                
+                CGRect selectViewRect = selectTitleBtn.frame;
+                CGPoint selectViewCenter = _selectView.center;
+                switch (_titleWidthStyle) {
+                    case TitleWidthStyleDefault:
+                    {
+                        selectViewRect.size.width = selectTitleBtn.frame.size.width + menuTitleLength;
+                        selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
+                        selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
+                        
+                        selectViewCenter.x = selectTitleBtn.center.x;
+                    }
+                        break;
+                    case TitleWidthStyleSame:
+                    {
+                        selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
+                        selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
+                        
+                        selectViewCenter.x = selectTitleBtn.center.x;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+                
+                if (_selectStyle & SelectStyleCustom) {
+                    selectViewRect.origin.y = 0;
+                    selectViewRect.size.height = self.frame.size.height;
+                }
+                
+                _selectView.frame = selectViewRect;
+                _selectView.center = selectViewCenter;
+                
+            }else{
+                [button setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+                button.transform = CGAffineTransformMakeScale(1, 1);
+            }
         }
-        
-        if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-            [self cellTitleChangeColorWithNewIndex:tapIndex];
-        }
-        
-//    ********************************************
-//    更换旧的选中title
-        
-        NSIndexPath * indexPath = [NSIndexPath indexPathForRow:tapIndex inSection:0];
-        UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-        
-        UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-        
-        oldSelectLab = titleLab;
-        oldTapIndex = tapIndex;
-        
-//    ********************************************
-        
-        if (self.contentSize.height > self.frame.size.width) {
-            [self tapChangeIndex:tapIndex animation:self.changeStyle];
-        }
-        
-        return;
-    }
-    
-    moveLength = moveLength - slideView.contentOffset.y;
-    
-//    ********************************************
-//    取得 toIndex & fromIndex
-    
-    NSInteger toIndex = 0;
-    NSInteger fromIndex = 0;
-    if (slideView.contentOffset.y <= 0 || slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
-        if (slideView.contentOffset.y <= 0) {
-            fromIndex = 0;
-            toIndex = 0;
-        }
-        
-        if (slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
-            toIndex = [_rowHeightArr count] - 1;
-            fromIndex = [_rowHeightArr count] - 1;
-        }
+    }];
+}
 
-    }else{
-        NSInteger selectIndex = [[NSString stringWithFormat:@"%f",slideView.contentOffset.y/slideView.frame.size.width] integerValue];
-        
-        NSString * contentOffsetY = [NSString stringWithFormat:@"%f",slideView.contentOffset.y];
-        NSString * width = [NSString stringWithFormat:@"%f",slideView.frame.size.width];
-        
-        NSInteger yPointLoction;
-        if ([contentOffsetY rangeOfString:@"."].location != NSNotFound) {
-            yPointLoction = [contentOffsetY rangeOfString:@"."].location;
-        }
-        
-        NSInteger widthPointLoction;
-        if ([width rangeOfString:@"."].location != NSNotFound) {
-            widthPointLoction = [width rangeOfString:@"."].location;
-        }
-        
-        NSInteger pointLaterLength = [contentOffsetY length]-yPointLoction>[width length]-widthPointLoction?[contentOffsetY length]-yPointLoction:[width length]-widthPointLoction;
-        
-        NSInteger contentOffsetY_integer = slideView.contentOffset.y * pow(10, pointLaterLength);
-        NSInteger width_integer = slideView.frame.size.width * pow(10, pointLaterLength);
-        
-        if (moveLength>0) {
-            toIndex = selectIndex;
-            fromIndex = selectIndex + 1;
-        }else if (moveLength<0) {
-            fromIndex = selectIndex;
-            toIndex = selectIndex + 1;
-        }
-        
-        if (contentOffsetY_integer % width_integer == 0) {
-            if (moveLength<0) {
-                fromIndex = selectIndex - 1;
-                toIndex = selectIndex;
-            }
-        }
+/**
+ *     随着 SlideView 滑动的距离滑动
+ */
+-(void)scrollWith:(UICollectionView *)slideView
+{
+    if (_selectStyle == SelectStyleNone || isTapMenuTitleFlag) {
+        return;
     }
     
-//    ********************************************
-//    防止滑动过快 字体 颜色 长度 变形
-    if (scroll_fromIndex != fromIndex && scroll_toIndex != toIndex) {
-        if (scroll_fromIndex == toIndex && scroll_toIndex == fromIndex) {
-           
-        }else{
-            if (moveLength > 0) {
-                [self preventDeformationWithScrollView:slideView withChangeIndex:fromIndex+1 fromIndex:fromIndex];
-            }else if (moveLength < 0) {
-                [self preventDeformationWithScrollView:slideView withChangeIndex:fromIndex-1 fromIndex:fromIndex];
-            }
-        }
-    }
-//    ********************************************
+    CGFloat slideViewContentOffX = slideView.contentOffset.x;
+   
+    // 第几页
+    NSInteger item = slideViewContentOffX / slideView.frame.size.width + 1;
     
-    if (self.contentSize.height > self.frame.size.width) {
-//    动画格式 并且改变 self contentOffset.y距离
+    if (item < 1) {
+        [self fineTuneAndSelectItem:1];
+        return;
+    }else if (item >= [_menuTitleArray count]) {
+        [self fineTuneAndSelectItem:[_menuTitleArray count]];
+        return;
+    }
+    
+    // 这一页滑动了多少
+    CGFloat page_contentOffX = (CGFloat)((NSInteger)slideViewContentOffX % (NSInteger)slideView.frame.size.width);
+    // 滑走的button
+    UIButton * fromButton = (UIButton*)[self viewWithTag:item];
+    // 滑向的button
+    UIButton * toButton = (UIButton*)[self viewWithTag:item+1];
+    // 这一页滑的百分比
+    CGFloat scale = page_contentOffX / slideView.frame.size.width;
+    
+    if (scale == 0) {
+        [self fineTuneAndSelectItem:item];
+        return;
+    }
+    
+    if (scale < 0.5) {
+        UIButton * button = (UIButton*)[self viewWithTag:item];
+        selectTitleBtn = button;
+        _selectIndex = item;
+    }
+    
+    // 根据方向从新控制滑向的button 和 百分比
+    CGFloat now_scale = 0.0;
+    UIButton * now_frombutton;
+    UIButton * now_toButton;
+    if (selectTitleBtn == fromButton) {
+        now_scale = scale;
+        now_frombutton = fromButton;
+        now_toButton = toButton;
+    }else if (selectTitleBtn == toButton) {
+        now_scale = 1-scale;
+        now_frombutton = toButton;
+        now_toButton = fromButton;
+    }
+    
+    /**
+     *  滑动中所做的动画
+     */
+    if (self.contentSize.width > self.frame.size.width) {
+        //    动画格式 并且改变 self contentOffset.x距离
         [self moveChangeAnimation:self.changeStyle];
     }
     
-//    改变selectView滑动位置
-    [self selectViewChangeWithScrollView:slideView fromCellIndex:fromIndex toCellIndex:toIndex move:moveLength];
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-//    改变滑动中 即将取消选择 和 选择的 cell 字号
-        [self scrollSlideViewMagnifyFontWithFromCellIndex:fromIndex toCellIndex:toIndex scrollView:slideView];
+    if (_selectStyle & SelectStyleChangeFont) {
+        //    改变滑动中 即将取消选择 和 选择的 cell 字号
+        [self magnifyFontWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
     }
     
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-//    改变滑动中 即将取消选择 和 选择的 cell 字体颜色
-        [self scrollSlideViewChangeSelectColorWithFromCellIndex:fromIndex toCellIndex:toIndex scrollView:slideView];
+//        改变selectView滑动位置
+    [self selectViewChangeWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
+    
+    if (_selectStyle & SelectStyleChangeColor) {
+        //    改变滑动中 即将取消选择 和 选择的 cell 字体颜色
+        [self ChangeSelectColorWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
     }
-    
-    moveLength = slideView.contentOffset.y;
-    
-    scroll_fromIndex = fromIndex;
-    scroll_toIndex = toIndex;
-}
-
-/**
- *     防止滑动过快 字体 颜色 长度 变形
- **/
--(void)preventDeformationWithScrollView:(BKSlideView*)slideView withChangeIndex:(NSInteger)index  fromIndex:(NSInteger)fromIndex
-{
-    UILabel * titleLab;
-    if (!(index < 0) && !(index > [_menuTitleArray count] - 1)) {
-        NSIndexPath * indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-        UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-        titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    }
-    
-    NSIndexPath * from_indexPath = [NSIndexPath indexPathForRow:fromIndex inSection:0];
-    UITableViewCell * from_cell = [self cellForRowAtIndexPath:from_indexPath];
-    UILabel * from_titleLab = (UILabel*)[from_cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-        
-        if (!(index < 0) && !(index > [_menuTitleArray count] - 1)) {
-            titleLab.transform = CGAffineTransformMakeScale(1, 1);
-            [_menuTitleZoomArr replaceObjectAtIndex:index withObject:@"1"];
-        }
-        
-        CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-        from_titleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
-        [_menuTitleZoomArr replaceObjectAtIndex:fromIndex withObject:[NSString stringWithFormat:@"%f",fontGap]];
-    }
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-        
-        if (!(index < 0) && !(index > [_menuTitleArray count] - 1)) {
-            titleLab.textColor = _normalMenuTitleColor;
-            [_menuTitleColorArr replaceObjectAtIndex:index withObject:_normalMenuTitleColor];
-        }
-        
-        from_titleLab.textColor = _selectMenuTitleColor;
-        [_menuTitleColorArr replaceObjectAtIndex:fromIndex withObject:_selectMenuTitleColor];
-    }
-    
-    CGFloat cellHeight = [_rowHeightArr[fromIndex] floatValue];
-    CGFloat cellY = [_rowYArr[fromIndex] floatValue];
-    
-    CGRect selectViewFrame = _selectView.frame;
-    selectViewFrame.size.height = cellHeight;
-    selectViewFrame.origin.y = cellY;
-    _selectView.frame = selectViewFrame;
-}
-
-/**
- *     selectView 改变滑动位置
- **/
--(void)selectViewChangeWithScrollView:(BKSlideView*)slideView fromCellIndex:(NSInteger)fromIndex toCellIndex:(NSInteger)toIndex move:(CGFloat)length
-{
-    CGFloat fromCellHeight = [_rowHeightArr[fromIndex] floatValue];
-    CGFloat toCellHeight = [_rowHeightArr[toIndex] floatValue];
-    
-    CGRect selectViewFrame = _selectView.frame;
-    
-    switch (_titleWidthStyle) {
-        case BKSlideMenuViewTitleWidthStyleDefault:
-        {
-            CGFloat cell1_cell2_heightGaps = 0;
-            if (moveLength>0) {
-                cell1_cell2_heightGaps = fromCellHeight - toCellHeight;
-                selectViewFrame.origin.y = selectViewFrame.origin.y - moveLength/slideView.frame.size.width * toCellHeight;
-            }else if (moveLength<0){
-                cell1_cell2_heightGaps = toCellHeight - fromCellHeight;
-                selectViewFrame.origin.y = selectViewFrame.origin.y - moveLength/slideView.frame.size.width * fromCellHeight;
-            }
-            
-            selectViewFrame.size.height = selectViewFrame.size.height - moveLength/slideView.frame.size.width *cell1_cell2_heightGaps;
-        }
-            break;
-        case BKSlideMenuViewTitleWidthStyleSame:
-        {
-            selectViewFrame.origin.y = selectViewFrame.origin.y - moveLength/slideView.frame.size.width * _menuTitleLength;
-        }
-            break;
-        default:
-            break;
-    }
-    
-    _selectView.frame = selectViewFrame;
 }
 
 /**
  *     SlideView 结束滑动
- **/
--(void)endScrollWith:(BKSlideView*)slideView
+ */
+-(void)endScrollWith:(UICollectionView *)slideView
 {
-    if (_selectStyle == BKSlideMenuViewSelectStyleNone) {
+    if (_selectStyle == SelectStyleNone || isTapMenuTitleFlag) {
         return;
     }
     
-    if (isMenuTapFlag) {
-        return;
-    }
+    CGPoint pInView = [self convertPoint:slideView.center toView:slideView];
+    NSIndexPath *indexPathNow = [slideView indexPathForItemAtPoint:pInView];
+    NSInteger item = indexPathNow.item;
     
-    NSInteger selectIndex = [[NSString stringWithFormat:@"%f",slideView.contentOffset.y/slideView.frame.size.width] integerValue];
+    _selectIndex = item + 1;
+    UIButton * selectBtn = (UIButton*)[self viewWithTag:_selectIndex];
     
-    CGFloat cellHeight = [_rowHeightArr[selectIndex] floatValue];
-    CGFloat cellY = [_rowYArr[selectIndex] floatValue];
+    selectTitleBtn.transform = CGAffineTransformMakeScale(1, 1);
+    [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+    selectTitleBtn = selectBtn;
+    [selectTitleBtn setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
+    selectTitleBtn.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
     
-    CGRect selectViewFrame = _selectView.frame;
-    selectViewFrame.size.height = cellHeight;
-    selectViewFrame.origin.y = cellY;
-    _selectView.frame = selectViewFrame;
-    
-    
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:selectIndex inSection:0];
-    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-    
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    
-//    更改选中title 样式
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeFont) {
-        
-        CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-        titleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
-        
-        [_menuTitleZoomArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [_menuTitleZoomArr replaceObjectAtIndex:idx withObject:@"1"];
-            
-            if (idx == selectIndex) {
-                [_menuTitleZoomArr replaceObjectAtIndex:selectIndex withObject:[NSString stringWithFormat:@"%f",fontGap]];
-            }
-        }];
-    }
-    
-    if (_selectStyle & BKSlideMenuViewSelectStyleChangeColor) {
-        
-        titleLab.textColor = _selectMenuTitleColor;
-        
-        [_menuTitleColorArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [_menuTitleColorArr replaceObjectAtIndex:idx withObject:_normalMenuTitleColor];
-            
-            if (idx == selectIndex) {
-                [_menuTitleColorArr replaceObjectAtIndex:selectIndex withObject:_selectMenuTitleColor];
-            }
-        }];
-    }
-    
-//    ********************************************
-//    更换旧的选中title
-    oldSelectLab = titleLab;
-    oldTapIndex = selectIndex;
-    
-//    ********************************************
-}
-
-#pragma mark - 滑动动画格式
-
-/**
- *     点击动画选择
- **/
--(void)tapChangeIndex:(NSInteger)index animation:(BKSlideMenuViewChangeStyle)style
-{
-//    滑动样式
-    CGFloat cellY = [_rowYArr[index] floatValue];
-    CGFloat cellRow = [_rowHeightArr[index] floatValue];
-    switch (style) {
-        case 0:
+    CGRect selectViewRect = selectBtn.frame;
+    CGPoint selectViewCenter = _selectView.center;
+    switch (_titleWidthStyle) {
+        case TitleWidthStyleDefault:
         {
-            [self tapCellDefaultAnimationWithCellY:cellY cellRow:cellRow];
+            selectViewRect.size.width = selectBtn.frame.size.width + menuTitleLength;
+            selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
+            selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
+            
+            selectViewCenter.x = selectBtn.center.x;
         }
             break;
-        case 1:
+        case TitleWidthStyleSame:
         {
-            [self tapCellCenterAnimationWithCellY:cellY cellRow:cellRow];
+            selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
+            selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
+            
+            selectViewCenter.x = selectBtn.center.x;
         }
             break;
         default:
             break;
     }
+    
+    if (_selectStyle & SelectStyleCustom) {
+        selectViewRect.origin.y = 0;
+        selectViewRect.size.height = self.frame.size.height;
+    }
+    
+    _selectView.frame = selectViewRect;
+    _selectView.center = selectViewCenter;
 }
 
 /**
- *     Tap Default
- **/
--(void)tapCellDefaultAnimationWithCellY:(CGFloat)cellY cellRow:(CGFloat)cellRow
+ *     设置 滑动 字号大小
+ */
+-(void)magnifyFontWithFromButton:(UIButton*)fromButton toButton:(UIButton*)toButton scale:(CGFloat)scale
 {
-    CGFloat selectViewPositionGaps = cellRow + cellY - self.contentOffset.y;
-    if (selectViewPositionGaps > self.frame.size.width) {
-        [self setContentOffset:CGPointMake(0, self.contentOffset.y + (selectViewPositionGaps - self.frame.size.width)) animated:YES];
-    }else if (cellY - self.contentOffset.y < 0) {
-        [self setContentOffset:CGPointMake(0, cellY) animated:YES];
-    }
+    CGFloat gap = scale * (_fontGap-1);
+    
+    fromButton.transform = CGAffineTransformMakeScale(_fontGap-gap, _fontGap-gap);
+    toButton.transform = CGAffineTransformMakeScale(1+gap, 1+gap);
 }
 
 /**
- *     Tap Center
- **/
--(void)tapCellCenterAnimationWithCellY:(CGFloat)cellY cellRow:(CGFloat)cellRow
+ *     selectView 改变滑动位置
+ */
+-(void)selectViewChangeWithFromButton:(UIButton*)fromButton toButton:(UIButton*)toButton scale:(CGFloat)scale
 {
-    CGFloat selectViewPositionGaps = cellRow + cellY - self.contentOffset.y;
-    CGFloat left_right_Gap = (self.frame.size.width - cellRow)/2.0f;
-    if (selectViewPositionGaps > self.frame.size.width - left_right_Gap) {
-        CGFloat move = cellY - left_right_Gap;
-        if (move > self.contentSize.height - self.frame.size.width) {
-            move = self.contentSize.height - self.frame.size.width;
+    CGRect selectViewRect = _selectView.frame;
+    CGPoint selectViewCenter = _selectView.center;
+    
+    switch (_titleWidthStyle) {
+        case TitleWidthStyleDefault:
+        {
+            selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width + menuTitleLength;
+            selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
         }
-        [self setContentOffset:CGPointMake(0,move) animated:YES];
-    }else if (cellY - self.contentOffset.y < left_right_Gap) {
-        CGFloat move = cellY - left_right_Gap;
-        if (move<0) {
-            move = 0;
+            break;
+        case TitleWidthStyleSame:
+        {
+            selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width;
+            selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
         }
-        [self setContentOffset:CGPointMake(0, move) animated:YES];
+            break;
+        default:
+            break;
     }
+    
+    _selectView.frame = selectViewRect;
+    _selectView.center = selectViewCenter;
 }
+
+/**
+ *     设置 滑动 字体颜色 透明度
+ */
+-(void)ChangeSelectColorWithFromButton:(UIButton*)fromButton toButton:(UIButton*)toButton scale:(CGFloat)scale
+{
+    CGFloat fromTitleAlpha = [[_selectMenuTitleColor valueForKey:@"alphaComponent"] floatValue];
+    CGFloat toTitleAlpha = [[_normalMenuTitleColor valueForKey:@"alphaComponent"] floatValue];
+    
+    CGFloat fromTitleR = [[_selectMenuTitleColor valueForKey:@"redComponent"] floatValue];
+    CGFloat toTitleR = [[_normalMenuTitleColor valueForKey:@"redComponent"] floatValue];
+    
+    CGFloat fromTitleG = [[_selectMenuTitleColor valueForKey:@"greenComponent"] floatValue];
+    CGFloat toTitleG = [[_normalMenuTitleColor valueForKey:@"greenComponent"] floatValue];
+    
+    CGFloat fromTitleB = [[_selectMenuTitleColor valueForKey:@"blueComponent"] floatValue];
+    CGFloat toTitleB = [[_normalMenuTitleColor valueForKey:@"blueComponent"] floatValue];
+    
+    CGFloat alphaGap = fromTitleAlpha - toTitleAlpha;
+    CGFloat RGap = fromTitleR - toTitleR;
+    CGFloat GGap = fromTitleG - toTitleG ;
+    CGFloat BGap = fromTitleB - toTitleB ;
+    
+    CGFloat alphaChange = scale * alphaGap;
+    CGFloat RChange = scale * RGap;
+    CGFloat GChange = scale * GGap;
+    CGFloat BChange = scale * BGap;
+    
+    UIColor * new_fromChangeColor = [UIColor colorWithRed:fromTitleR-RChange green:fromTitleG-GChange blue:fromTitleB-BChange alpha:fromTitleAlpha-alphaChange];
+    UIColor * new_toChangeColor = [UIColor colorWithRed:toTitleR+RChange green:toTitleG+GChange blue:toTitleB+BChange alpha:toTitleAlpha+alphaChange];
+    
+    [fromButton setTitleColor:new_fromChangeColor forState:UIControlStateNormal];
+    [toButton setTitleColor:new_toChangeColor forState:UIControlStateNormal];
+}
+
+#pragma mark - 动画格式
 
 /**
  *     滑动动画选择
- **/
+ */
 -(void)moveChangeAnimation:(BKSlideMenuViewChangeStyle)style
 {
     switch (style) {
-        case 0:
+        case ChangeStyleDefault:
         {
             [self changeSelectViewDefaultAnimation];
         }
             break;
-        case 1:
+        case ChangeStyleCenter:
         {
             [self changeSelectViewCenterAnimation];
         }
@@ -853,18 +696,18 @@ typedef enum {
 
 /**
  *     scroll Default
- **/
+ */
 -(void)changeSelectViewDefaultAnimation
 {
-    CGFloat selectViewPositionGaps = CGRectGetMaxY(_selectView.frame) - self.contentOffset.y;
+    CGFloat selectViewPositionGaps = CGRectGetMaxX(_selectView.frame) - self.contentOffset.x;
     if (selectViewPositionGaps > self.frame.size.width) {
-        [self setContentOffset:CGPointMake(0, self.contentOffset.y + (selectViewPositionGaps - self.frame.size.width)) animated:NO];
-        if (self.contentOffset.y > self.contentSize.height - self.frame.size.width) {
-            [self setContentOffset:CGPointMake(0, self.contentSize.height - self.frame.size.width) animated:NO];
+        [self setContentOffset:CGPointMake(self.contentOffset.x + (selectViewPositionGaps - self.frame.size.width), 0) animated:NO];
+        if (self.contentOffset.x > self.contentSize.width - self.frame.size.width) {
+            [self setContentOffset:CGPointMake(self.contentSize.width - self.frame.size.width, 0) animated:NO];
         }
-    }else if (_selectView.frame.origin.y - self.contentOffset.y < 0) {
-        [self setContentOffset:CGPointMake(0, _selectView.frame.origin.y) animated:NO];
-        if (self.contentOffset.y < 0) {
+    }else if (_selectView.frame.origin.x - self.contentOffset.x < 0) {
+        [self setContentOffset:CGPointMake(_selectView.frame.origin.x, 0) animated:NO];
+        if (self.contentOffset.x < 0) {
             [self setContentOffset:CGPointMake(0, 0) animated:NO];
         }
     }
@@ -872,259 +715,24 @@ typedef enum {
 
 /**
  *     scroll Center
- **/
+ */
 -(void)changeSelectViewCenterAnimation
 {
-    CGFloat selectViewPositionGaps = CGRectGetMaxY(_selectView.frame) - self.contentOffset.y;
-    CGFloat left_right_Gap = (self.frame.size.width - _selectView.frame.size.height)/2.0f;
+    CGFloat selectViewPositionGaps = CGRectGetMaxX(_selectView.frame) - self.contentOffset.x;
+    CGFloat left_right_Gap = (self.frame.size.width - _selectView.frame.size.width)/2.0f;
     if (selectViewPositionGaps > self.frame.size.width - left_right_Gap) {
-        CGFloat move = _selectView.frame.origin.y - left_right_Gap;
-        if (move > self.contentSize.height - self.frame.size.width) {
-            move = self.contentSize.height - self.frame.size.width;
+        CGFloat move = _selectView.frame.origin.x - left_right_Gap;
+        if (move > self.contentSize.width - self.frame.size.width) {
+            move = self.contentSize.width - self.frame.size.width;
         }
-        [self setContentOffset:CGPointMake(0,move) animated:NO];
-    }else if (_selectView.frame.origin.y - self.contentOffset.y < left_right_Gap) {
-        CGFloat move = _selectView.frame.origin.y - left_right_Gap;
+        [self setContentOffset:CGPointMake(move, 0) animated:NO];
+    }else if (_selectView.frame.origin.x - self.contentOffset.x < left_right_Gap) {
+        CGFloat move = _selectView.frame.origin.x - left_right_Gap;
         if (move<0) {
             move = 0;
         }
-        [self setContentOffset:CGPointMake(0, move) animated:NO];
+        [self setContentOffset:CGPointMake(move, 0) animated:NO];
     }
-}
-
-#pragma mark - 字体大小
-
-/**
- *     设置 点击 字号大小
- **/
--(void)cellTitleLabFontMagnifyWithNewIndex:(NSInteger)index
-{
-    oldSelectLab.transform = CGAffineTransformMakeScale(1, 1);
-    [_menuTitleZoomArr replaceObjectAtIndex:oldTapIndex withObject:@"1"];
-    
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-    
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    
-    CGFloat fontMagnifyGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-    titleLab.transform = CGAffineTransformMakeScale(fontMagnifyGap, fontMagnifyGap);
-    
-    [_menuTitleZoomArr replaceObjectAtIndex:index withObject:[NSString stringWithFormat:@"%f",fontMagnifyGap]];
-}
-
-/**
- *     设置 滑动 字号大小
- **/
--(void)scrollSlideViewMagnifyFontWithFromCellIndex:(NSInteger)fromCellIndex toCellIndex:(NSInteger)toCellIndex scrollView:(BKSlideView*)slideView
-{
-    if (slideView.contentOffset.y <= 0 || slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
-        
-        if (fromCellIndex != toCellIndex) {
-            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:fromCellIndex inSection:0];
-            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
-            
-            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-            fromMenuTitleLab.transform = CGAffineTransformMakeScale(1, 1);
-            
-            [_menuTitleZoomArr replaceObjectAtIndex:fromCellIndex withObject:@"1"];
-        }else{
-            NSInteger from_index;
-            if (slideView.contentOffset.y <= 0) {
-                from_index = toCellIndex + 1;
-            }else if (slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
-                from_index = toCellIndex - 1;
-            }
-            
-            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:from_index inSection:0];
-            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
-            
-            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-            fromMenuTitleLab.transform = CGAffineTransformMakeScale(1, 1);
-            
-            [_menuTitleZoomArr replaceObjectAtIndex:from_index withObject:@"1"];
-            
-            NSIndexPath * toIndexPath = [NSIndexPath indexPathForRow:toCellIndex inSection:0];
-            UITableViewCell * toCell = [self cellForRowAtIndexPath:toIndexPath];
-            
-            UILabel * toMenuTitleLab = (UILabel*)[toCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-            CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize;
-            toMenuTitleLab.transform = CGAffineTransformMakeScale(fontGap, fontGap);
-            
-            [_menuTitleZoomArr replaceObjectAtIndex:toCellIndex withObject:[NSString stringWithFormat:@"%f",fontGap]];
-        }
-        
-        return;
-    }
-    
-    NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:fromCellIndex inSection:0];
-    UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
-    
-    NSIndexPath * toIndexPath = [NSIndexPath indexPathForRow:toCellIndex inSection:0];
-    UITableViewCell * toCell = [self cellForRowAtIndexPath:toIndexPath];
-    
-    CGFloat fromCellTitleFont = [_menuTitleZoomArr[fromCellIndex] floatValue];
-    CGFloat toCellTitleFont = [_menuTitleZoomArr[toCellIndex] floatValue];
-    
-    CGFloat fontGap = _selectMenuTitleFont.pointSize / _normalMenuTitleFont.pointSize - 1;
-    CGFloat fontChange = moveLength/slideView.frame.size.width * fontGap;
-    
-    CGFloat fromFont = 0;
-    CGFloat toFont = 0;
-    if (moveLength < 0) {
-        fromFont = fromCellTitleFont + fontChange;
-        toFont = toCellTitleFont - fontChange;
-    }else if (moveLength > 0) {
-        fromFont = fromCellTitleFont - fontChange;
-        toFont = toCellTitleFont + fontChange;
-    }
-    
-    if (fromCell || toCell) {
-        UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-        UILabel * toMenuTitleLab = (UILabel*)[toCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-        
-        fromMenuTitleLab.transform = CGAffineTransformMakeScale(fromFont,fromFont);
-        toMenuTitleLab.transform = CGAffineTransformMakeScale(toFont,toFont);
-    }
-    
-    [_menuTitleZoomArr replaceObjectAtIndex:fromCellIndex withObject:[NSString stringWithFormat:@"%f",fromFont]];
-    [_menuTitleZoomArr replaceObjectAtIndex:toCellIndex withObject:[NSString stringWithFormat:@"%f",toFont]];
-}
-
-#pragma mark - 字体颜色
-
-/**
- *     设置 点击 字体颜色
- **/
--(void)cellTitleChangeColorWithNewIndex:(NSInteger)index
-{
-    oldSelectLab.textColor = _normalMenuTitleColor;
-    [_menuTitleColorArr replaceObjectAtIndex:oldTapIndex withObject:_normalMenuTitleColor];
-    
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-    UITableViewCell * cell = [self cellForRowAtIndexPath:indexPath];
-    
-    UILabel * titleLab = (UILabel*)[cell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-    
-    titleLab.textColor = _selectMenuTitleColor;
-    [_menuTitleColorArr replaceObjectAtIndex:index withObject:_selectMenuTitleColor];
-}
-
-/**
- *     设置 滑动 字体颜色 透明度
- **/
--(void)scrollSlideViewChangeSelectColorWithFromCellIndex:(NSInteger)fromCellIndex toCellIndex:(NSInteger)toCellIndex scrollView:(BKSlideView*)slideView
-{
-    if (slideView.contentOffset.y <= 0 || slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
-        
-        if (fromCellIndex != toCellIndex) {
-            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:fromCellIndex inSection:0];
-            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
-            
-            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-            fromMenuTitleLab.textColor = _normalMenuTitleColor;
-            
-            [_menuTitleColorArr replaceObjectAtIndex:fromCellIndex withObject:_normalMenuTitleColor];
-        }else{
-            NSInteger from_index;
-            if (slideView.contentOffset.y <= 0) {
-                from_index = toCellIndex + 1;
-            }else if (slideView.contentOffset.y >= slideView.contentSize.height - slideView.frame.size.width) {
-                from_index = toCellIndex - 1;
-            }
-            
-            NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:from_index inSection:0];
-            UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
-            
-            UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-            fromMenuTitleLab.textColor = _normalMenuTitleColor;
-            
-            [_menuTitleColorArr replaceObjectAtIndex:from_index withObject:_normalMenuTitleColor];
-            
-            NSIndexPath * toIndexPath = [NSIndexPath indexPathForRow:toCellIndex inSection:0];
-            UITableViewCell * toCell = [self cellForRowAtIndexPath:toIndexPath];
-            
-            UILabel * toMenuTitleLab = (UILabel*)[toCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-            toMenuTitleLab.textColor = _selectMenuTitleColor;
-            
-            [_menuTitleColorArr replaceObjectAtIndex:toCellIndex withObject:_selectMenuTitleColor];
-        }
-        
-        return;
-    }
-    
-    NSIndexPath * fromIndexPath = [NSIndexPath indexPathForRow:fromCellIndex inSection:0];
-    UITableViewCell * fromCell = [self cellForRowAtIndexPath:fromIndexPath];
-    
-    NSIndexPath * toIndexPath = [NSIndexPath indexPathForRow:toCellIndex inSection:0];
-    UITableViewCell * toCell = [self cellForRowAtIndexPath:toIndexPath];
-    
-    UIColor * fromCellTitleColor = _menuTitleColorArr[fromCellIndex];
-    UIColor * toCellTitleColor = _menuTitleColorArr[toCellIndex];
-    
-    CGFloat fromCellTitleAlpha = [[fromCellTitleColor valueForKey:@"alphaComponent"] floatValue];
-    CGFloat toCellTitleAlpha = [[toCellTitleColor valueForKey:@"alphaComponent"] floatValue];
-    
-    CGFloat fromCellTitleR = [[fromCellTitleColor valueForKey:@"redComponent"] floatValue];
-    CGFloat toCellTitleR = [[toCellTitleColor valueForKey:@"redComponent"] floatValue];
-    
-    CGFloat fromCellTitleG = [[fromCellTitleColor valueForKey:@"greenComponent"] floatValue];
-    CGFloat toCellTitleG = [[toCellTitleColor valueForKey:@"greenComponent"] floatValue];
-    
-    CGFloat fromCellTitleB = [[fromCellTitleColor valueForKey:@"blueComponent"] floatValue];
-    CGFloat toCellTitleB = [[toCellTitleColor valueForKey:@"blueComponent"] floatValue];
-    
-    CGFloat alphaGap = [[_selectMenuTitleColor valueForKey:@"alphaComponent"] floatValue] - [[_normalMenuTitleColor valueForKey:@"alphaComponent"] floatValue];
-    CGFloat RGap = [[_selectMenuTitleColor valueForKey:@"redComponent"] floatValue] - [[_normalMenuTitleColor valueForKey:@"redComponent"] floatValue];
-    CGFloat GGap = [[_selectMenuTitleColor valueForKey:@"greenComponent"] floatValue] - [[_normalMenuTitleColor valueForKey:@"greenComponent"] floatValue];
-    CGFloat BGap = [[_selectMenuTitleColor valueForKey:@"blueComponent"] floatValue] - [[_normalMenuTitleColor valueForKey:@"blueComponent"] floatValue];
-    
-    CGFloat alphaChange = moveLength/slideView.frame.size.width * alphaGap;
-    CGFloat RChange = moveLength/slideView.frame.size.width * RGap;
-    CGFloat GChange = moveLength/slideView.frame.size.width * GGap;
-    CGFloat BChange = moveLength/slideView.frame.size.width * BGap;
-    
-    CGFloat fromAlpha = 0;
-    CGFloat toAlpha = 0;
-    CGFloat fromR = 0;
-    CGFloat toR = 0;
-    CGFloat fromG = 0;
-    CGFloat toG = 0;
-    CGFloat fromB = 0;
-    CGFloat toB = 0;
-    if (moveLength < 0) {
-        fromAlpha = fromCellTitleAlpha + alphaChange;
-        toAlpha = toCellTitleAlpha - alphaChange;
-        fromR = fromCellTitleR + RChange;
-        toR = toCellTitleR - RChange;
-        fromG = fromCellTitleG + GChange;
-        toG = toCellTitleG - GChange;
-        fromB = fromCellTitleB + BChange;
-        toB = toCellTitleB - BChange;
-    }else if (moveLength > 0) {
-        fromAlpha = fromCellTitleAlpha - alphaChange;
-        toAlpha = toCellTitleAlpha + alphaChange;
-        fromR = fromCellTitleR - RChange;
-        toR = toCellTitleR + RChange;
-        fromG = fromCellTitleG - GChange;
-        toG = toCellTitleG + GChange;
-        fromB = fromCellTitleB - BChange;
-        toB = toCellTitleB + BChange;
-    }
-    
-    UIColor * new_fromChangeColor = [UIColor colorWithRed:fromR green:fromG blue:fromB alpha:fromAlpha];
-    UIColor * new_toChangeColor = [UIColor colorWithRed:toR green:toG blue:toB alpha:toAlpha];
-    
-    if (fromCell || toCell) {
-        UILabel * fromMenuTitleLab = (UILabel*)[fromCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-        UILabel * toMenuTitleLab = (UILabel*)[toCell viewWithTag:BKSlideMenuViewCell_tilteLab_tag];
-        
-        fromMenuTitleLab.textColor = new_fromChangeColor;
-        toMenuTitleLab.textColor = new_toChangeColor;
-    }
-    
-    [_menuTitleColorArr replaceObjectAtIndex:fromCellIndex withObject:new_fromChangeColor];
-    [_menuTitleColorArr replaceObjectAtIndex:toCellIndex withObject:new_toChangeColor];
 }
 
 @end

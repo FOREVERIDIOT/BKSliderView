@@ -12,7 +12,7 @@
 
 @interface CustomSelectViewViewController ()<BKSlideViewDelegate,BKSlideMenuViewDelegate>
 {
-    BKSlideView * slideView;
+    BKSlideView * theSlideView;
     BKSlideMenuView * menuView;
 }
 
@@ -34,53 +34,55 @@
     
     menuView = [[BKSlideMenuView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, 45) menuTitleArray:titleArray];
     menuView.customDelegate = self;
-    menuView.selectStyle = BKSlideMenuViewSelectStyleCustom | BKSlideMenuViewSelectStyleChangeColor;
-    menuView.changeStyle = BKSlideMenuViewChangeStyleCenter;
+    menuView.selectStyle = SelectStyleCustom | SelectStyleChangeColor;
+    menuView.changeStyle = ChangeStyleCenter;
     menuView.selectMenuTitleColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
     menuView.normalMenuTitleColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
     [self.view addSubview:menuView];
     
-    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
-    slideView.customDelegate = self;
-    [self.view addSubview:slideView];
+    theSlideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
+    theSlideView.customDelegate = self;
+    [self.view addSubview:theSlideView];
 }
 
 #pragma mark - SlideViewDelegate
 
--(void)scrollSlideView:(BKSlideView *)theSlideView
+-(void)scrollSlideView:(UICollectionView *)slideView
 {
-    if ([theSlideView isEqual:slideView]) {
-        [menuView scrollWith:theSlideView];
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView scrollWith:theSlideView.slideView];
     }
 }
 
--(void)endScrollSlideView:(BKSlideView *)theSlideView
+-(void)endScrollSlideView:(UICollectionView *)slideView
 {
-    if ([theSlideView isEqual:slideView]) {
-        [menuView endScrollWith:theSlideView];
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView endScrollWith:theSlideView.slideView];
     }
 }
 
--(void)reuseCell:(UITableViewCell *)cell withIndex:(NSIndexPath *)indexPath
+-(void)initInView:(UIView *)view atIndex:(NSInteger)index
 {
-    cell.backgroundColor = [UIColor colorWithRed:arc4random()%255/255.0f green:arc4random()%255/255.0f blue:arc4random()%255/255.0f alpha:1];
+    UIView * subView = [[UIView alloc]initWithFrame:view.bounds];
+    subView.backgroundColor = [UIColor colorWithRed:(arc4random()%255)/255.0f green:(arc4random()%255)/255.0f blue:(arc4random()%255)/255.0f alpha:1];
+    [view addSubview:subView];
 }
 
 #pragma mark - SlideMenuViewDelegate
 
 -(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index
 {
-    [slideView rollSlideViewToIndexView:index];
+    [theSlideView rollSlideViewToIndexView:index];
 }
 
 // 自定义selectView
 -(void)modifyChooseSelectView:(UIView *)selectView
 {
-    CustomSelectView * textView = [[CustomSelectView alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
+    CustomSelectView * textView = [[CustomSelectView alloc]initWithFrame:CGRectMake(0, selectView.frame.size.height - 10, 10, 10)];
     [selectView addSubview:textView];
     
     CGPoint textViewCenter = textView.center;
-    textViewCenter.y = selectView.center.y - selectView.frame.origin.y;
+    textViewCenter.x = selectView.center.x - selectView.frame.origin.x;
     textView.center = textViewCenter;
 }
 
@@ -88,8 +90,10 @@
 -(void)changeElementInSelectView:(UIView *)selectView
 {
     [[selectView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
         CGPoint viewCenter = obj.center;
-        viewCenter.y = selectView.center.y - selectView.frame.origin.y;
+        viewCenter.x = selectView.center.x - selectView.frame.origin.x;
+        viewCenter.y = obj.center.y;
         obj.center = viewCenter;
     }];
 }
