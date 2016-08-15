@@ -23,24 +23,24 @@
 
 ## SlideViewDelegate
 
--(void)scrollSlideView:(UICollectionView *)slideView {
-    if ([theSlideView.slideView isEqual:slideView]) {
-        [menuView scrollWith:theSlideView.slideView];
-    }
+-(void)scrollSlideView:(UICollectionView *)slideView {<br>
+    if ([theSlideView.slideView isEqual:slideView]) {<br>
+        [menuView scrollWith:theSlideView.slideView];<br>
+    }<br>
 }
 
--(void)endScrollSlideView:(UICollectionView *)slideView {
-    if ([theSlideView.slideView isEqual:slideView]) {
-        [menuView endScrollWith:theSlideView.slideView];
-    }
+-(void)endScrollSlideView:(UICollectionView *)slideView {<br>
+    if ([theSlideView.slideView isEqual:slideView]) {<br>
+        [menuView endScrollWith:theSlideView.slideView];<br>
+    }<br>
 }
 
--(void)initInView:(UIView *)view atIndex:(NSInteger)index {
-    //创建View
+-(void)initInView:(UIView *)view atIndex:(NSInteger)index {<br>
+    //创建View<br>
 }
 
 ## SlideMenuViewDelegate
 
--(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {
-    [theSlideView rollSlideViewToIndexView:index];
+-(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {<br>
+    [theSlideView rollSlideViewToIndexView:index];<br>
 }
