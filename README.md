@@ -1,5 +1,5 @@
 
-## BKSliderView 基本用法
+# BKSliderView 基本用法
 
 - (void)viewDidLoad 
 {
@@ -20,10 +20,9 @@
     [self.view addSubview:theSlideView];
 }
 
-SlideViewDelegate
+## SlideViewDelegate
 
 -(void)scrollSlideView:(UICollectionView *)slideView
-
 {
 
     if ([theSlideView.slideView isEqual:slideView]) {
@@ -35,7 +34,6 @@ SlideViewDelegate
 }
 
 -(void)endScrollSlideView:(UICollectionView *)slideView
-
 {
 
     if ([theSlideView.slideView isEqual:slideView]) {
@@ -47,17 +45,15 @@ SlideViewDelegate
 }
 
 -(void)initInView:(UIView *)view atIndex:(NSInteger)index
-
 {
 
     //创建View
 
 }
 
-SlideMenuViewDelegate
+## SlideMenuViewDelegate
 
 -(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index
-
 {
 
     [theSlideView rollSlideViewToIndexView:index];
