@@ -1,8 +1,8 @@
 
 # BKSliderView 基本用法
 
-- (void)viewDidLoad 
-{
+`- (void)viewDidLoad {
+
     [super viewDidLoad];
 
     NSArray * titleArray = @[@"第一个",@"第二个",@"第三个",@"第四个",@"这是一个很长的title",@"~~~~~~",@"倒数第二个",@"倒一"];
@@ -18,29 +18,28 @@
     theSlideView.customDelegate = self;
 
     [self.view addSubview:theSlideView];
-
-}
+}`
 
 ## SlideViewDelegate
 
--(void)scrollSlideView:(UICollectionView *)slideView {<br>
-    if ([theSlideView.slideView isEqual:slideView]) {<br>
-        [menuView scrollWith:theSlideView.slideView];<br>
-    }<br>
+`-(void)scrollSlideView:(UICollectionView *)slideView {
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView scrollWith:theSlideView.slideView];
+    }
 }
 
--(void)endScrollSlideView:(UICollectionView *)slideView {<br>
-    if ([theSlideView.slideView isEqual:slideView]) {<br>
-        [menuView endScrollWith:theSlideView.slideView];<br>
-    }<br>
+-(void)endScrollSlideView:(UICollectionView *)slideView {
+    if ([theSlideView.slideView isEqual:slideView]) {
+        [menuView endScrollWith:theSlideView.slideView];
+    }
 }
 
--(void)initInView:(UIView *)view atIndex:(NSInteger)index {<br>
-    //创建View<br>
-}
+-(void)initInView:(UIView *)view atIndex:(NSInteger)index {
+    //创建View
+}`
 
 ## SlideMenuViewDelegate
 
--(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {<br>
-    [theSlideView rollSlideViewToIndexView:index];<br>
-}
+`-(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {
+    [theSlideView rollSlideViewToIndexView:index];
+}`
