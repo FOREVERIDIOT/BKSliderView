@@ -11,21 +11,21 @@
 @class BKSlideView;
 
 typedef NS_ENUM(NSUInteger, BKSlideMenuViewTitleWidthStyle) {
-    TitleWidthStyleDefault = 0,             // 按照字的宽度 + 字左右设定的宽度
-    TitleWidthStyleSame                     // 每个title的宽度一样
+    SlideMenuViewTitleWidthStyleDefault = 0,             // 按照字的宽度 + 字左右设定的宽度
+    SlideMenuViewTitleWidthStyleSame                     // 每个title的宽度一样
 };
 
 typedef NS_ENUM(NSUInteger, BKSlideMenuViewChangeStyle) {
-    ChangeStyleDefault = 0,
-    ChangeStyleCenter
+    SlideMenuViewChangeStyleDefault = 0,
+    SlideMenuViewChangeStyleCenter
 };
 
 typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
-    SelectStyleNone = 0,                     //无效果
-    SelectStyleHaveLine = 1 << 0,            //有线
-    SelectStyleChangeFont = 1 << 1,          //选中的字体会变大
-    SelectStyleChangeColor = 1 << 2,         //选中的字体颜色会有变化 未改动是灰色 normal 时颜色透明度为 0.6
-    SelectStyleCustom = 1 << 3               //自定义选中的View 此选项与 BKSlideMenuViewSelectStyleHaveLine冲突 选择此项不能选择BKSlideMenuViewSelectStyleHaveLine 选择此项时动画跟BKSlideMenuViewSelectStyleHaveLine效果一样 但是selectView需要自定义 此时selectView跟 第一个选中的menuTitle大小一样 此时可以在 selectView 上添加任何 UI来做标记 (注意 不论选择哪个menuTitle selectView的大小是跟menuTitle的大小一样)
+    SlideMenuViewSelectStyleNone = 0,                     //无效果
+    SlideMenuViewSelectStyleHaveLine = 1 << 0,            //有线
+    SlideMenuViewSelectStyleChangeFont = 1 << 1,          //选中的字体会变大
+    SlideMenuViewSelectStyleChangeColor = 1 << 2,         //选中的字体颜色会有变化 未改动是灰色 normal 时颜色透明度为 0.6
+    SlideMenuViewSelectStyleCustom = 1 << 3               //自定义选中的View 此选项与 BKSlideMenuViewSelectStyleHaveLine冲突 选择此项不能选择BKSlideMenuViewSelectStyleHaveLine 选择此项时动画跟BKSlideMenuViewSelectStyleHaveLine效果一样 但是selectView需要自定义 此时selectView跟 第一个选中的menuTitle大小一样 此时可以在 selectView 上添加任何 UI来做标记 (注意 不论选择哪个menuTitle selectView的大小是跟menuTitle的大小一样)
 };
 
 @protocol BKSlideMenuViewDelegate <NSObject>
@@ -83,18 +83,18 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 /**
  *     menuTitle 宽度格式
  */
-@property (nonatomic,assign) BKSlideMenuViewTitleWidthStyle titleWidthStyle;
+@property (nonatomic,assign) BKSlideMenuViewTitleWidthStyle slideMenuViewTitleWidthStyle;
 
 /**
  *     变换格式 不做改动是Default
  */
-@property (nonatomic,assign) BKSlideMenuViewChangeStyle changeStyle;
+@property (nonatomic,assign) BKSlideMenuViewChangeStyle slideMenuViewChangeStyle;
 
 /**
  *     选中的格式 不做改动时为  BKSlideMenuViewSelectStyleHaveLine | BKSlideMenuViewSelectStyleChangeFont | BKSlideMenuViewSelectStyleChangeColor
  可以自定义 BKSlideMenuViewSelectStyleCustom 自定义需实现 (可选) 1、自定义 selectView  2、实现自定义代理方法 changeToChooseSelectView 再该方法中自定义 selectView
  */
-@property (nonatomic,assign) BKSlideMenuViewSelectStyle selectStyle;
+@property (nonatomic,assign) BKSlideMenuViewSelectStyle slideMenuViewSelectStyle;
 
 /**
  *     未选中的Title 的字号

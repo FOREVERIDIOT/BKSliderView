@@ -34,8 +34,8 @@
     
     menuView = [[BKSlideMenuView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, 45) menuTitleArray:titleArray];
     menuView.customDelegate = self;
-    menuView.selectStyle = SelectStyleCustom | SelectStyleChangeColor;
-    menuView.changeStyle = ChangeStyleCenter;
+    menuView.slideMenuViewSelectStyle = SlideMenuViewSelectStyleCustom | SlideMenuViewSelectStyleChangeColor;
+    menuView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
     menuView.selectMenuTitleColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
     menuView.normalMenuTitleColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
     [self.view addSubview:menuView];

@@ -107,16 +107,16 @@
 
 #pragma mark - menuTitle 距离
 
--(void)setTitleWidthStyle:(BKSlideMenuViewTitleWidthStyle)titleWidthStyle
+-(void)setSlideMenuViewTitleWidthStyle:(BKSlideMenuViewTitleWidthStyle)slideMenuViewTitleWidthStyle
 {
-    _titleWidthStyle = titleWidthStyle;
-    switch (titleWidthStyle) {
-        case TitleWidthStyleDefault:
+    _slideMenuViewTitleWidthStyle = slideMenuViewTitleWidthStyle;
+    switch (_slideMenuViewTitleWidthStyle) {
+        case SlideMenuViewTitleWidthStyleDefault:
         {
             menuTitleLength = TITLE_GAP;
         }
             break;
-        case TitleWidthStyleSame:
+        case SlideMenuViewTitleWidthStyleSame:
         {
             menuTitleLength = MENU_TITLE_WIDTH;
         }
@@ -160,9 +160,9 @@
     _normalMenuTitleColor = NORMAL_TITLE_COLOR;
     _selectMenuTitleColor = SELECT_TITLE_COLOR;
 
-    self.titleWidthStyle = TitleWidthStyleDefault;
+    self.slideMenuViewTitleWidthStyle = SlideMenuViewTitleWidthStyleDefault;
     
-    _selectStyle = SelectStyleHaveLine | SelectStyleChangeFont | SelectStyleChangeColor;
+    _slideMenuViewSelectStyle = SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
 }
 
 -(void)initSelfProperty
@@ -194,8 +194,8 @@
 {
     __block UIView * lastView;
     
-    switch (_titleWidthStyle) {
-        case TitleWidthStyleDefault:
+    switch (_slideMenuViewTitleWidthStyle) {
+        case SlideMenuViewTitleWidthStyleDefault:
         {
             [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
@@ -224,7 +224,7 @@
             self.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame)+menuTitleLength/2.0f, self.frame.size.height);
         }
             break;
-        case TitleWidthStyleSame:
+        case SlideMenuViewTitleWidthStyleSame:
         {
             [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
@@ -268,25 +268,25 @@
 
 #pragma mark - 自定义selectView
 
--(void)setSelectStyle:(BKSlideMenuViewSelectStyle)selectStyle
+-(void)setSlideMenuViewSelectStyle:(BKSlideMenuViewSelectStyle)slideMenuViewSelectStyle
 {
-    _selectStyle = selectStyle;
+    _slideMenuViewSelectStyle = slideMenuViewSelectStyle;
     
-    if (_selectStyle & SelectStyleChangeFont) {
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeFont) {
         
     }else{
         _fontGap = 1;
         [self reloadView];
     }
     
-    if (_selectStyle & SelectStyleChangeColor) {
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
         
     }else{
         _selectMenuTitleColor = _normalMenuTitleColor;
         [self reloadView];
     }
     
-    if (selectStyle & SelectStyleHaveLine) {
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleHaveLine) {
         
     }else{
         _selectView.frame = CGRectMake(0, 0, selectTitleBtn.frame.size.width, self.frame.size.height);
@@ -297,7 +297,7 @@
         _selectView.layer.cornerRadius = 0;
         _selectView.clipsToBounds = NO;
         
-        if (selectStyle & SelectStyleCustom) {
+        if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
             [self refreshChangeSelectView];
         }
     }
@@ -341,8 +341,8 @@
     if (_selectView) {
         CGRect selectViewRect = button.frame;
         CGPoint selectViewCenter = _selectView.center;
-        switch (_titleWidthStyle) {
-            case TitleWidthStyleDefault:
+        switch (_slideMenuViewTitleWidthStyle) {
+            case SlideMenuViewTitleWidthStyleDefault:
             {
                 selectViewRect.size.width = button.frame.size.width * _fontGap + menuTitleLength;
                 selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
@@ -351,7 +351,7 @@
                 selectViewCenter.x = button.center.x;
             }
                 break;
-            case TitleWidthStyleSame:
+            case SlideMenuViewTitleWidthStyleSame:
             {
                 selectViewRect.size.width = button.frame.size.width * _fontGap;
                 selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
@@ -364,7 +364,7 @@
                 break;
         }
         
-        if (_selectStyle & SelectStyleCustom) {
+        if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
             selectViewRect.origin.y = 0;
             selectViewRect.size.height = self.frame.size.height;
         }
@@ -426,8 +426,8 @@
                 
                 CGRect selectViewRect = selectTitleBtn.frame;
                 CGPoint selectViewCenter = _selectView.center;
-                switch (_titleWidthStyle) {
-                    case TitleWidthStyleDefault:
+                switch (_slideMenuViewTitleWidthStyle) {
+                    case SlideMenuViewTitleWidthStyleDefault:
                     {
                         selectViewRect.size.width = selectTitleBtn.frame.size.width + menuTitleLength;
                         selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
@@ -436,7 +436,7 @@
                         selectViewCenter.x = selectTitleBtn.center.x;
                     }
                         break;
-                    case TitleWidthStyleSame:
+                    case SlideMenuViewTitleWidthStyleSame:
                     {
                         selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
                         selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
@@ -448,7 +448,7 @@
                         break;
                 }
                 
-                if (_selectStyle & SelectStyleCustom) {
+                if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
                     selectViewRect.origin.y = 0;
                     selectViewRect.size.height = self.frame.size.height;
                 }
@@ -469,7 +469,7 @@
  */
 -(void)scrollWith:(UICollectionView *)slideView
 {
-    if (_selectStyle == SelectStyleNone || isTapMenuTitleFlag) {
+    if (_slideMenuViewSelectStyle == SlideMenuViewSelectStyleNone || isTapMenuTitleFlag) {
         return;
     }
     
@@ -525,10 +525,10 @@
      */
     if (self.contentSize.width > self.frame.size.width) {
         //    动画格式 并且改变 self contentOffset.x距离
-        [self moveChangeAnimation:self.changeStyle];
+        [self moveChangeAnimation:self.slideMenuViewChangeStyle];
     }
     
-    if (_selectStyle & SelectStyleChangeFont) {
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeFont) {
         //    改变滑动中 即将取消选择 和 选择的 cell 字号
         [self magnifyFontWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
     }
@@ -536,7 +536,7 @@
 //        改变selectView滑动位置
     [self selectViewChangeWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
     
-    if (_selectStyle & SelectStyleChangeColor) {
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
         //    改变滑动中 即将取消选择 和 选择的 cell 字体颜色
         [self ChangeSelectColorWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
     }
@@ -547,7 +547,7 @@
  */
 -(void)endScrollWith:(UICollectionView *)slideView
 {
-    if (_selectStyle == SelectStyleNone || isTapMenuTitleFlag) {
+    if (_slideMenuViewSelectStyle == SlideMenuViewSelectStyleNone || isTapMenuTitleFlag) {
         return;
     }
     
@@ -566,8 +566,8 @@
     
     CGRect selectViewRect = selectBtn.frame;
     CGPoint selectViewCenter = _selectView.center;
-    switch (_titleWidthStyle) {
-        case TitleWidthStyleDefault:
+    switch (_slideMenuViewTitleWidthStyle) {
+        case SlideMenuViewTitleWidthStyleDefault:
         {
             selectViewRect.size.width = selectBtn.frame.size.width + menuTitleLength;
             selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
@@ -576,7 +576,7 @@
             selectViewCenter.x = selectBtn.center.x;
         }
             break;
-        case TitleWidthStyleSame:
+        case SlideMenuViewTitleWidthStyleSame:
         {
             selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
             selectViewRect.origin.y = self.frame.size.height - DEFAULT_SELECTVIEW_HEIGHT;
@@ -588,7 +588,7 @@
             break;
     }
     
-    if (_selectStyle & SelectStyleCustom) {
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
         selectViewRect.origin.y = 0;
         selectViewRect.size.height = self.frame.size.height;
     }
@@ -616,14 +616,14 @@
     CGRect selectViewRect = _selectView.frame;
     CGPoint selectViewCenter = _selectView.center;
     
-    switch (_titleWidthStyle) {
-        case TitleWidthStyleDefault:
+    switch (_slideMenuViewTitleWidthStyle) {
+        case SlideMenuViewTitleWidthStyleDefault:
         {
             selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width + menuTitleLength;
             selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
         }
             break;
-        case TitleWidthStyleSame:
+        case SlideMenuViewTitleWidthStyleSame:
         {
             selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width;
             selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
@@ -679,12 +679,12 @@
 -(void)moveChangeAnimation:(BKSlideMenuViewChangeStyle)style
 {
     switch (style) {
-        case ChangeStyleDefault:
+        case SlideMenuViewChangeStyleDefault:
         {
             [self changeSelectViewDefaultAnimation];
         }
             break;
-        case ChangeStyleCenter:
+        case SlideMenuViewChangeStyleCenter:
         {
             [self changeSelectViewCenterAnimation];
         }

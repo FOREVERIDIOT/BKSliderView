@@ -49,8 +49,8 @@ typedef enum {
     
     menuView = [[BKSlideMenuView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, 45) menuTitleArray:titleArray];
     menuView.customDelegate = self;
-    menuView.selectStyle = SelectStyleChangeFont | SelectStyleChangeColor;
-    menuView.changeStyle = ChangeStyleCenter;
+    menuView.slideMenuViewSelectStyle = SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
+    menuView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
     [self.view addSubview:menuView];
     
     theSlideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
