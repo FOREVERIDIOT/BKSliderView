@@ -101,6 +101,9 @@
 
 -(void)setSelectIndex:(NSInteger)selectIndex
 {
+    if (selectIndex > [_menuTitleArray count]) {
+        return;
+    }
     _selectIndex = selectIndex;
     [self reloadView];
 }
