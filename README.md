@@ -1,6 +1,5 @@
 
 # BKSliderView 基本用法
-
 `- (void)viewDidLoad {
 
     [super viewDidLoad];
@@ -21,7 +20,6 @@
 }`
 
 ## SlideViewDelegate
-
 `-(void)scrollSlideView:(UICollectionView *)slideView {
     if ([theSlideView.slideView isEqual:slideView]) {
         [menuView scrollWith:theSlideView.slideView];
@@ -39,7 +37,6 @@
 }`
 
 ## SlideMenuViewDelegate
-
 `-(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index {
     [theSlideView rollSlideViewToIndexView:index];
 }`
