@@ -349,8 +349,11 @@
 
 -(void)refreshChangeSelectView
 {
-    if ([self.customDelegate respondsToSelector:@selector(modifyChooseSelectView:)]) {
-        [self.customDelegate modifyChooseSelectView:_selectView];
+    if ([self.customDelegate respondsToSelector:@selector(editChooseSelectView:)]) {
+        [self.customDelegate editChooseSelectView:_selectView];
+    }
+    if ([self.customDelegate respondsToSelector:@selector(editSubInSelectView:)]) {
+        [self.customDelegate editSubInSelectView:_selectView];
     }
     
     [_selectView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
@@ -360,8 +363,8 @@
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if ([object isEqual:_selectView]) {
-        if ([self.customDelegate respondsToSelector:@selector(changeElementInSelectView:)]) {
-            [self.customDelegate changeElementInSelectView:_selectView];
+        if ([self.customDelegate respondsToSelector:@selector(editSubInSelectView:)]) {
+            [self.customDelegate editSubInSelectView:_selectView];
         }
     }
 }

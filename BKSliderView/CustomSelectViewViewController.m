@@ -49,26 +49,22 @@
 }
 
 // 自定义selectView
--(void)modifyChooseSelectView:(UIView *)selectView
+-(void)editChooseSelectView:(UIView*)selectView
 {
-    CustomSelectView * textView = [[CustomSelectView alloc]initWithFrame:CGRectMake(0, selectView.frame.size.height - 10, 10, 10)];
+    CustomSelectView * textView = [[CustomSelectView alloc]init];
+    textView.tag = 999;
     [selectView addSubview:textView];
-    
-    CGPoint textViewCenter = textView.center;
-    textViewCenter.x = selectView.center.x - selectView.frame.origin.x;
-    textView.center = textViewCenter;
 }
 
-// 修改selectView移动时 selectView中自定义的View
--(void)changeElementInSelectView:(UIView *)selectView
+// 修改selectView中自定义的View
+-(void)editSubInSelectView:(UIView*)selectView
 {
-    [[selectView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        
-        CGPoint viewCenter = obj.center;
-        viewCenter.x = selectView.center.x - selectView.frame.origin.x;
-        viewCenter.y = obj.center.y;
-        obj.center = viewCenter;
-    }];
+    CustomSelectView * textView = (CustomSelectView*)[selectView viewWithTag:999];
+    textView.frame = CGRectMake(0, selectView.frame.size.height - 10, 10, 10);
+    
+    CGPoint viewCenter = textView.center;
+    viewCenter.x = selectView.center.x - selectView.frame.origin.x;
+    textView.center = viewCenter;
 }
 
 @end

@@ -54,14 +54,14 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 
 /**
  *     改变selectView 实现的代理
- *     作用 自定义selectView
+ *     作用 自定义selectView 在selectView中创建的view如果设置tag,此tag必须大于[menuTitleArray count]
  */
--(void)modifyChooseSelectView:(UIView*)selectView;
+-(void)editChooseSelectView:(UIView*)selectView;
 
 /**
- *     当selectView的frame改变时 修改自定义selectView 中自定义view的属性
+ *     当创建自定义selectView时 或 当selectView的frame改变时 修改自定义selectView 中自定义view的属性
  */
--(void)changeElementInSelectView:(UIView*)selectView;
+-(void)editSubInSelectView:(UIView*)selectView;
 
 @end
 
