@@ -17,7 +17,7 @@ typedef enum {
 
 @interface ExampleViewController ()<BKSlideViewDelegate,UITableViewDataSource,UITableViewDelegate>
 {
-    BKSlideView * slideView;
+    BKSlideView * _slideView;
     
     NSMutableDictionary * dataDic;
     NSInteger num;
@@ -46,15 +46,15 @@ typedef enum {
         [dataDic setObject:@[@"0",@"1",@"2"] forKey:[NSString stringWithFormat:@"%ld",idx]];
     }];
     
-    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) menuTitleArray:titleArray delegate:self];
-    slideView.slideMenuViewSelectStyle = SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
-    slideView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
-    [self.view addSubview:slideView];
+    _slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) menuTitleArray:titleArray delegate:self];
+    _slideView.slideMenuViewSelectStyle = SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
+    _slideView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
+    [self.view addSubview:_slideView];
 }
 
 #pragma mark - SlideViewDelegate
 
--(void)initInView:(UIView *)view atIndex:(NSInteger)index
+-(void)slideView:(BKSlideView*)slideView initInView:(UIView *)view atIndex:(NSInteger)index
 {
     num = index;
     
@@ -115,7 +115,7 @@ typedef enum {
             return;
         }
         
-        UIView * view = [slideView getDisplayView];
+        UIView * view = [_slideView getDisplayView];
         UITableView * exampleTableView = (UITableView*)[view viewWithTag:ExampleView_ExampleTableView_Tag];
         UILabel * headerLoadLab = (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_HeaderLoadLab_Tag];
         UILabel * footerLoadLab =  (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_FooterLoadLab_Tag];

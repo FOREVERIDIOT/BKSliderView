@@ -11,7 +11,7 @@
 
 @interface BaseViewController ()<BKSlideViewDelegate>
 {
-    BKSlideView * slideView;
+    BKSlideView * _slideView;
 }
 
 @end
@@ -30,13 +30,13 @@
     
     NSArray * titleArray = @[@"第一个",@"第二个",@"第三个",@"第四个",@"这是一个很长的title",@"~~~~~~",@"倒数第二个",@"倒一"];
     
-    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) menuTitleArray:titleArray delegate:self];
-    [self.view addSubview:slideView];
+    _slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) menuTitleArray:titleArray delegate:self];
+    [self.view addSubview:_slideView];
 }
 
 #pragma mark - SlideViewDelegate
 
--(void)initInView:(UIView *)view atIndex:(NSInteger)index
+-(void)slideView:(BKSlideView*)slideView initInView:(UIView*)view atIndex:(NSInteger)index
 {
     UIView * subView = [[UIView alloc]initWithFrame:view.bounds];
     subView.backgroundColor = [UIColor colorWithRed:(arc4random()%255)/255.0f green:(arc4random()%255)/255.0f blue:(arc4random()%255)/255.0f alpha:1];

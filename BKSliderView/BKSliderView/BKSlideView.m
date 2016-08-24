@@ -303,8 +303,8 @@
         [obj removeFromSuperview];
     }];
     
-    if ([_customDelegate respondsToSelector:@selector(initInView:atIndex:)]) {
-        [_customDelegate initInView:cell atIndex:indexPath.item];
+    if ([_customDelegate respondsToSelector:@selector(slideView:initInView:atIndex:)]) {
+        [_customDelegate slideView:self initInView:cell atIndex:indexPath.item];
     }
     
     return cell;
@@ -349,11 +349,11 @@
 
 -(void)refreshChangeSelectView
 {
-    if ([self.customDelegate respondsToSelector:@selector(editChooseSelectView:)]) {
-        [self.customDelegate editChooseSelectView:_selectView];
+    if ([self.customDelegate respondsToSelector:@selector(slideView:editChooseSelectView:)]) {
+        [self.customDelegate slideView:self editChooseSelectView:_selectView];
     }
-    if ([self.customDelegate respondsToSelector:@selector(editSubInSelectView:)]) {
-        [self.customDelegate editSubInSelectView:_selectView];
+    if ([self.customDelegate respondsToSelector:@selector(slideView:editSubInSelectView:)]) {
+        [self.customDelegate slideView:self editSubInSelectView:_selectView];
     }
     
     [_selectView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
@@ -363,8 +363,8 @@
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if ([object isEqual:_selectView]) {
-        if ([self.customDelegate respondsToSelector:@selector(editSubInSelectView:)]) {
-            [self.customDelegate editSubInSelectView:_selectView];
+        if ([self.customDelegate respondsToSelector:@selector(slideView:editSubInSelectView:)]) {
+            [self.customDelegate slideView:self editSubInSelectView:_selectView];
         }
     }
 }

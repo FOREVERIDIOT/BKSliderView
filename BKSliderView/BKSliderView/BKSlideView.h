@@ -19,6 +19,7 @@
 #define DEFAULT_SELECTVIEW_HEIGHT 2
 
 #import <UIKit/UIKit.h>
+@class BKSlideView;
 
 typedef NS_ENUM(NSUInteger, BKSlideMenuViewTitleWidthStyle) {
     SlideMenuViewTitleWidthStyleDefault = 0,             // 按照字的宽度 + 字左右设定的宽度
@@ -48,7 +49,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *  @param view  第几页上的view （创建UI在这里创建）
  *  @param index 第几页
  */
--(void)initInView:(UIView*)view atIndex:(NSInteger)index;
+-(void)slideView:(BKSlideView*)slideView initInView:(UIView*)view atIndex:(NSInteger)index;
 
 @optional
 
@@ -56,12 +57,12 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *     改变selectView 实现的代理
  *     作用 自定义selectView 在selectView中创建的view如果设置tag,此tag必须大于[menuTitleArray count]
  */
--(void)editChooseSelectView:(UIView*)selectView;
+-(void)slideView:(BKSlideView*)slideView editChooseSelectView:(UIView*)selectView;
 
 /**
  *     当创建自定义selectView时 或 当selectView的frame改变时 修改自定义selectView 中自定义view的属性
  */
--(void)editSubInSelectView:(UIView*)selectView;
+-(void)slideView:(BKSlideView*)slideView editSubInSelectView:(UIView*)selectView;
 
 @end
 
