@@ -33,8 +33,8 @@
     //    是否自定义selectView
     BOOL isCustomSelectView;
     
-    
 }
+
 @end
 
 @implementation BKSlideView
@@ -59,31 +59,8 @@
     }
 }
 
-#pragma mark - 字体
-
--(void)setNormalMenuTitleFont:(UIFont *)normalMenuTitleFont
+- (void)didMoveToSuperview
 {
-    _normalMenuTitleFont = normalMenuTitleFont;
-    [self reloadView];
-}
-
--(void)setFontGap:(CGFloat)fontGap
-{
-    _fontGap = fontGap;
-    [self reloadView];
-}
-
-#pragma mark - 颜色
-
--(void)setNormalMenuTitleColor:(UIColor *)normalMenuTitleColor
-{
-    _normalMenuTitleColor = normalMenuTitleColor;
-    [self reloadView];
-}
-
--(void)setSelectMenuTitleColor:(UIColor *)selectMenuTitleColor
-{
-    _selectMenuTitleColor = selectMenuTitleColor;
     [self reloadView];
 }
 
@@ -117,7 +94,6 @@
         default:
             break;
     }
-    [self reloadView];
 }
 
 #pragma mark - 初始
@@ -320,14 +296,12 @@
         
     }else{
         _fontGap = 1;
-        [self reloadView];
     }
     
     if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
         
     }else{
         _selectMenuTitleColor = _normalMenuTitleColor;
-        [self reloadView];
     }
     
     if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleHaveLine) {
