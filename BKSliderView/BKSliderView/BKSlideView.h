@@ -74,6 +74,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  */
 @property (nonatomic,assign) id <BKSlideViewDelegate>customDelegate;
 
+/**
+ *     menu title 数组
+ */
+@property (nonatomic,strong,readonly) NSArray * menuTitleArray;
+
 #pragma mark - 显示的View
 
 /**
@@ -89,19 +94,14 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,strong,readonly) UIScrollView * slideMenuView;
 
 /**
- *     menu title 数组
+ *     选中的View
  */
-@property (nonatomic,strong,readonly) NSArray * menuTitleArray;
+@property (nonatomic,strong) UIView * selectView;
 
 /**
  *     从1开始 目前选中的第几个,也可以赋值更改选中(超过数组最大值无效)
  */
 @property (nonatomic,assign) NSInteger selectIndex;
-
-/**
- *     选中的View
- */
-@property (nonatomic,strong) UIView * selectView;
 
 /**
  *     menuTitle 宽度格式
