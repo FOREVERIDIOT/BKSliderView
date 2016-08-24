@@ -15,10 +15,9 @@ typedef enum {
     ExampleView_ExampleTableView_FooterLoadLab_Tag
 }ExampleTag;
 
-@interface ExampleViewController ()<BKSlideViewDelegate,BKSlideMenuViewDelegate,UITableViewDataSource,UITableViewDelegate>
+@interface ExampleViewController ()<BKSlideViewDelegate,UITableViewDataSource,UITableViewDelegate>
 {
-    BKSlideView * theSlideView;
-    BKSlideMenuView * menuView;
+    BKSlideView * slideView;
     
     NSMutableDictionary * dataDic;
     NSInteger num;
@@ -47,33 +46,13 @@ typedef enum {
         [dataDic setObject:@[@"0",@"1",@"2"] forKey:[NSString stringWithFormat:@"%ld",idx]];
     }];
     
-    menuView = [[BKSlideMenuView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, 45) menuTitleArray:titleArray];
-    menuView.customDelegate = self;
-    menuView.slideMenuViewSelectStyle = SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
-    menuView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
-    [self.view addSubview:menuView];
-    
-    theSlideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(menuView.frame), self.view.frame.size.width, self.view.frame.size.height - CGRectGetMaxY(menuView.frame)) allPageNum:[titleArray count] delegate:self];
-    theSlideView.customDelegate = self;
-    [self.view addSubview:theSlideView];
-    
+    slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) menuTitleArray:titleArray delegate:self];
+    slideView.slideMenuViewSelectStyle = SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
+    slideView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
+    [self.view addSubview:slideView];
 }
 
 #pragma mark - SlideViewDelegate
-
--(void)scrollSlideView:(UICollectionView *)slideView
-{
-    if ([theSlideView.slideView isEqual:slideView]) {
-        [menuView scrollWith:theSlideView.slideView];
-    }
-}
-
--(void)endScrollSlideView:(UICollectionView *)slideView
-{
-    if ([theSlideView.slideView isEqual:slideView]) {
-        [menuView endScrollWith:theSlideView.slideView];
-    }
-}
 
 -(void)initInView:(UIView *)view atIndex:(NSInteger)index
 {
@@ -101,14 +80,6 @@ typedef enum {
     footerLoadLab.text = @"上拉加载更多";
     exampleTableView.tableFooterView = footerLoadLab;
 }
-
-#pragma mark - SlideMenuViewDelegate
-
--(void)selectMenuSlide:(BKSlideMenuView *)slideMenuView relativelyViewWithViewIndex:(NSInteger)index
-{
-    [theSlideView rollSlideViewToIndexView:index];
-}
-
 
 #pragma mark - UITableViewDelegate
 
@@ -144,7 +115,7 @@ typedef enum {
             return;
         }
         
-        UIView * view = [theSlideView getDisplayView];
+        UIView * view = [slideView getDisplayView];
         UITableView * exampleTableView = (UITableView*)[view viewWithTag:ExampleView_ExampleTableView_Tag];
         UILabel * headerLoadLab = (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_HeaderLoadLab_Tag];
         UILabel * footerLoadLab =  (UILabel*)[exampleTableView viewWithTag:ExampleView_ExampleTableView_FooterLoadLab_Tag];
