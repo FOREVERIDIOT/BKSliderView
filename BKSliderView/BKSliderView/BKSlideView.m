@@ -33,6 +33,8 @@
     Class delegateClass;
 }
 
+@property (nonatomic,strong) dispatch_queue_t myQueue;
+
 @end
 
 @implementation BKSlideView
@@ -43,23 +45,108 @@
 
 #pragma mark - 刷新
 
+-(dispatch_queue_t)myQueue
+{
+    if (!_myQueue) {
+        _myQueue = dispatch_queue_create("myQueue", nil);
+    }
+    
+    return _myQueue;
+}
+
 -(void)reloadView
 {
-    if (isInitFinishFlag) {
+    dispatch_async(self.myQueue, ^{
+        if (isInitFinishFlag) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                for (UIView * view in [_slideMenuView subviews]) {
+                    if (view.tag != 0 && [view isKindOfClass:[UIButton class]]) {
+                        [view removeFromSuperview];
+                    }
+                }
+                
+                [self initAnyButton];
+            });
+        }
+    });
+}
+
+-(void)setMenuTitleWidth:(CGFloat)menuTitleWidth
+{
+    _menuTitleWidth = menuTitleWidth;
+    [self reloadView];
+}
+
+-(void)setSlideMenuViewSelectStyle:(BKSlideMenuViewSelectStyle)slideMenuViewSelectStyle
+{
+    _slideMenuViewSelectStyle = slideMenuViewSelectStyle;
+    
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeFont) {
         
-        [[_slideMenuView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (obj.tag != 0 && [obj isKindOfClass:[UIButton class]]) {
-                [obj removeFromSuperview];
-            }
+    }else{
+        _fontGap = 1;
+    }
+    
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
+        
+    }else{
+        _selectMenuTitleColor = _normalMenuTitleColor;
+    }
+    
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleHaveLine) {
+        
+    }else{
+        
+        [[_selectView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [obj removeFromSuperview];
         }];
         
-        [self initAnyButton];
+        if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
+            [self refreshChangeSelectView];
+            isCustomSelectView = YES;
+        }
+    }
+    
+    [self reloadView];
+}
+
+-(void)setNormalMenuTitleFont:(UIFont *)normalMenuTitleFont
+{
+    _normalMenuTitleFont = normalMenuTitleFont;
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeFont) {
+        
+    }else{
+        _fontGap = 1;
+    }
+    [self reloadView];
+}
+
+-(void)setFontGap:(CGFloat)fontGap
+{
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeFont) {
+        _fontGap = fontGap;
+        [self reloadView];
     }
 }
 
-- (void)didMoveToSuperview
+-(void)setNormalMenuTitleColor:(UIColor *)normalMenuTitleColor
 {
+    _normalMenuTitleColor = normalMenuTitleColor;
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
+        
+    }else{
+        _selectMenuTitleColor = _normalMenuTitleColor;
+    }
     [self reloadView];
+}
+
+-(void)setSelectMenuTitleColor:(UIColor *)selectMenuTitleColor
+{
+    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
+        _selectMenuTitleColor = selectMenuTitleColor;
+        [self reloadView];
+    }
 }
 
 #pragma mark - 改变选中
@@ -249,37 +336,6 @@
 }
 
 #pragma mark - 自定义selectView
-
--(void)setSlideMenuViewSelectStyle:(BKSlideMenuViewSelectStyle)slideMenuViewSelectStyle
-{
-    _slideMenuViewSelectStyle = slideMenuViewSelectStyle;
-    
-    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeFont) {
-        
-    }else{
-        _fontGap = 1;
-    }
-    
-    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleChangeColor) {
-        
-    }else{
-        _selectMenuTitleColor = _normalMenuTitleColor;
-    }
-    
-    if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleHaveLine) {
-        
-    }else{
-        
-        [[_selectView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [obj removeFromSuperview];
-        }];
-        
-        if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
-            [self refreshChangeSelectView];
-            isCustomSelectView = YES;
-        }
-    }
-}
 
 -(void)refreshChangeSelectView
 {

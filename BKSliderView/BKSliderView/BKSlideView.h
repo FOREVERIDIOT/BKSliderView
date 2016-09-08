@@ -98,7 +98,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,assign) NSInteger selectIndex;
 
 /**
- *     menuTitle 宽度大小 设置后所有menuTitle的宽度为设置宽度 (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ *     menuTitle 宽度大小 设置后所有menuTitle的宽度为设置宽度
  */
 @property (nonatomic,assign) CGFloat menuTitleWidth;
 
@@ -109,28 +109,28 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 
 /**
  *     选中的格式 不做改动时为  SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor
- 可以自定义 SlideMenuViewSelectStyleCustom 自定义需实现 (可选) 1、自定义 selectView  2、实现自定义代理方法 editChooseSelectView 和 editSubInSelectView 再该方法中自定义 selectView和selectView中View的frame (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ 可以自定义 SlideMenuViewSelectStyleCustom 自定义需实现 (可选) 1、自定义 selectView  2、实现自定义代理方法 editSelectView 和 editSubInSelectView 再该方法中自定义 selectView和selectView中View的frame
  */
 @property (nonatomic,assign) BKSlideMenuViewSelectStyle slideMenuViewSelectStyle;
 
 /**
- *     未选中的Title 的字号 (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ *     未选中的Title 的字号
  */
 @property (nonatomic,strong) UIFont * normalMenuTitleFont;
 
 /**
- *     选中的Title 的大小是未选中的字号的倍数 默认1.1 (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ *     选中的Title 的大小是未选中的字号的倍数 默认1.1
  */
 @property (nonatomic,assign) CGFloat fontGap;
 
 /**
- *     未选中的Title字 的颜色 (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ *     未选中的Title字 的颜色
  *     设置格式必须是 [UIColor colorWithRed:(CGFloat) green:(CGFloat) blue:(CGFloat) alpha:(CGFloat)]
  */
 @property (nonatomic,strong) UIColor * normalMenuTitleColor;
 
 /**
- *     选中的Title字 的颜色 (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ *     选中的Title字 的颜色
  *     设置格式必须是 [UIColor colorWithRed:(CGFloat) green:(CGFloat) blue:(CGFloat) alpha:(CGFloat)]
  */
 @property (nonatomic,strong) UIColor * selectMenuTitleColor;
@@ -151,10 +151,5 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *  获取当前显示View
  */
 -(UIView*)getDisplayView;
-
-/**
- *  刷新 slideMenuView
- */
--(void)reloadView;
 
 @end
