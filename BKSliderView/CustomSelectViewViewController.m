@@ -19,11 +19,6 @@
 
 @implementation CustomSelectViewViewController
 
--(void)dealloc
-{
-    NSLog(@"%@",self);
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
