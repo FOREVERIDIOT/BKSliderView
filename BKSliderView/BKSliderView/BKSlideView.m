@@ -6,6 +6,7 @@
 //
 
 #import "BKSlideView.h"
+#import "objc/runtime.h"
 
 @interface BKSlideView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 {
@@ -13,19 +14,14 @@
      *  是否初始化完毕
      */
     BOOL isInitFinishFlag;
-    
-    /**
-     *  间距
-     */
-    CGFloat menuTitleLength;
-    
+   
     /**
      *  选中的titleBtn
      */
     UIButton * selectTitleBtn;
     
     /**
-     *  是否点击menuTitle翻页
+     *  是否是点击menuTitle翻页
      */
     BOOL isTapMenuTitleFlag;
     
@@ -33,6 +29,8 @@
     //    是否自定义selectView
     BOOL isCustomSelectView;
     
+    //代理指定的类
+    Class delegateClass;
 }
 
 @end
@@ -75,27 +73,6 @@
     [self reloadView];
 }
 
-#pragma mark - menuTitle 距离
-
--(void)setSlideMenuViewTitleWidthStyle:(BKSlideMenuViewTitleWidthStyle)slideMenuViewTitleWidthStyle
-{
-    _slideMenuViewTitleWidthStyle = slideMenuViewTitleWidthStyle;
-    switch (_slideMenuViewTitleWidthStyle) {
-        case SlideMenuViewTitleWidthStyleDefault:
-        {
-            menuTitleLength = TITLE_GAP;
-        }
-            break;
-        case SlideMenuViewTitleWidthStyleSame:
-        {
-            menuTitleLength = MENU_TITLE_WIDTH;
-        }
-            break;
-        default:
-            break;
-    }
-}
-
 #pragma mark - 初始
 
 -(instancetype)initWithFrame:(CGRect)frame menuTitleArray:(NSArray *)titleArray delegate:(id<BKSlideViewDelegate>)customDelegate
@@ -105,7 +82,7 @@
     if (self) {
         
         _menuTitleArray = titleArray;
-        _customDelegate = customDelegate;
+        self.customDelegate = customDelegate;
         
         /**
          *  显示的SelectScrollView
@@ -119,6 +96,15 @@
     }
     
     return self;
+}
+
+-(void)setCustomDelegate:(id<BKSlideViewDelegate>)customDelegate
+{
+    if (!_customDelegate) {
+        _customDelegate = customDelegate;
+        
+        delegateClass = object_getClass(_customDelegate);
+    }
 }
 
 -(void)initSlideMenuView
@@ -146,8 +132,6 @@
     _normalMenuTitleColor = NORMAL_TITLE_COLOR;
     _selectMenuTitleColor = SELECT_TITLE_COLOR;
     
-    self.slideMenuViewTitleWidthStyle = SlideMenuViewTitleWidthStyleDefault;
-    
     _slideMenuViewSelectStyle = SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor;
 }
 
@@ -172,76 +156,54 @@
 {
     __block UIView * lastView;
     
-    switch (_slideMenuViewTitleWidthStyle) {
-        case SlideMenuViewTitleWidthStyleDefault:
-        {
-            [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                
-                UIButton * titleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-                titleBtn.frame = CGRectMake((lastView?CGRectGetMaxX(lastView.frame)+menuTitleLength:menuTitleLength/2.0f), 0, 0, SLIDE_MENU_VIEW_HEIGHT);
-                [titleBtn setBackgroundColor:[UIColor clearColor]];
-                [titleBtn setTitle:obj forState:UIControlStateNormal];
-                [titleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
-                titleBtn.titleLabel.font = _normalMenuTitleFont;
-                titleBtn.adjustsImageWhenHighlighted = NO;
-                titleBtn.tag = idx + 1;
-                
-                CGRect titleRect = titleBtn.frame;
-                titleRect.size.width = [self changeWidthView:titleBtn.titleLabel];
-                titleBtn.frame = titleRect;
-                
-                [titleBtn addTarget:self action:@selector(titleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-                if (titleBtn.tag == _selectIndex) {
-                    [self titleBtnClick:titleBtn];
-                }
-                [_slideMenuView addSubview:titleBtn];
-                
-                lastView = titleBtn;
-            }];
-            
-            _slideMenuView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame)+menuTitleLength/2.0f, SLIDE_MENU_VIEW_HEIGHT);
+    [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        UIButton * titleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        titleBtn.frame = CGRectMake((lastView?CGRectGetMaxX(lastView.frame):0), 0, 0, SLIDE_MENU_VIEW_HEIGHT);
+        titleBtn.titleLabel.lineBreakMode =  NSLineBreakByTruncatingTail;
+        [titleBtn setBackgroundColor:[UIColor clearColor]];
+        [titleBtn setTitle:obj forState:UIControlStateNormal];
+        [titleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
+        titleBtn.titleLabel.font = _normalMenuTitleFont;
+        titleBtn.adjustsImageWhenHighlighted = NO;
+        titleBtn.tag = idx + 1;
+        
+        CGRect titleRect = titleBtn.frame;
+        if (!_menuTitleWidth) {
+            titleRect.size.width = [self changeWidthView:titleBtn.titleLabel] + TITLE_ADD_GAP;
+        }else{
+            titleRect.size.width = _menuTitleWidth;
         }
-            break;
-        case SlideMenuViewTitleWidthStyleSame:
-        {
-            [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                
-                UIButton * titleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-                titleBtn.frame = CGRectMake((lastView?CGRectGetMaxX(lastView.frame):0), 0, menuTitleLength, SLIDE_MENU_VIEW_HEIGHT);
-                [titleBtn setBackgroundColor:[UIColor clearColor]];
-                [titleBtn setTitle:obj forState:UIControlStateNormal];
-                [titleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
-                titleBtn.titleLabel.font = _normalMenuTitleFont;
-                titleBtn.adjustsImageWhenHighlighted = NO;
-                titleBtn.tag = idx + 1;
-                [titleBtn addTarget:self action:@selector(titleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-                if (titleBtn.tag == _selectIndex) {
-                    [self titleBtnClick:titleBtn];
-                }
-                [_slideMenuView addSubview:titleBtn];
-                
-                lastView = titleBtn;
-                
-            }];
-            
-            _slideMenuView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), SLIDE_MENU_VIEW_HEIGHT);
+        titleBtn.frame = titleRect;
+        
+        [titleBtn addTarget:self action:@selector(titleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        if (titleBtn.tag == _selectIndex) {
+            [self titleBtnClick:titleBtn];
         }
-            break;
-        default:
-            break;
-    }
+        [_slideMenuView addSubview:titleBtn];
+        
+        lastView = titleBtn;
+    }];
+    
+    _slideMenuView.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame), SLIDE_MENU_VIEW_HEIGHT);
 }
 
 -(void)initSelectView
 {
-    _selectView = [[UIView alloc]initWithFrame:CGRectMake(0,SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT,selectTitleBtn.frame.size.width + menuTitleLength,DEFAULT_SELECTVIEW_HEIGHT)];
+    _selectView = [[UIView alloc]initWithFrame:CGRectMake(0,0,selectTitleBtn.frame.size.width,SLIDE_MENU_VIEW_HEIGHT)];
     CGPoint selectViewCenter = _selectView.center;
     selectViewCenter.x = selectTitleBtn.center.x;
     _selectView.center = selectViewCenter;
-    _selectView.backgroundColor = [UIColor blackColor];
-    _selectView.layer.cornerRadius = _selectView.bounds.size.height/2.0f;
-    _selectView.clipsToBounds = YES;
+    _selectView.backgroundColor = [UIColor clearColor];
     [_slideMenuView addSubview:_selectView];
+    
+    [_selectView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
+    
+    UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT, _selectView.frame.size.width, DEFAULT_SELECTVIEW_HEIGHT)];
+    imageView.backgroundColor = [UIColor blackColor];
+    imageView.layer.cornerRadius = imageView.frame.size.height/2.0f;
+    imageView.clipsToBounds = YES;
+    [_selectView addSubview:imageView];
 }
 
 -(void)initSlideView
@@ -307,47 +269,57 @@
     if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleHaveLine) {
         
     }else{
-        _selectView.frame = CGRectMake(0, 0, selectTitleBtn.frame.size.width, SLIDE_MENU_VIEW_HEIGHT);
-        CGPoint selectViewCenter = _selectView.center;
-        selectViewCenter.x = selectTitleBtn.center.x;
-        _selectView.center = selectViewCenter;
-        _selectView.backgroundColor = [UIColor clearColor];
-        _selectView.layer.cornerRadius = 0;
-        _selectView.clipsToBounds = NO;
+        
+        [[_selectView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [obj removeFromSuperview];
+        }];
         
         if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
             [self refreshChangeSelectView];
+            isCustomSelectView = YES;
         }
     }
 }
 
 -(void)refreshChangeSelectView
 {
-    if ([self.customDelegate respondsToSelector:@selector(slideView:editChooseSelectView:)]) {
-        [self.customDelegate slideView:self editChooseSelectView:_selectView];
+    if ([_customDelegate respondsToSelector:@selector(slideView:editSelectView:)]) {
+        [_customDelegate slideView:self editSelectView:_selectView];
     }
-    if ([self.customDelegate respondsToSelector:@selector(slideView:editSubInSelectView:)]) {
-        [self.customDelegate slideView:self editSubInSelectView:_selectView];
+    if ([_customDelegate respondsToSelector:@selector(slideView:editSubInSelectView:)]) {
+        [_customDelegate slideView:self editSubInSelectView:_selectView];
     }
-    
-    [_selectView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
-    isCustomSelectView = YES;
+}
+
+-(void)editSubViewInSelectView
+{
+    [[_selectView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        CGRect viewRect = obj.frame;
+        viewRect.size.width = _selectView.frame.size.width;
+        obj.frame = viewRect;
+    }];
 }
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if ([object isEqual:_selectView]) {
-        if ([self.customDelegate respondsToSelector:@selector(slideView:editSubInSelectView:)]) {
-            [self.customDelegate slideView:self editSubInSelectView:_selectView];
+        if (isCustomSelectView) {
+            
+            Class nowDelegateClass = object_getClass(_customDelegate);
+            if (nowDelegateClass == delegateClass) {
+                if ([_customDelegate respondsToSelector:@selector(slideView:editSubInSelectView:)]) {
+                    [_customDelegate slideView:self editSubInSelectView:_selectView];
+                }
+            }
+        }else{
+            [self editSubViewInSelectView];
         }
     }
 }
 
 -(void)dealloc
 {
-    if (isCustomSelectView) {
-        [_selectView removeObserver:self forKeyPath:@"frame"];
-    }
+    [_selectView removeObserver:self forKeyPath:@"frame"];
 }
 
 #pragma mark - UIButton
@@ -362,33 +334,11 @@
     if (_selectView) {
         CGRect selectViewRect = button.frame;
         CGPoint selectViewCenter = _selectView.center;
-        switch (_slideMenuViewTitleWidthStyle) {
-            case SlideMenuViewTitleWidthStyleDefault:
-            {
-                selectViewRect.size.width = button.frame.size.width * _fontGap + menuTitleLength;
-                selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
-                selectViewRect.origin.y = SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT;
-                
-                selectViewCenter.x = button.center.x;
-            }
-                break;
-            case SlideMenuViewTitleWidthStyleSame:
-            {
-                selectViewRect.size.width = button.frame.size.width * _fontGap;
-                selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
-                selectViewRect.origin.y = SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT;
-                
-                selectViewCenter.x = button.center.x;
-            }
-                break;
-            default:
-                break;
-        }
         
-        if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
-            selectViewRect.origin.y = 0;
-            selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
-        }
+        selectViewRect.size.width = button.frame.size.width * _fontGap;
+        selectViewRect.origin.y = 0;
+        selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
+        selectViewCenter.x = button.center.x;
         
         [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
         [button setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
@@ -467,32 +417,11 @@
                 
                 CGRect selectViewRect = selectTitleBtn.frame;
                 CGPoint selectViewCenter = _selectView.center;
-                switch (_slideMenuViewTitleWidthStyle) {
-                    case SlideMenuViewTitleWidthStyleDefault:
-                    {
-                        selectViewRect.size.width = selectTitleBtn.frame.size.width + menuTitleLength;
-                        selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
-                        selectViewRect.origin.y = SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT;
-                        
-                        selectViewCenter.x = selectTitleBtn.center.x;
-                    }
-                        break;
-                    case SlideMenuViewTitleWidthStyleSame:
-                    {
-                        selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
-                        selectViewRect.origin.y = SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT;
-                        
-                        selectViewCenter.x = selectTitleBtn.center.x;
-                    }
-                        break;
-                    default:
-                        break;
-                }
                 
-                if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
-                    selectViewRect.origin.y = 0;
-                    selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
-                }
+                selectViewRect.size.width = selectTitleBtn.frame.size.width;
+                selectViewRect.origin.y = 0;
+                selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
+                selectViewCenter.x = selectTitleBtn.center.x;
                 
                 _selectView.frame = selectViewRect;
                 _selectView.center = selectViewCenter;
@@ -604,32 +533,11 @@
         
         CGRect selectViewRect = selectBtn.frame;
         CGPoint selectViewCenter = _selectView.center;
-        switch (_slideMenuViewTitleWidthStyle) {
-            case SlideMenuViewTitleWidthStyleDefault:
-            {
-                selectViewRect.size.width = selectBtn.frame.size.width + menuTitleLength;
-                selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
-                selectViewRect.origin.y = SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT;
-                
-                selectViewCenter.x = selectBtn.center.x;
-            }
-                break;
-            case SlideMenuViewTitleWidthStyleSame:
-            {
-                selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
-                selectViewRect.origin.y = SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT;
-                
-                selectViewCenter.x = selectBtn.center.x;
-            }
-                break;
-            default:
-                break;
-        }
         
-        if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleCustom) {
-            selectViewRect.origin.y = 0;
-            selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
-        }
+        selectViewRect.size.width = selectBtn.frame.size.width;
+        selectViewRect.origin.y = 0;
+        selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
+        selectViewCenter.x = selectBtn.center.x;
         
         _selectView.frame = selectViewRect;
         _selectView.center = selectViewCenter;
@@ -655,22 +563,8 @@
     CGRect selectViewRect = _selectView.frame;
     CGPoint selectViewCenter = _selectView.center;
     
-    switch (_slideMenuViewTitleWidthStyle) {
-        case SlideMenuViewTitleWidthStyleDefault:
-        {
-            selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width + menuTitleLength;
-            selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
-        }
-            break;
-        case SlideMenuViewTitleWidthStyleSame:
-        {
-            selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width;
-            selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
-        }
-            break;
-        default:
-            break;
-    }
+    selectViewRect.size.width = (toButton.frame.size.width - fromButton.frame.size.width) * scale + fromButton.frame.size.width;
+    selectViewCenter.x = fromButton.center.x + (toButton.center.x - fromButton.center.x)*scale;
     
     _selectView.frame = selectViewRect;
     _selectView.center = selectViewCenter;

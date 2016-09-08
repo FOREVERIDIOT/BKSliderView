@@ -6,6 +6,9 @@
 //
 
 #define SLIDE_MENU_VIEW_HEIGHT 45
+#define DEFAULT_SELECTVIEW_HEIGHT 2
+
+#define TITLE_ADD_GAP 20
 
 #define NORMAL_TITLE_FONT 14.0f
 #define FONT_GAP 1.1
@@ -13,18 +16,8 @@
 #define NORMAL_TITLE_COLOR [UIColor colorWithRed:153.0/255.0f green:153.0/255.0f blue:153.0/255.0f alpha:0.6]
 #define SELECT_TITLE_COLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:1]
 
-#define TITLE_GAP 20
-#define MENU_TITLE_WIDTH 100.0f
-
-#define DEFAULT_SELECTVIEW_HEIGHT 2
-
 #import <UIKit/UIKit.h>
 @class BKSlideView;
-
-typedef NS_ENUM(NSUInteger, BKSlideMenuViewTitleWidthStyle) {
-    SlideMenuViewTitleWidthStyleDefault = 0,             // 按照字的宽度 + 字左右设定的宽度
-    SlideMenuViewTitleWidthStyleSame                     // 每个title的宽度一样
-};
 
 typedef NS_ENUM(NSUInteger, BKSlideMenuViewChangeStyle) {
     SlideMenuViewChangeStyleDefault = 0,
@@ -54,10 +47,10 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @optional
 
 /**
- *     改变selectView 实现的代理
+ *     自定义selectView里view的内容 实现的代理
  *     作用 自定义selectView 在selectView中创建的view如果设置tag,此tag必须大于[menuTitleArray count]
  */
--(void)slideView:(BKSlideView*)slideView editChooseSelectView:(UIView*)selectView;
+-(void)slideView:(BKSlideView*)slideView editSelectView:(UIView*)selectView;
 
 /**
  *     当创建自定义selectView时 或 当selectView的frame改变时 修改自定义selectView 中自定义view的属性
@@ -105,9 +98,9 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,assign) NSInteger selectIndex;
 
 /**
- *     menuTitle 宽度格式 (在addSubview之前调用 或者 改变后调用 reloadView方法)
+ *     menuTitle 宽度大小 设置后所有menuTitle的宽度为设置宽度 (在addSubview之前调用 或者 改变后调用 reloadView方法)
  */
-@property (nonatomic,assign) BKSlideMenuViewTitleWidthStyle slideMenuViewTitleWidthStyle;
+@property (nonatomic,assign) CGFloat menuTitleWidth;
 
 /**
  *     变换格式 不做改动是Default

@@ -19,6 +19,11 @@
 
 @implementation CustomSelectViewViewController
 
+-(void)dealloc
+{
+    NSLog(@"%@",self);
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -49,9 +54,9 @@
 }
 
 // 自定义selectView
--(void)slideView:(BKSlideView*)slideView editChooseSelectView:(UIView*)selectView
+-(void)slideView:(BKSlideView*)slideView editSelectView:(UIView*)selectView
 {
-    CustomSelectView * textView = [[CustomSelectView alloc]init];
+    CustomSelectView * textView = [[CustomSelectView alloc]initWithFrame:CGRectMake((selectView.frame.size.width - 10)/2.0f, selectView.frame.size.height - 10, 10, 10)];
     textView.tag = 999;
     [selectView addSubview:textView];
 }
@@ -60,7 +65,6 @@
 -(void)slideView:(BKSlideView*)slideView editSubInSelectView:(UIView*)selectView
 {
     CustomSelectView * textView = (CustomSelectView*)[selectView viewWithTag:999];
-    textView.frame = CGRectMake(0, selectView.frame.size.height - 10, 10, 10);
     
     CGPoint viewCenter = textView.center;
     viewCenter.x = selectView.center.x - selectView.frame.origin.x;
