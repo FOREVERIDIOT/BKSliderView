@@ -243,6 +243,8 @@
 {
     __block UIView * lastView;
     
+    isTapMenuTitleFlag = NO;
+    
     [_menuTitleArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         UIButton * titleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
