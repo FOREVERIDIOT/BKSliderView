@@ -398,6 +398,7 @@
         selectViewRect.size.height = SLIDE_MENU_VIEW_HEIGHT;
         selectViewCenter.x = button.center.x;
         
+        selectTitleBtn = (UIButton*)[_slideMenuView viewWithTag:_selectIndex];
         [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
         [button setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
         
