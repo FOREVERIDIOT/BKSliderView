@@ -12,12 +12,7 @@
 		2A1B3CDC1C95735700D04EFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDB1C95735700D04EFF /* Assets.xcassets */; };
 		2A1B3CDF1C95735700D04EFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDD1C95735700D04EFF /* LaunchScreen.storyboard */; };
 		2A1B3CEC1C95737900D04EFF /* BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CEA1C95737900D04EFF /* BKSlideView.m */; };
-		2A1B3CF81C9573E400D04EFF /* BaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CEE1C9573E400D04EFF /* BaseViewController.m */; };
-		2A1B3CF91C9573E400D04EFF /* CustomSelectView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF01C9573E400D04EFF /* CustomSelectView.m */; };
-		2A1B3CFA1C9573E400D04EFF /* CustomSelectViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF21C9573E400D04EFF /* CustomSelectViewViewController.m */; };
-		2A1B3CFB1C9573E400D04EFF /* ExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF41C9573E400D04EFF /* ExampleViewController.m */; };
 		2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF61C9573E400D04EFF /* ViewController.m */; };
-		2A1B3CFD1C9573E400D04EFF /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF71C9573E400D04EFF /* ViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,17 +25,8 @@
 		2A1B3CE01C95735700D04EFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2A1B3CE91C95737900D04EFF /* BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideView.h; sourceTree = "<group>"; };
 		2A1B3CEA1C95737900D04EFF /* BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideView.m; sourceTree = "<group>"; };
-		2A1B3CED1C9573E400D04EFF /* BaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseViewController.h; sourceTree = "<group>"; };
-		2A1B3CEE1C9573E400D04EFF /* BaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseViewController.m; sourceTree = "<group>"; };
-		2A1B3CEF1C9573E400D04EFF /* CustomSelectView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSelectView.h; sourceTree = "<group>"; };
-		2A1B3CF01C9573E400D04EFF /* CustomSelectView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSelectView.m; sourceTree = "<group>"; };
-		2A1B3CF11C9573E400D04EFF /* CustomSelectViewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSelectViewViewController.h; sourceTree = "<group>"; };
-		2A1B3CF21C9573E400D04EFF /* CustomSelectViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSelectViewViewController.m; sourceTree = "<group>"; };
-		2A1B3CF31C9573E400D04EFF /* ExampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleViewController.h; sourceTree = "<group>"; };
-		2A1B3CF41C9573E400D04EFF /* ExampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleViewController.m; sourceTree = "<group>"; };
 		2A1B3CF51C9573E400D04EFF /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2A1B3CF61C9573E400D04EFF /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		2A1B3CF71C9573E400D04EFF /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,15 +64,6 @@
 				2A1B3CD31C95735700D04EFF /* AppDelegate.m */,
 				2A1B3CF51C9573E400D04EFF /* ViewController.h */,
 				2A1B3CF61C9573E400D04EFF /* ViewController.m */,
-				2A1B3CF71C9573E400D04EFF /* ViewController.xib */,
-				2A1B3CED1C9573E400D04EFF /* BaseViewController.h */,
-				2A1B3CEE1C9573E400D04EFF /* BaseViewController.m */,
-				2A1B3CF11C9573E400D04EFF /* CustomSelectViewViewController.h */,
-				2A1B3CF21C9573E400D04EFF /* CustomSelectViewViewController.m */,
-				2A1B3CEF1C9573E400D04EFF /* CustomSelectView.h */,
-				2A1B3CF01C9573E400D04EFF /* CustomSelectView.m */,
-				2A1B3CF31C9573E400D04EFF /* ExampleViewController.h */,
-				2A1B3CF41C9573E400D04EFF /* ExampleViewController.m */,
 				2A1B3CDB1C95735700D04EFF /* Assets.xcassets */,
 				2A1B3CDD1C95735700D04EFF /* LaunchScreen.storyboard */,
 				2A1B3CE01C95735700D04EFF /* Info.plist */,
@@ -171,7 +148,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A1B3CDF1C95735700D04EFF /* LaunchScreen.storyboard in Resources */,
-				2A1B3CFD1C9573E400D04EFF /* ViewController.xib in Resources */,
 				2A1B3CDC1C95735700D04EFF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,10 +161,6 @@
 			files = (
 				2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */,
 				2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */,
-				2A1B3CFA1C9573E400D04EFF /* CustomSelectViewViewController.m in Sources */,
-				2A1B3CF91C9573E400D04EFF /* CustomSelectView.m in Sources */,
-				2A1B3CF81C9573E400D04EFF /* BaseViewController.m in Sources */,
-				2A1B3CFB1C9573E400D04EFF /* ExampleViewController.m in Sources */,
 				2A1B3CD11C95735700D04EFF /* main.m in Sources */,
 				2A1B3CEC1C95737900D04EFF /* BKSlideView.m in Sources */,
 			);

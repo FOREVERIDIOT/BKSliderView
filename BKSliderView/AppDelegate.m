@@ -21,7 +21,7 @@
     
     self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
     
-    ViewController * VC = [[[NSBundle mainBundle] loadNibNamed:@"ViewController" owner:nil options:nil] lastObject];
+    ViewController * VC = [[ViewController alloc]init];
     UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:VC];
     
     self.window.rootViewController = nav;
