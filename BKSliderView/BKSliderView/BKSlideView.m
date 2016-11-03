@@ -262,14 +262,22 @@
     [selectTitleBtn setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
     selectTitleBtn.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
     
-    _selectView = [[UIView alloc]initWithFrame:CGRectMake(0,SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT,selectTitleBtn.frame.size.width,DEFAULT_SELECTVIEW_HEIGHT)];
+    [_slideMenuView addSubview:[self selectView]];
+    _selectView.frame = CGRectMake(0,SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT,selectTitleBtn.frame.size.width,DEFAULT_SELECTVIEW_HEIGHT);
     CGPoint selectViewCenter = _selectView.center;
     selectViewCenter.x = selectTitleBtn.center.x;
     _selectView.center = selectViewCenter;
-    _selectView.backgroundColor = [UIColor blackColor];
-    _selectView.layer.cornerRadius = _selectView.frame.size.height/2.0f;
-    _selectView.clipsToBounds = YES;
-    [_slideMenuView addSubview:_selectView];
+}
+
+-(UIView*)selectView
+{
+    if (!_selectView) {
+        _selectView = [[UIView alloc]initWithFrame:CGRectMake(0,SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT,selectTitleBtn.frame.size.width,DEFAULT_SELECTVIEW_HEIGHT)];
+        _selectView.backgroundColor = [UIColor blackColor];
+        _selectView.layer.cornerRadius = _selectView.frame.size.height/2.0f;
+        _selectView.clipsToBounds = YES;
+    }
+    return _selectView;
 }
 
 -(void)initSlideView
