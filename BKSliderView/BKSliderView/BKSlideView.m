@@ -28,16 +28,22 @@
 
 @property (nonatomic,strong) dispatch_queue_t myQueue;
 
-@property (nonatomic,strong) NSArray * vcArray;
-
 /**
- *     选中的View
+ 记录创建过的vc数组
  */
-@property (nonatomic,strong) UIView * selectView;
+@property (nonatomic,strong) NSMutableArray * createIndexArr;
 
 @end
 
 @implementation BKSlideView
+
+-(NSMutableArray*)createIndexArr
+{
+    if (!_createIndexArr) {
+        _createIndexArr = [NSMutableArray array];
+    }
+    return _createIndexArr;
+}
 
 #pragma mark - 刷新
 
@@ -91,10 +97,9 @@
     }
     
     if (_slideMenuViewSelectStyle & SlideMenuViewSelectStyleHaveLine) {
-        
+        [_selectView setHidden:NO];
     }else{
-        [_selectView removeFromSuperview];
-        _selectView = nil;
+        [_selectView setHidden:YES];
     }
     
     [self reloadView];
@@ -173,6 +178,48 @@
     return self;
 }
 
+-(void)setDelegate:(id<BKSlideViewDelegate>)delegate
+{
+    if (delegate) {
+        _delegate = delegate;
+        
+        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:_selectIndex inSection:0];
+        UICollectionViewCell * cell = [self.slideView cellForItemAtIndexPath:indexPath];
+        if (cell) {
+        
+            UIViewController *vc = _vcArray[indexPath.item];
+            vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
+            [cell addSubview:vc.view];
+            
+            if ([self.delegate respondsToSelector:@selector(slideView:createVCWithIndex:)]) {
+                if (![self.createIndexArr containsObject:indexPath]) {
+                    [self.createIndexArr addObject:indexPath];
+                    [self.delegate slideView:self createVCWithIndex:_selectIndex];
+                }
+            }
+        }
+        
+        [self addObserver:self forKeyPath:@"selectIndex" options:NSKeyValueObservingOptionNew context:nil];
+        if ([_delegate respondsToSelector:@selector(slideView:nowShowSelectIndex:)]) {
+            [_delegate slideView:self nowShowSelectIndex:_selectIndex];
+        }
+    }
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"selectIndex"]) {
+        if ([self.delegate respondsToSelector:@selector(slideView:nowShowSelectIndex:)]) {
+            [self.delegate slideView:self nowShowSelectIndex:[change[@"new"] integerValue]];
+        }
+    }
+}
+
+-(void)dealloc
+{
+    [self removeObserver:self forKeyPath:@"selectIndex"];
+}
+
 -(void)initSlideMenuView
 {
     _slideMenuView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, SLIDE_MENU_VIEW_HEIGHT)];
@@ -189,7 +236,7 @@
 
 -(void)initData
 {
-    _selectIndex = 1;
+    self.selectIndex = 0;
     
     _normalMenuTitleFont = [UIFont systemFontOfSize:NORMAL_TITLE_FONT];
     _fontGap = FONT_GAP;
@@ -244,7 +291,7 @@
         titleBtn.frame = titleRect;
         
         [titleBtn addTarget:self action:@selector(titleBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-        if (titleBtn.tag == _selectIndex) {
+        if (titleBtn.tag == _selectIndex+1) {
             selectTitleBtn = titleBtn;
         }
         [_slideMenuView addSubview:titleBtn];
@@ -262,7 +309,10 @@
     [selectTitleBtn setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
     selectTitleBtn.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
     
-    [_slideMenuView addSubview:[self selectView]];
+    if (![[_slideMenuView subviews] containsObject:self.selectView]) {
+        [_slideMenuView addSubview:[self selectView]];
+    }
+    
     _selectView.frame = CGRectMake(0,SLIDE_MENU_VIEW_HEIGHT - DEFAULT_SELECTVIEW_HEIGHT,selectTitleBtn.frame.size.width,DEFAULT_SELECTVIEW_HEIGHT);
     CGPoint selectViewCenter = _selectView.center;
     selectViewCenter.x = selectTitleBtn.center.x;
@@ -298,6 +348,8 @@
     [self addSubview:_slideView];
     
     [_slideView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"slideView"];
+    
+    [self bringSubviewToFront:_slideMenuView];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -310,11 +362,20 @@
 -(UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"slideView" forIndexPath:indexPath];
+
+    [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
-    UIViewController *vc = _vcArray[indexPath.row];
+    UIViewController *vc = _vcArray[indexPath.item];
     vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-    [cell addSubview:vc.view];
+    [cell.contentView addSubview:vc.view];
     
+    if ([self.delegate respondsToSelector:@selector(slideView:createVCWithIndex:)]) {
+        if (![self.createIndexArr containsObject:indexPath]) {
+            [self.createIndexArr addObject:indexPath];
+            [self.delegate slideView:self createVCWithIndex:indexPath.item];
+        }
+    }
+
     return cell;
 }
 
@@ -336,7 +397,7 @@
         selectViewRect.size.height = DEFAULT_SELECTVIEW_HEIGHT;
         selectViewCenter.x = button.center.x;
         
-        selectTitleBtn = (UIButton*)[_slideMenuView viewWithTag:_selectIndex];
+        selectTitleBtn = (UIButton*)[_slideMenuView viewWithTag:_selectIndex+1];
         [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
         [button setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
         
@@ -370,9 +431,9 @@
         isTapMenuTitleFlag = NO;
     }
     
-    _selectIndex = button.tag;
+    self.selectIndex = button.tag-1;
     
-    CGFloat rollLength = _slideView.frame.size.width * (_selectIndex-1);
+    CGFloat rollLength = _slideView.frame.size.width * (_selectIndex);
     [_slideView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
 }
 
@@ -381,7 +442,7 @@
  */
 -(void)rollSlideViewToIndexView:(NSInteger)index
 {
-    UIButton * button = [_slideMenuView viewWithTag:index];
+    UIButton * button = [_slideMenuView viewWithTag:index+1];
     [self titleBtnClick:button];
 }
 
@@ -400,7 +461,7 @@
             
             if (item == button.tag) {
                 selectTitleBtn = button;
-                _selectIndex = item;
+                _selectIndex = item-1;
                 
                 [selectTitleBtn setTitleColor:_selectMenuTitleColor forState:UIControlStateNormal];
                 selectTitleBtn.transform = CGAffineTransformMakeScale(_fontGap, _fontGap);
@@ -447,9 +508,9 @@
         // 这一页滑动了多少
         CGFloat page_contentOffX = (CGFloat)((NSInteger)slideViewContentOffX % (NSInteger)_slideView.frame.size.width);
         // 滑走的button
-        UIButton * fromButton = (UIButton*)[self viewWithTag:item];
+        UIButton * fromButton = (UIButton*)[_slideMenuView viewWithTag:item];
         // 滑向的button
-        UIButton * toButton = (UIButton*)[self viewWithTag:item+1];
+        UIButton * toButton = (UIButton*)[_slideMenuView viewWithTag:item+1];
         // 这一页滑的百分比
         CGFloat scale = page_contentOffX / _slideView.frame.size.width;
         
@@ -459,20 +520,20 @@
         }
         
         if (scale < 0.5) {
-            UIButton * button = (UIButton*)[self viewWithTag:item];
+            UIButton * button = (UIButton*)[_slideMenuView viewWithTag:item];
             selectTitleBtn = button;
-            _selectIndex = item;
+            _selectIndex = item-1;
         }
         
         // 根据方向从新控制滑向的button 和 百分比
         CGFloat now_scale = 0.0;
         UIButton * now_frombutton;
         UIButton * now_toButton;
-        if (selectTitleBtn == fromButton) {
+        if (selectTitleBtn == fromButton || selectTitleBtn.tag == fromButton.tag) {
             now_scale = scale;
             now_frombutton = fromButton;
             now_toButton = toButton;
-        }else if (selectTitleBtn == toButton) {
+        }else if (selectTitleBtn == toButton || selectTitleBtn.tag == toButton.tag) {
             now_scale = 1-scale;
             now_frombutton = toButton;
             now_toButton = fromButton;
@@ -512,8 +573,8 @@
         NSIndexPath *indexPathNow = [_slideView indexPathForItemAtPoint:pInView];
         NSInteger item = indexPathNow.item;
         
-        _selectIndex = item + 1;
-        UIButton * selectBtn = (UIButton*)[self viewWithTag:_selectIndex];
+        self.selectIndex = item;
+        UIButton * selectBtn = (UIButton*)[_slideMenuView viewWithTag:_selectIndex+1];
         
         selectTitleBtn.transform = CGAffineTransformMakeScale(1, 1);
         [selectTitleBtn setTitleColor:_normalMenuTitleColor forState:UIControlStateNormal];
@@ -623,9 +684,9 @@
 -(void)changeSelectViewDefaultAnimation
 {
     CGFloat selectViewPositionGaps = CGRectGetMaxX(_selectView.frame) - _slideMenuView.contentOffset.x;
-    if (selectViewPositionGaps > self.frame.size.width) {
-        [_slideMenuView setContentOffset:CGPointMake(_slideMenuView.contentOffset.x + (selectViewPositionGaps - self.frame.size.width), 0) animated:NO];
-        if (_slideMenuView.contentOffset.x > _slideMenuView.contentSize.width - self.frame.size.width) {
+    if (selectViewPositionGaps > _slideMenuView.frame.size.width) {
+        [_slideMenuView setContentOffset:CGPointMake(_slideMenuView.contentOffset.x + (selectViewPositionGaps - _slideMenuView.frame.size.width), 0) animated:NO];
+        if (_slideMenuView.contentOffset.x > _slideMenuView.contentSize.width - _slideMenuView.frame.size.width) {
             [_slideMenuView setContentOffset:CGPointMake(_slideMenuView.contentSize.width - self.frame.size.width, 0) animated:NO];
         }
     }else if (_selectView.frame.origin.x - _slideMenuView.contentOffset.x < 0) {
@@ -642,11 +703,11 @@
 -(void)changeSelectViewCenterAnimation
 {
     CGFloat selectViewPositionGaps = CGRectGetMaxX(_selectView.frame) - _slideMenuView.contentOffset.x;
-    CGFloat left_right_Gap = (self.frame.size.width - _selectView.frame.size.width)/2.0f;
-    if (selectViewPositionGaps > self.frame.size.width - left_right_Gap) {
+    CGFloat left_right_Gap = (_slideMenuView.frame.size.width - _selectView.frame.size.width)/2.0f;
+    if (selectViewPositionGaps > _slideMenuView.frame.size.width - left_right_Gap) {
         CGFloat move = _selectView.frame.origin.x - left_right_Gap;
-        if (move > _slideMenuView.contentSize.width - self.frame.size.width) {
-            move = _slideMenuView.contentSize.width - self.frame.size.width;
+        if (move > _slideMenuView.contentSize.width - _slideMenuView.frame.size.width) {
+            move = _slideMenuView.contentSize.width - _slideMenuView.frame.size.width;
         }
         [_slideMenuView setContentOffset:CGPointMake(move, 0) animated:NO];
     }else if (_selectView.frame.origin.x - _slideMenuView.contentOffset.x < left_right_Gap) {

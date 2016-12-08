@@ -11,8 +11,8 @@
 		2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CD31C95735700D04EFF /* AppDelegate.m */; };
 		2A1B3CDC1C95735700D04EFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDB1C95735700D04EFF /* Assets.xcassets */; };
 		2A1B3CDF1C95735700D04EFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDD1C95735700D04EFF /* LaunchScreen.storyboard */; };
-		2A1B3CEC1C95737900D04EFF /* BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CEA1C95737900D04EFF /* BKSlideView.m */; };
 		2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CF61C9573E400D04EFF /* ViewController.m */; };
+		883B55011DF94362002A623C /* BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 883B55001DF94362002A623C /* BKSlideView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,10 +23,10 @@
 		2A1B3CDB1C95735700D04EFF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2A1B3CDE1C95735700D04EFF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2A1B3CE01C95735700D04EFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2A1B3CE91C95737900D04EFF /* BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideView.h; sourceTree = "<group>"; };
-		2A1B3CEA1C95737900D04EFF /* BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideView.m; sourceTree = "<group>"; };
 		2A1B3CF51C9573E400D04EFF /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2A1B3CF61C9573E400D04EFF /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		883B54FF1DF94362002A623C /* BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideView.h; sourceTree = "<group>"; };
+		883B55001DF94362002A623C /* BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +83,8 @@
 		2A1B3CE61C95737900D04EFF /* BKSliderView */ = {
 			isa = PBXGroup;
 			children = (
-				2A1B3CE91C95737900D04EFF /* BKSlideView.h */,
-				2A1B3CEA1C95737900D04EFF /* BKSlideView.m */,
+				883B54FF1DF94362002A623C /* BKSlideView.h */,
+				883B55001DF94362002A623C /* BKSlideView.m */,
 			);
 			path = BKSliderView;
 			sourceTree = "<group>";
@@ -160,9 +160,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */,
+				883B55011DF94362002A623C /* BKSlideView.m in Sources */,
 				2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */,
 				2A1B3CD11C95735700D04EFF /* main.m in Sources */,
-				2A1B3CEC1C95737900D04EFF /* BKSlideView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

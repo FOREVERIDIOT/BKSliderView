@@ -8,7 +8,7 @@
 #define SLIDE_MENU_VIEW_HEIGHT 45
 #define DEFAULT_SELECTVIEW_HEIGHT 2
 
-#define TITLE_ADD_GAP 20
+#define TITLE_ADD_GAP 30
 
 #define NORMAL_TITLE_FONT 14.0f
 #define FONT_GAP 1.1
@@ -31,7 +31,38 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
     SlideMenuViewSelectStyleChangeColor = 1 << 2         //选中的字体颜色会有变化 未改动是灰色 normal 时颜色透明度为 0.6
 };
 
+@protocol BKSlideViewDelegate <NSObject>
+
+@required
+
+/**
+ 创建对应index的VC
+
+ @param slideView BKSlideView
+ @param index     索引 从0开始
+ */
+-(void)slideView:(BKSlideView*)slideView createVCWithIndex:(NSInteger)index;
+
+@optional
+
+/**
+ 记录目前所在的index
+
+ @param slideView BKSlideView
+ @param index     索引 从0开始
+ */
+-(void)slideView:(BKSlideView*)slideView nowShowSelectIndex:(NSInteger)index;
+
+@end
+
 @interface BKSlideView : UIView
+
+@property (nonatomic,assign) id<BKSlideViewDelegate> delegate;
+
+/**
+ viewController数组
+ */
+@property (nonatomic,strong) NSArray * vcArray;
 
 #pragma mark - 显示的View
 
@@ -46,6 +77,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *  基础 selectScrollview
  */
 @property (nonatomic,strong) UIScrollView * slideMenuView;
+
+/**
+ *     选中的View
+ */
+@property (nonatomic,strong) UIView * selectView;
 
 /**
  *     从1开始 目前选中的第几个,也可以赋值更改选中(超过数组最大值无效)
@@ -97,9 +133,12 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 -(instancetype)initWithFrame:(CGRect)frame vcArray:(NSArray*)vcArray;
 
 /**
- *     移动 SlideView 至第 index 页
+ *     移动 SlideView 至第 index 页 从0开始
  */
 -(void)rollSlideViewToIndexView:(NSInteger)index;
 
 
 @end
+
+
+
