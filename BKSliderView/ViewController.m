@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "BKSlideView.h"
 
-@interface ViewController ()
+@interface ViewController ()<BKSlideViewDelegate>
 {
     BKSlideView * _slideView;
 }
@@ -36,8 +36,13 @@
     }
     
     _slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) vcArray:vcArray];
-    _slideView.slideMenuViewChangeStyle = SlideMenuViewChangeStyleCenter;
+    _slideView.delegate = self;
     [self.view addSubview:_slideView];
+}
+
+-(void)slideView:(BKSlideView*)slideView createVCWithIndex:(NSInteger)index
+{
+    
 }
 
 @end

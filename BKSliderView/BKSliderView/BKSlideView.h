@@ -11,7 +11,6 @@
 #define TITLE_ADD_GAP 30
 
 #define NORMAL_TITLE_FONT 14.0f
-#define FONT_GAP 1.1
 
 #define NORMAL_TITLE_COLOR [UIColor colorWithRed:153.0/255.0f green:153.0/255.0f blue:153.0/255.0f alpha:0.6]
 #define SELECT_TITLE_COLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:1]
@@ -19,16 +18,10 @@
 #import <UIKit/UIKit.h>
 @class BKSlideView;
 
-typedef NS_ENUM(NSUInteger, BKSlideMenuViewChangeStyle) {
-    SlideMenuViewChangeStyleDefault = 0,
-    SlideMenuViewChangeStyleCenter
-};
-
 typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
     SlideMenuViewSelectStyleNone = 0,                     //无效果
     SlideMenuViewSelectStyleHaveLine = 1 << 0,            //有线
-    SlideMenuViewSelectStyleChangeFont = 1 << 1,          //选中的字体会变大
-    SlideMenuViewSelectStyleChangeColor = 1 << 2         //选中的字体颜色会有变化 未改动是灰色 normal 时颜色透明度为 0.6
+    SlideMenuViewSelectStyleChangeColor = 1 << 1         //选中的字体颜色会有变化 未改动是灰色 normal 时颜色透明度为 0.6
 };
 
 @protocol BKSlideViewDelegate <NSObject>
@@ -46,7 +39,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @optional
 
 /**
- 记录目前所在的index
+ 目前所在VC的index
 
  @param slideView BKSlideView
  @param index     索引 从0开始
@@ -58,6 +51,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @interface BKSlideView : UIView
 
 @property (nonatomic,assign) id<BKSlideViewDelegate> delegate;
+
+/**
+ 刷新slideMenuView
+ */
+-(void)reloadMenuView;
 
 /**
  viewController数组
@@ -74,7 +72,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 #pragma mark - 显示的选取View
 
 /**
- *  基础 selectScrollview
+ *  title滑动视图
  */
 @property (nonatomic,strong) UIScrollView * slideMenuView;
 
@@ -94,12 +92,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,assign) CGFloat menuTitleWidth;
 
 /**
- *     变换格式 不做改动是Default
- */
-@property (nonatomic,assign) BKSlideMenuViewChangeStyle slideMenuViewChangeStyle;
-
-/**
- *     选中的格式 不做改动时为  SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeFont | SlideMenuViewSelectStyleChangeColor
+ *     选中的格式 默认为  SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeColor
  */
 @property (nonatomic,assign) BKSlideMenuViewSelectStyle slideMenuViewSelectStyle;
 
@@ -107,11 +100,6 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *     未选中的Title 的字号
  */
 @property (nonatomic,strong) UIFont * normalMenuTitleFont;
-
-/**
- *     选中的Title 的大小是未选中的字号的倍数 默认1.1
- */
-@property (nonatomic,assign) CGFloat fontGap;
 
 /**
  *     未选中的Title字 的颜色
