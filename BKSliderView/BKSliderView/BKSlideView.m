@@ -116,6 +116,25 @@
     [self rollSlideViewToIndexView:_selectIndex];
 }
 
+#pragma mark - 添加头视图
+
+-(void)setHeaderView:(UIView *)headerView
+{
+    _headerView = headerView;
+    
+    [_bgScrollView addSubview:_headerView];
+    
+    CGRect menuViewRect = _slideMenuView.frame;
+    menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
+    _slideMenuView.frame = menuViewRect;
+    
+    CGRect slideViewRect = _slideView.frame;
+    slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
+    _slideView.frame = slideViewRect;
+    
+    _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_slideView.frame));
+}
+
 #pragma mark - 初始
 
 -(instancetype)initWithFrame:(CGRect)frame vcArray:(NSArray *)vcArray
@@ -126,16 +145,21 @@
         
         self.clipsToBounds = NO;
         _vcArray = [NSArray arrayWithArray:vcArray];
+
+        //背景滚动视图(竖直方向)
+        [self addSubview:self.bgScrollView];
         
         /**
-         *  显示的SelectScrollView
+         *  title滑动视图
          */
         [self initSlideMenuView];
         
         /**
-         *  显示的View
+         *  滑动主视图
          */
         [self initSlideView];
+        
+        _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_bgScrollView.frame));
     }
     
     return self;
@@ -162,37 +186,42 @@
             }
         }
         
-        [self addObserver:self forKeyPath:@"selectIndex" options:NSKeyValueObservingOptionNew context:nil];
-        if ([_delegate respondsToSelector:@selector(slideView:nowShowSelectIndex:)]) {
-            [_delegate slideView:self nowShowSelectIndex:_selectIndex];
-        }
+        [self changeNowSelectIndex];
     }
 }
 
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+-(void)changeNowSelectIndex
 {
-    if ([keyPath isEqualToString:@"selectIndex"]) {
-        if ([_delegate respondsToSelector:@selector(slideView:nowShowSelectIndex:)]) {
-            [_delegate slideView:self nowShowSelectIndex:[change[@"new"] integerValue]];
-        }
+    if ([_delegate respondsToSelector:@selector(slideView:nowShowSelectIndex:)]) {
+        [_delegate slideView:self nowShowSelectIndex:_selectIndex];
     }
 }
 
--(void)dealloc
+#pragma mark - 背景滚动视图
+
+-(UIScrollView *)bgScrollView
 {
-    [self removeObserver:self forKeyPath:@"selectIndex"];
+    if (!_bgScrollView) {
+        _bgScrollView = [[UIScrollView alloc]initWithFrame:self.bounds];
+        _bgScrollView.backgroundColor = [UIColor clearColor];
+        _bgScrollView.showsVerticalScrollIndicator = NO;
+        _bgScrollView.showsHorizontalScrollIndicator = NO;
+        _bgScrollView.delegate = self;
+        _bgScrollView.clipsToBounds = NO;
+    }
+    return _bgScrollView;
 }
 
 #pragma mark - 选取title滑动视图
 
 -(void)initSlideMenuView
 {
-    _slideMenuView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, SLIDE_MENU_VIEW_HEIGHT)];
+    _slideMenuView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _bgScrollView.frame.size.width, SLIDE_MENU_VIEW_HEIGHT)];
     _slideMenuView.backgroundColor = [UIColor whiteColor];
     _slideMenuView.showsHorizontalScrollIndicator = NO;
     _slideMenuView.showsVerticalScrollIndicator = NO;
     _slideMenuView.clipsToBounds = NO;
-    [self addSubview:_slideMenuView];
+    [_bgScrollView addSubview:_slideMenuView];
     
     [self initData];
     [self initAnyButton];
@@ -308,14 +337,14 @@
     layout.minimumLineSpacing = 0;
     layout.minimumInteritemSpacing = 0;
     
-    _slideView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SLIDE_MENU_VIEW_HEIGHT, self.frame.size.width, self.frame.size.height - SLIDE_MENU_VIEW_HEIGHT) collectionViewLayout:layout];
+    _slideView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SLIDE_MENU_VIEW_HEIGHT, _bgScrollView.frame.size.width, _bgScrollView.frame.size.height - SLIDE_MENU_VIEW_HEIGHT) collectionViewLayout:layout];
     _slideView.showsHorizontalScrollIndicator = NO;
     _slideView.showsVerticalScrollIndicator = NO;
     _slideView.delegate = self;
     _slideView.dataSource = self;
     _slideView.backgroundColor = [UIColor clearColor];
     _slideView.pagingEnabled = YES;
-    [self addSubview:_slideView];
+    [_bgScrollView addSubview:_slideView];
     
     [_slideView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"slideView"];
     
@@ -374,7 +403,7 @@
         _selectView.frame = selectViewRect;
         _selectView.center = selectViewCenter;
         
-        if (_slideMenuView.contentSize.width > self.frame.size.width) {
+        if (_slideMenuView.contentSize.width > _slideMenuView.frame.size.width) {
             //    动画格式 并且改变 self contentOffset.x距离
             [self changeSelectViewCenterAnimation];
         }
@@ -390,6 +419,7 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self fineTuneAndSelectItem:button.tag];
+        [self changeNowSelectIndex];
     });
 }
 
@@ -508,7 +538,7 @@
         /**
          *  滑动中所做的动画
          */
-        if (_slideMenuView.contentSize.width > self.frame.size.width) {
+        if (_slideMenuView.contentSize.width > _slideMenuView.frame.size.width) {
             //    动画格式 并且改变 self contentOffset.x距离
             [self changeSelectViewCenterAnimation];
         }
@@ -517,6 +547,27 @@
             //    改变滑动中 即将取消选择 和 选择的 cell 字体颜色
             [self ChangeSelectColorWithFromButton:now_frombutton toButton:now_toButton scale:now_scale];
         }
+    }else if (_bgScrollView == scrollView) {
+        
+        if (_headerView) {
+            
+            CGFloat contentOffSetY = _bgScrollView.contentOffset.y;
+            if (contentOffSetY > _headerView.frame.size.height) {
+                
+                CGRect menuViewRect = _slideMenuView.frame;
+                menuViewRect.origin.y = contentOffSetY;
+                _slideMenuView.frame = menuViewRect;
+            }else{
+                
+                [_bgScrollView addSubview:_slideMenuView];
+                
+                CGRect menuViewRect = _slideMenuView.frame;
+                menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
+                _slideMenuView.frame = menuViewRect;
+            }
+            
+        }
+        
     }
 }
 
@@ -553,6 +604,7 @@
         NSInteger item = indexPath.item;
         
         [self fineTuneAndSelectItem:item+1];
+        [self changeNowSelectIndex];
     }
 }
 

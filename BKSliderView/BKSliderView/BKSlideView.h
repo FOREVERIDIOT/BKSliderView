@@ -21,7 +21,7 @@
 typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
     SlideMenuViewSelectStyleNone = 0,                     //无效果
     SlideMenuViewSelectStyleHaveLine = 1 << 0,            //有线
-    SlideMenuViewSelectStyleChangeColor = 1 << 1         //选中的字体颜色会有变化 未改动是灰色 normal 时颜色透明度为 0.6
+    SlideMenuViewSelectStyleChangeColor = 1 << 1         //选中的字体颜色会有变化
 };
 
 @protocol BKSlideViewDelegate <NSObject>
@@ -62,12 +62,19 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  */
 @property (nonatomic,strong) NSArray * vcArray;
 
-#pragma mark - 显示的View
+#pragma mark - 背景滚动视图
 
 /**
- *  基础view
+ 背景滚动视图(竖直方向)
  */
-@property (nonatomic,strong) UICollectionView * slideView;
+@property (nonatomic,strong) UIScrollView * bgScrollView;
+
+#pragma mark - 头视图
+
+/**
+ 头视图
+ */
+@property (nonatomic,strong) UIView * headerView;
 
 #pragma mark - 显示的选取View
 
@@ -112,6 +119,13 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *     设置格式必须是 [UIColor colorWithRed:(CGFloat) green:(CGFloat) blue:(CGFloat) alpha:(CGFloat)]
  */
 @property (nonatomic,strong) UIColor * selectMenuTitleColor;
+
+#pragma mark - 滑动主视图
+
+/**
+ *  滑动主视图
+ */
+@property (nonatomic,strong) UICollectionView * slideView;
 
 #pragma mark - 方法
 

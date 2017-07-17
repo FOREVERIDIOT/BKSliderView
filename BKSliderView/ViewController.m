@@ -38,6 +38,10 @@
     _slideView = [[BKSlideView alloc]initWithFrame:CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height-64) vcArray:vcArray];
     _slideView.delegate = self;
     [self.view addSubview:_slideView];
+    
+    UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+    yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
+    _slideView.headerView = yellowColorHeaderView;
 }
 
 -(void)slideView:(BKSlideView*)slideView createVCWithIndex:(NSInteger)index
