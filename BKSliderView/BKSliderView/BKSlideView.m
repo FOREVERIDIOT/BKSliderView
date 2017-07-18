@@ -159,8 +159,6 @@
     if (scrollView) {
         
         scrollView.scrollEnabled = NO;
-        scrollView.showsVerticalScrollIndicator = NO;
-        _bgScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(_headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT, 0, 0, 0);
         
         if (scrollView.contentSize.height > scrollView.frame.size.height) {
             
@@ -169,7 +167,9 @@
             if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
                 scrollView.contentOffset = CGPointZero;
             }else {
-                _bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + _headerView.frame.size.height);
+                if (index == _selectIndex) {
+                    _bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + _headerView.frame.size.height);
+                }
             }
                 
         }else{
@@ -193,7 +193,9 @@
         if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
             
         }else{
-            _bgScrollView.contentOffset = CGPointMake(0, _headerView.frame.size.height);
+            if (index == _selectIndex) {
+                _bgScrollView.contentOffset = CGPointMake(0, _headerView.frame.size.height);
+            }
         }
     }
 }
@@ -245,6 +247,7 @@
         _bgScrollView = [[UIScrollView alloc]initWithFrame:self.bounds];
         _bgScrollView.backgroundColor = [UIColor clearColor];
         _bgScrollView.showsHorizontalScrollIndicator = NO;
+        _bgScrollView.showsVerticalScrollIndicator = NO;
         _bgScrollView.delegate = self;
         _bgScrollView.clipsToBounds = NO;
     }
