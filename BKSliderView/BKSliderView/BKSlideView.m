@@ -152,49 +152,51 @@
  */
 -(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index
 {
-    UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:index];
-    
-    //是否主视图内 scrollview的contentSize.height 小于 自身height
-    BOOL flag = NO;
-    if (scrollView) {
+    if (_headerView) {
+        UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:index];
         
-        scrollView.scrollEnabled = NO;
-        
-        if (scrollView.contentSize.height > scrollView.frame.size.height) {
+        //是否主视图内 scrollview的contentSize.height 小于 自身height
+        BOOL flag = NO;
+        if (scrollView) {
             
-            _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, scrollView.contentSize.height + _headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT);
+            scrollView.scrollEnabled = NO;
             
-            if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
-                scrollView.contentOffset = CGPointZero;
-            }else {
-                if (index == _selectIndex) {
-                    _bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + _headerView.frame.size.height);
-                }
-            }
+            if (scrollView.contentSize.height > scrollView.frame.size.height) {
                 
+                _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, scrollView.contentSize.height + _headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT);
+                
+                if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
+                    scrollView.contentOffset = CGPointZero;
+                }else {
+                    if (index == _selectIndex) {
+                        _bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + _headerView.frame.size.height);
+                    }
+                }
+                
+            }else{
+                flag = YES;
+            }
+            
         }else{
             flag = YES;
         }
         
-    }else{
-        flag = YES;
-    }
-    
-    if (flag) {
-        CGRect menuViewRect = _slideMenuView.frame;
-        menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
-        _slideMenuView.frame = menuViewRect;
-        
-        CGRect slideViewRect = _slideView.frame;
-        slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
-        _slideView.frame = slideViewRect;
-        
-        _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_slideView.frame));
-        if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
+        if (flag) {
+            CGRect menuViewRect = _slideMenuView.frame;
+            menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
+            _slideMenuView.frame = menuViewRect;
             
-        }else{
-            if (index == _selectIndex) {
-                _bgScrollView.contentOffset = CGPointMake(0, _headerView.frame.size.height);
+            CGRect slideViewRect = _slideView.frame;
+            slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
+            _slideView.frame = slideViewRect;
+            
+            _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_slideView.frame));
+            if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
+                
+            }else{
+                if (index == _selectIndex) {
+                    _bgScrollView.contentOffset = CGPointMake(0, _headerView.frame.size.height);
+                }
             }
         }
     }
