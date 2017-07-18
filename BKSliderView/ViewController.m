@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "BKSlideView.h"
+#import "ExampleViewController.h"
 
 @interface ViewController ()<BKSlideViewDelegate>
 {
@@ -29,9 +30,8 @@
     
     NSMutableArray * vcArray = [NSMutableArray array];
     for (int i = 0 ; i<10; i++) {
-        UIViewController * vc = [[UIViewController alloc]init];
+        ExampleViewController * vc = [[ExampleViewController alloc]init];
         vc.title = [NSString stringWithFormat:@"第%d个",i];
-        vc.view.backgroundColor = [UIColor colorWithRed:arc4random()%255/255.0f green:arc4random()%255/255.0f blue:arc4random()%255/255.0f alpha:1];
         [vcArray addObject:vc];
     }
     
@@ -46,7 +46,8 @@
 
 -(void)slideView:(BKSlideView*)slideView createVCWithIndex:(NSInteger)index
 {
-    
+    ExampleViewController * vc = _slideView.vcArray[index];
+    [vc createUIWithIndex:index];
 }
 
 @end

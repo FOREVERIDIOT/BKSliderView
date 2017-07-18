@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D07EDA61F1D9486006F9794 /* ExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D07EDA51F1D9486006F9794 /* ExampleViewController.m */; };
 		2A1B3CD11C95735700D04EFF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CD01C95735700D04EFF /* main.m */; };
 		2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CD31C95735700D04EFF /* AppDelegate.m */; };
 		2A1B3CDC1C95735700D04EFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDB1C95735700D04EFF /* Assets.xcassets */; };
@@ -16,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D07EDA41F1D9486006F9794 /* ExampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleViewController.h; sourceTree = "<group>"; };
+		1D07EDA51F1D9486006F9794 /* ExampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleViewController.m; sourceTree = "<group>"; };
 		2A1B3CCC1C95735700D04EFF /* BKSliderView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKSliderView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A1B3CD01C95735700D04EFF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2A1B3CD21C95735700D04EFF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -64,6 +67,8 @@
 				2A1B3CD31C95735700D04EFF /* AppDelegate.m */,
 				2A1B3CF51C9573E400D04EFF /* ViewController.h */,
 				2A1B3CF61C9573E400D04EFF /* ViewController.m */,
+				1D07EDA41F1D9486006F9794 /* ExampleViewController.h */,
+				1D07EDA51F1D9486006F9794 /* ExampleViewController.m */,
 				2A1B3CDB1C95735700D04EFF /* Assets.xcassets */,
 				2A1B3CDD1C95735700D04EFF /* LaunchScreen.storyboard */,
 				2A1B3CE01C95735700D04EFF /* Info.plist */,
@@ -161,6 +166,7 @@
 			files = (
 				2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */,
 				883B55011DF94362002A623C /* BKSlideView.m in Sources */,
+				1D07EDA61F1D9486006F9794 /* ExampleViewController.m in Sources */,
 				2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */,
 				2A1B3CD11C95735700D04EFF /* main.m in Sources */,
 			);

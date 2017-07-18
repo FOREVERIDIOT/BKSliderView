@@ -124,15 +124,78 @@
     
     [_bgScrollView addSubview:_headerView];
     
-    CGRect menuViewRect = _slideMenuView.frame;
-    menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
-    _slideMenuView.frame = menuViewRect;
+    [self changeBgScrollContentSizeWithNowIndex:_selectIndex];
+}
+
+
+/**
+ 获取主视图内的scrollview
+
+ @return 主视图内的scrollview
+ */
+-(UIScrollView*)getFrontScrollViewWithNowIndex:(NSInteger)index
+{
+    UIViewController * vc = _vcArray[index];
     
-    CGRect slideViewRect = _slideView.frame;
-    slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
-    _slideView.frame = slideViewRect;
+    __block UIScrollView * scrollView;
+    [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[UIScrollView class]]) {
+            scrollView = obj;
+        }
+    }];
     
-    _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_slideView.frame));
+    return scrollView;
+}
+
+/**
+ 根据主视图内容改变 bgScrollview 的 contentSize
+ */
+-(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index
+{
+    UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:index];
+    
+    //是否主视图内 scrollview的contentSize.height 小于 自身height
+    BOOL flag = NO;
+    if (scrollView) {
+        
+        scrollView.scrollEnabled = NO;
+        scrollView.showsVerticalScrollIndicator = NO;
+        _bgScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(_headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT, 0, 0, 0);
+        
+        if (scrollView.contentSize.height > scrollView.frame.size.height) {
+            
+            _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, scrollView.contentSize.height + _headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT);
+            
+            if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
+                scrollView.contentOffset = CGPointZero;
+            }else {
+                _bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + _headerView.frame.size.height);
+            }
+                
+        }else{
+            flag = YES;
+        }
+        
+    }else{
+        flag = YES;
+    }
+    
+    if (flag) {
+        CGRect menuViewRect = _slideMenuView.frame;
+        menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
+        _slideMenuView.frame = menuViewRect;
+        
+        CGRect slideViewRect = _slideView.frame;
+        slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
+        _slideView.frame = slideViewRect;
+        
+        _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_slideView.frame));
+        if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
+            
+        }else{
+            _bgScrollView.contentOffset = CGPointMake(0, _headerView.frame.size.height);
+        }
+    }
 }
 
 #pragma mark - 初始
@@ -165,36 +228,13 @@
     return self;
 }
 
--(void)setDelegate:(id<BKSlideViewDelegate>)delegate
-{
-    if (delegate) {
-        _delegate = delegate;
-        
-        NSIndexPath * indexPath = [NSIndexPath indexPathForItem:_selectIndex inSection:0];
-        UICollectionViewCell * cell = [self.slideView cellForItemAtIndexPath:indexPath];
-        if (cell) {
-            
-            UIViewController *vc = _vcArray[indexPath.item];
-            vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
-            [cell addSubview:vc.view];
-            
-            if ([_delegate respondsToSelector:@selector(slideView:createVCWithIndex:)]) {
-                if (![self.createIndexArr containsObject:indexPath]) {
-                    [self.createIndexArr addObject:indexPath];
-                    [_delegate slideView:self createVCWithIndex:_selectIndex];
-                }
-            }
-        }
-        
-        [self changeNowSelectIndex];
-    }
-}
-
 -(void)changeNowSelectIndex
 {
     if ([_delegate respondsToSelector:@selector(slideView:nowShowSelectIndex:)]) {
         [_delegate slideView:self nowShowSelectIndex:_selectIndex];
     }
+    
+    [self changeBgScrollContentSizeWithNowIndex:_selectIndex];
 }
 
 #pragma mark - 背景滚动视图
@@ -204,7 +244,6 @@
     if (!_bgScrollView) {
         _bgScrollView = [[UIScrollView alloc]initWithFrame:self.bounds];
         _bgScrollView.backgroundColor = [UIColor clearColor];
-        _bgScrollView.showsVerticalScrollIndicator = NO;
         _bgScrollView.showsHorizontalScrollIndicator = NO;
         _bgScrollView.delegate = self;
         _bgScrollView.clipsToBounds = NO;
@@ -362,6 +401,8 @@
     return cell;
 }
 
+//第一次创建时调用 changeNowSelectIndex 方法
+static bool firstCreateFlag = YES;
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
@@ -370,11 +411,18 @@
     vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
     [cell.contentView addSubview:vc.view];
     
-    if ([_delegate respondsToSelector:@selector(slideView:createVCWithIndex:)]) {
-        if (![self.createIndexArr containsObject:indexPath]) {
-            [self.createIndexArr addObject:indexPath];
+    if (![self.createIndexArr containsObject:indexPath]) {
+        [self.createIndexArr addObject:indexPath];
+        if ([_delegate respondsToSelector:@selector(slideView:createVCWithIndex:)]) {
             [_delegate slideView:self createVCWithIndex:indexPath.item];
         }
+    }
+    
+    if (firstCreateFlag) {
+        [self changeNowSelectIndex];
+        firstCreateFlag = NO;
+    }else{
+        [self changeBgScrollContentSizeWithNowIndex:indexPath.item];
     }
 }
 
@@ -552,11 +600,18 @@
         if (_headerView) {
             
             CGFloat contentOffSetY = _bgScrollView.contentOffset.y;
+            
+            UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:_selectIndex];
+            
             if (contentOffSetY > _headerView.frame.size.height) {
                 
                 CGRect menuViewRect = _slideMenuView.frame;
                 menuViewRect.origin.y = contentOffSetY;
                 _slideMenuView.frame = menuViewRect;
+                
+                if (scrollView) {
+                    scrollView.contentOffset = CGPointMake(0, contentOffSetY - _headerView.frame.size.height);
+                }
             }else{
                 
                 [_bgScrollView addSubview:_slideMenuView];
@@ -564,10 +619,16 @@
                 CGRect menuViewRect = _slideMenuView.frame;
                 menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
                 _slideMenuView.frame = menuViewRect;
+                
+                if (scrollView) {
+                    scrollView.contentOffset = CGPointZero;
+                }
             }
             
+            CGRect slideViewRect = _slideView.frame;
+            slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
+            _slideView.frame = slideViewRect;
         }
-        
     }
 }
 
@@ -599,7 +660,7 @@
             return;
         }
         
-        CGPoint point = [self convertPoint:_slideView.center toView:_slideView];
+        CGPoint point = [self convertPoint:self.center toView:_slideView];
         NSIndexPath * indexPath = [_slideView indexPathForItemAtPoint:point];
         NSInteger item = indexPath.item;
         
