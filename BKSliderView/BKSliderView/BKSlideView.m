@@ -128,7 +128,7 @@
     contentViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
     _contentView.frame = contentViewRect;
     
-    [self changeBgScrollContentSizeWithNowIndex:_selectIndex];
+    [self changeBgScrollContentSizeWithNowIndex:_selectIndex isScrollEnd:NO];
 }
 
 
@@ -151,10 +151,14 @@
     return scrollView;
 }
 
+
 /**
  根据主视图内容改变 bgScrollview 的 contentSize
+
+ @param index 第几页
+ @param isScrollEnd 是否滑动结束
  */
--(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index
+-(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index isScrollEnd:(BOOL)isScrollEnd
 {
     if (_headerView) {
         UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:index];
@@ -167,7 +171,11 @@
             
             if (scrollView.contentSize.height > scrollView.frame.size.height) {
                 
-                _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, scrollView.contentSize.height + _headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT);
+                CGFloat contentSizeHeight = scrollView.contentSize.height + _headerView.frame.size.height + SLIDE_MENU_VIEW_HEIGHT;
+                
+                if (contentSizeHeight > _bgScrollView.contentSize.height) {
+                    _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, contentSizeHeight);
+                }
                 
                 if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
                     scrollView.contentOffset = CGPointZero;
@@ -175,6 +183,10 @@
                     if (index == _selectIndex) {
                         _bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + _headerView.frame.size.height);
                     }
+                }
+                
+                if (isScrollEnd && contentSizeHeight != _bgScrollView.contentSize.height) {
+                    _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, contentSizeHeight);
                 }
                 
             }else{
@@ -187,13 +199,22 @@
         
         if (flag) {
             
-            _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_contentView.frame));
+            CGFloat contentSizeHeight = CGRectGetMaxY(_contentView.frame);
+            
+            if (contentSizeHeight > _bgScrollView.contentSize.height) {
+                _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, contentSizeHeight);
+            }
+            
             if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
                 
             }else{
                 if (index == _selectIndex) {
                     _bgScrollView.contentOffset = CGPointMake(0, _headerView.frame.size.height);
                 }
+            }
+            
+            if (isScrollEnd && contentSizeHeight != _bgScrollView.contentSize.height) {
+                _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, contentSizeHeight);
             }
         }
     }
@@ -257,7 +278,7 @@
         [_delegate slideView:self nowShowSelectIndex:_selectIndex];
     }
     
-    [self changeBgScrollContentSizeWithNowIndex:_selectIndex];
+    [self changeBgScrollContentSizeWithNowIndex:_selectIndex isScrollEnd:YES];
 }
 
 #pragma mark - 背景滚动视图
@@ -280,7 +301,7 @@
 
 -(void)initSlideMenuView
 {
-    _slideMenuView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _bgScrollView.frame.size.width, SLIDE_MENU_VIEW_HEIGHT)];
+    _slideMenuView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, _contentView.frame.size.width, SLIDE_MENU_VIEW_HEIGHT)];
     _slideMenuView.backgroundColor = [UIColor whiteColor];
     _slideMenuView.showsHorizontalScrollIndicator = NO;
     _slideMenuView.showsVerticalScrollIndicator = NO;
@@ -401,7 +422,7 @@
     layout.minimumLineSpacing = 0;
     layout.minimumInteritemSpacing = 0;
     
-    _slideView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SLIDE_MENU_VIEW_HEIGHT, _bgScrollView.frame.size.width, _bgScrollView.frame.size.height - SLIDE_MENU_VIEW_HEIGHT) collectionViewLayout:layout];
+    _slideView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SLIDE_MENU_VIEW_HEIGHT, _contentView.frame.size.width, _contentView.frame.size.height - SLIDE_MENU_VIEW_HEIGHT) collectionViewLayout:layout];
     _slideView.showsHorizontalScrollIndicator = NO;
     _slideView.showsVerticalScrollIndicator = NO;
     _slideView.delegate = self;
@@ -447,7 +468,7 @@ static bool firstCreateFlag = YES;
         [self changeNowSelectIndex];
         firstCreateFlag = NO;
     }else{
-        [self changeBgScrollContentSizeWithNowIndex:indexPath.item];
+        [self changeBgScrollContentSizeWithNowIndex:indexPath.item isScrollEnd:NO];
     }
 }
 
