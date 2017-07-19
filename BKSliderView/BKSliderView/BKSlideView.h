@@ -69,12 +69,17 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  */
 @property (nonatomic,strong) UIScrollView * bgScrollView;
 
-#pragma mark - 头视图
+#pragma mark - 视图
 
 /**
  头视图
  */
 @property (nonatomic,strong) UIView * headerView;
+
+/**
+ 内容视图 (包含title滑动视图和title滑动视图底部线和主视图)
+ */
+@property (nonatomic,strong) UIView * contentView;
 
 #pragma mark - 显示的选取View
 
@@ -82,6 +87,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *  title滑动视图
  */
 @property (nonatomic,strong) UIScrollView * slideMenuView;
+
+/**
+ *  title滑动视图底部线
+ */
+@property (nonatomic,strong) UIImageView * slideMenuBottomLine;
 
 /**
  *     选中的View

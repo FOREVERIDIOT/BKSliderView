@@ -124,6 +124,10 @@
     
     [_bgScrollView addSubview:_headerView];
     
+    CGRect contentViewRect = _contentView.frame;
+    contentViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
+    _contentView.frame = contentViewRect;
+    
     [self changeBgScrollContentSizeWithNowIndex:_selectIndex];
 }
 
@@ -182,15 +186,8 @@
         }
         
         if (flag) {
-            CGRect menuViewRect = _slideMenuView.frame;
-            menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
-            _slideMenuView.frame = menuViewRect;
             
-            CGRect slideViewRect = _slideView.frame;
-            slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
-            _slideView.frame = slideViewRect;
-            
-            _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_slideView.frame));
+            _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_contentView.frame));
             if (_bgScrollView.contentOffset.y < _headerView.frame.size.height) {
                 
             }else{
@@ -200,6 +197,36 @@
             }
         }
     }
+}
+
+#pragma mark - 内容视图
+
+-(UIView *)contentView
+{
+    if (!_contentView) {
+        _contentView = [[UIView alloc]initWithFrame:_bgScrollView.bounds];
+        _contentView.clipsToBounds = NO;
+        _contentView.backgroundColor = [UIColor clearColor];
+        
+        /**
+         *  title滑动视图
+         */
+        [self initSlideMenuView];
+        
+        if (!_slideMenuBottomLine) {
+            _slideMenuBottomLine = [[UIImageView alloc]initWithFrame:CGRectMake(0, _slideMenuView.frame.size.height - 0.5, _slideMenuView.frame.size.width, 0.5)];
+            _slideMenuBottomLine.backgroundColor = [UIColor clearColor];
+            [_slideMenuView addSubview:_slideMenuBottomLine];
+        }
+        
+        /**
+         *  滑动主视图
+         */
+        [self initSlideView];
+        
+        [_bgScrollView addSubview:_contentView];
+    }
+    return _contentView;
 }
 
 #pragma mark - 初始
@@ -214,19 +241,11 @@
         _vcArray = [NSArray arrayWithArray:vcArray];
 
         //背景滚动视图(竖直方向)
-        [self addSubview:self.bgScrollView];
+        [self bgScrollView];
+        //内容视图
+        [self contentView];
         
-        /**
-         *  title滑动视图
-         */
-        [self initSlideMenuView];
-        
-        /**
-         *  滑动主视图
-         */
-        [self initSlideView];
-        
-        _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_bgScrollView.frame));
+        _bgScrollView.contentSize = CGSizeMake(_bgScrollView.frame.size.width, CGRectGetMaxY(_contentView.frame));
     }
     
     return self;
@@ -252,6 +271,7 @@
         _bgScrollView.showsVerticalScrollIndicator = NO;
         _bgScrollView.delegate = self;
         _bgScrollView.clipsToBounds = NO;
+        [self addSubview:_bgScrollView];
     }
     return _bgScrollView;
 }
@@ -265,7 +285,7 @@
     _slideMenuView.showsHorizontalScrollIndicator = NO;
     _slideMenuView.showsVerticalScrollIndicator = NO;
     _slideMenuView.clipsToBounds = NO;
-    [_bgScrollView addSubview:_slideMenuView];
+    [_contentView addSubview:_slideMenuView];
     
     [self initData];
     [self initAnyButton];
@@ -388,7 +408,7 @@
     _slideView.dataSource = self;
     _slideView.backgroundColor = [UIColor clearColor];
     _slideView.pagingEnabled = YES;
-    [_bgScrollView addSubview:_slideView];
+    [_contentView addSubview:_slideView];
     
     [_slideView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"slideView"];
     
@@ -610,29 +630,23 @@ static bool firstCreateFlag = YES;
             
             if (contentOffSetY > _headerView.frame.size.height) {
                 
-                CGRect menuViewRect = _slideMenuView.frame;
-                menuViewRect.origin.y = contentOffSetY;
-                _slideMenuView.frame = menuViewRect;
+                CGRect contentViewRect = _contentView.frame;
+                contentViewRect.origin.y = contentOffSetY;
+                _contentView.frame = contentViewRect;
                 
                 if (scrollView) {
                     scrollView.contentOffset = CGPointMake(0, contentOffSetY - _headerView.frame.size.height);
                 }
             }else{
                 
-                [_bgScrollView addSubview:_slideMenuView];
-                
-                CGRect menuViewRect = _slideMenuView.frame;
-                menuViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
-                _slideMenuView.frame = menuViewRect;
+                CGRect contentViewRect = _contentView.frame;
+                contentViewRect.origin.y = CGRectGetMaxY(_headerView.frame);
+                _contentView.frame = contentViewRect;
                 
                 if (scrollView) {
                     scrollView.contentOffset = CGPointZero;
                 }
             }
-            
-            CGRect slideViewRect = _slideView.frame;
-            slideViewRect.origin.y = CGRectGetMaxY(_slideMenuView.frame);
-            _slideView.frame = slideViewRect;
         }
     }
 }
