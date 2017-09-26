@@ -15,6 +15,9 @@
 #define NORMAL_TITLE_COLOR [UIColor colorWithRed:153.0/255.0f green:153.0/255.0f blue:153.0/255.0f alpha:0.6]
 #define SELECT_TITLE_COLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:1]
 
+#define POINTS_FROM_PIXELS(__PIXELS) (__PIXELS / [[UIScreen mainScreen] scale])
+#define ONE_PIXEL POINTS_FROM_PIXELS(1.0)
+
 #import <UIKit/UIKit.h>
 @class BKSlideView;
 
@@ -30,7 +33,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 
 /**
  创建对应index的VC
-
+ 
  @param slideView BKSlideView
  @param index     索引 从0开始
  */
@@ -40,11 +43,51 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 
 /**
  目前所在VC的index
-
+ 
  @param slideView BKSlideView
  @param index     索引 从0开始
  */
 -(void)slideView:(BKSlideView*)slideView nowShowSelectIndex:(NSInteger)index;
+
+/**
+ 即将离开VC的index
+ 
+ @param slideView BKSlideView
+ @param index 即将显示的索引 从0开始
+ */
+-(void)slideView:(BKSlideView *)slideView nowLeaveIndex:(NSInteger)index;
+
+/**
+ 滑动竖向滚动视图
+ 
+ @param slideView BKSlideView
+ @param bgScrollView 竖向滚动视图
+ */
+-(void)slideView:(BKSlideView *)slideView didScrollBgScrollView:(UIScrollView*)bgScrollView;
+
+/**
+ 开始滑竖向滚动视图
+ 
+ @param slideView BKSlideView
+ @param bgScrollView 竖向滚动视图
+ */
+-(void)slideView:(BKSlideView *)slideView willBeginDraggingBgScrollView:(UIScrollView*)bgScrollView;
+
+/**
+ 竖向滚动视图惯性结束
+ 
+ @param slideView BKSlideView
+ @param bgScrollView 竖向滚动视图
+ */
+-(void)slideView:(BKSlideView *)slideView didEndDeceleratingBgScrollView:(UIScrollView*)bgScrollView;
+
+/**
+ 竖向滚动视图停止拖拽
+ 
+ @param slideView BKSlideView
+ @param bgScrollView 竖向滚动视图
+ */
+-(void)slideView:(BKSlideView *)slideView didEndDraggingBgScrollView:(UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 
 @end
 
@@ -81,7 +124,7 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  */
 @property (nonatomic,strong) UIView * contentView;
 
-#pragma mark - 显示的选取View
+#pragma mark - 滑动title视图
 
 /**
  *  title滑动视图
@@ -89,14 +132,14 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,strong) UIScrollView * slideMenuView;
 
 /**
+ *  title滑动视图高度修改 默认 45
+ */
+@property (nonatomic,assign) CGFloat slideMenuViewHeight;
+
+/**
  *  title滑动视图底部线
  */
 @property (nonatomic,strong) UIImageView * slideMenuBottomLine;
-
-/**
- *     选中的View
- */
-@property (nonatomic,strong) UIView * selectView;
 
 /**
  *     从1开始 目前选中的第几个,也可以赋值更改选中(超过数组最大值无效)
@@ -107,6 +150,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *     menuTitle 宽度大小 设置后所有menuTitle的宽度为设置宽度
  */
 @property (nonatomic,assign) CGFloat menuTitleWidth;
+
+/**
+ title滑动视图 标题行数 默认1行
+ */
+@property (nonatomic,assign) CGFloat menuTitleNumberOfLine;
 
 /**
  *     选中的格式 默认为  SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeColor
@@ -130,6 +178,23 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  */
 @property (nonatomic,strong) UIColor * selectMenuTitleColor;
 
+#pragma mark - 选中色块view
+
+/**
+ *     选中的View
+ */
+@property (nonatomic,strong) UIView * selectView;
+
+/**
+ 选中view的高
+ */
+@property (nonatomic,assign) CGFloat selectViewHeight;
+
+/**
+ 选中view对滑动title视图底的高
+ */
+@property (nonatomic,assign) CGFloat selectViewDistance;
+
 #pragma mark - 滑动主视图
 
 /**
@@ -148,7 +213,6 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
  *     移动 SlideView 至第 index 页 从0开始
  */
 -(void)rollSlideViewToIndexView:(NSInteger)index;
-
 
 @end
 
