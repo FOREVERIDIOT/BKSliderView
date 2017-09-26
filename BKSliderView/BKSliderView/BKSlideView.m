@@ -176,7 +176,7 @@
         CGRect frame = _selectView.frame;
         frame.size.height = _selectViewHeight;
         frame.origin.y = _slideMenuViewHeight - _selectViewHeight - _selectViewDistance;
-        _slideView.frame = frame;
+        _selectView.frame = frame;
         
         _selectView.layer.cornerRadius = _selectView.frame.size.height/2.0f;
     }
@@ -189,7 +189,7 @@
         
         CGRect frame = _selectView.frame;
         frame.origin.y = _slideMenuViewHeight - _selectViewHeight - _selectViewDistance;
-        _slideView.frame = frame;
+        _selectView.frame = frame;
     }
 }
 
