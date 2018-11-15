@@ -31,13 +31,26 @@
     [self.view addSubview:self.tableView];
 }
 
+-(void)changeContentFrame
+{
+    _tableView.frame = self.view.bounds;
+    [_tableView reloadData];
+}
+
+#pragma mark - UITableView
+
 -(UITableView*)tableView
 {
     if (!_tableView) {
         _tableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
-        
+        if (@available(iOS 11.0, *)) {
+            _tableView.estimatedRowHeight = 0;
+            _tableView.estimatedSectionFooterHeight = 0;
+            _tableView.estimatedSectionHeaderHeight = 0;
+            _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
         _tableView.tableFooterView = [UIView new];
     }
     return _tableView;
@@ -59,6 +72,11 @@
     cell.textLabel.text = [NSString stringWithFormat:@"%ld",indexPath.row];
     
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end

@@ -5,114 +5,117 @@
 //  Copyright © 2016年 BIKE. All rights reserved.
 //
 
-#define SLIDE_MENU_VIEW_HEIGHT 45
-#define DEFAULT_SELECTVIEW_HEIGHT 2
-
-#define TITLE_ADD_GAP 30
-
-#define NORMAL_TITLE_FONT 14.0f
-
-#define NORMAL_TITLE_COLOR [UIColor colorWithRed:153.0/255.0f green:153.0/255.0f blue:153.0/255.0f alpha:0.6]
-#define SELECT_TITLE_COLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:1]
-
-#define POINTS_FROM_PIXELS(__PIXELS) (__PIXELS / [[UIScreen mainScreen] scale])
-#define ONE_PIXEL POINTS_FROM_PIXELS(1.0)
-
 #import <UIKit/UIKit.h>
+#import "BKSlideMenuView.h"
 @class BKSlideView;
-
-typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
-    SlideMenuViewSelectStyleNone = 0,                     //无效果
-    SlideMenuViewSelectStyleHaveLine = 1 << 0,            //有线
-    SlideMenuViewSelectStyleChangeColor = 1 << 1         //选中的字体颜色会有变化
-};
 
 @protocol BKSlideViewDelegate <NSObject>
 
 @required
 
 /**
- 创建对应index的VC
+ 创建对应index的vc
  
  @param slideView BKSlideView
  @param index     索引 从0开始
  */
--(void)slideView:(BKSlideView*)slideView createVCWithIndex:(NSInteger)index;
+-(void)slideView:(BKSlideView*)slideView createViewControllerWithIndex:(NSUInteger)index;
 
 @optional
 
 /**
- 目前所在VC的index
- 
- @param slideView BKSlideView
- @param index     索引 从0开始
+ 准备离开index
+
+ @param leaveIndex 离开的index
  */
--(void)slideView:(BKSlideView*)slideView nowShowSelectIndex:(NSInteger)index;
+-(void)slideView:(BKSlideView*)slideView leaveIndex:(NSUInteger)leaveIndex;
 
 /**
- 即将离开VC的index
- 
+ 切换index
+
  @param slideView BKSlideView
- @param index 即将显示的索引 从0开始
+ @param switchIndex 切换的index
+ @param leaveIndex 离开的index
  */
--(void)slideView:(BKSlideView *)slideView nowLeaveIndex:(NSInteger)index;
+-(void)slideView:(BKSlideView*)slideView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex;
 
 /**
- 滑动竖向滚动视图
- 
+ 修改详情内容视图的frame
+
  @param slideView BKSlideView
- @param bgScrollView 竖向滚动视图
  */
--(void)slideView:(BKSlideView *)slideView didScrollBgScrollView:(UIScrollView*)bgScrollView;
+-(void)slideViewDidChangeFrame:(BKSlideView*)slideView;
+
+#pragma mark - 主视图滑动代理
 
 /**
- 开始滑竖向滚动视图
+ 滑动主视图
  
  @param slideView BKSlideView
- @param bgScrollView 竖向滚动视图
+ @param bgScrollView 主视图
  */
--(void)slideView:(BKSlideView *)slideView willBeginDraggingBgScrollView:(UIScrollView*)bgScrollView;
+-(void)slideView:(BKSlideView*)slideView didScrollBgScrollView:(UIScrollView*)bgScrollView;
 
 /**
- 竖向滚动视图惯性结束
+ 开始滑动主视图
  
  @param slideView BKSlideView
- @param bgScrollView 竖向滚动视图
+ @param bgScrollView 主视图
  */
--(void)slideView:(BKSlideView *)slideView didEndDeceleratingBgScrollView:(UIScrollView*)bgScrollView;
+-(void)slideView:(BKSlideView*)slideView willBeginDraggingBgScrollView:(UIScrollView*)bgScrollView;
 
 /**
- 竖向滚动视图停止拖拽
+ 主视图惯性结束
  
  @param slideView BKSlideView
- @param bgScrollView 竖向滚动视图
+ @param bgScrollView 主视图
  */
--(void)slideView:(BKSlideView *)slideView didEndDraggingBgScrollView:(UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
+-(void)slideView:(BKSlideView*)slideView didEndDeceleratingBgScrollView:(UIScrollView*)bgScrollView;
+
+/**
+ 主视图停止拖拽
+ 
+ @param slideView BKSlideView
+ @param bgScrollView 主视图
+ */
+-(void)slideView:(BKSlideView*)slideView didEndDraggingBgScrollView:(UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 
 @end
 
 @interface BKSlideView : UIView
 
-@property (nonatomic,assign) id<BKSlideViewDelegate> delegate;
-
 /**
- 刷新slideMenuView
+ 初始化方法
+
+ @param frame 坐标大小
+ @param delegate 代理
+ @param viewControllers 展示的vc数组 (以vc的title作为创建标志符)
+ @return BKSlideView
  */
--(void)reloadMenuView;
+-(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKSlideViewDelegate>)delegate viewControllers:(NSArray*)viewControllers;
 
 /**
- viewController数组
+ 代理
  */
-@property (nonatomic,strong) NSArray * vcArray;
+@property (nonatomic,weak) id<BKSlideViewDelegate> delegate;
+/**
+ 展示的vc数组 (以vc的title作为创建标志符)
+ */
+@property (nonatomic,copy) NSArray<UIViewController*> * viewControllers;
+/**
+ 选中索引 从0开始
+ (selectIndex >= [viewControllers count] - 1 时 selectIndex = [viewControllers count] - 1)
+ */
+@property (nonatomic,assign) NSUInteger selectIndex;
 
-#pragma mark - 背景滚动视图
+#pragma mark - 主视图
 
 /**
- 背景滚动视图(竖直方向)
+ 主视图（竖直滚动）
  */
 @property (nonatomic,strong) UIScrollView * bgScrollView;
 
-#pragma mark - 视图
+#pragma mark - 第二级视图
 
 /**
  头视图
@@ -120,99 +123,23 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuViewSelectStyle) {
 @property (nonatomic,strong) UIView * headerView;
 
 /**
- 内容视图 (包含title滑动视图和title滑动视图底部线和主视图)
+ 内容视图(包含导航和内容)
  */
 @property (nonatomic,strong) UIView * contentView;
 
-#pragma mark - 滑动title视图
+#pragma mark - 导航视图（第三级）
 
 /**
- *  title滑动视图
+ 导航视图
  */
-@property (nonatomic,strong) UIScrollView * slideMenuView;
+@property (nonatomic,strong) BKSlideMenuView * menuView;
+
+#pragma mark - 内容视图（第三级）
 
 /**
- *  title滑动视图高度修改 默认 45
+ 详情内容视图
  */
-@property (nonatomic,assign) CGFloat slideMenuViewHeight;
-
-/**
- *  title滑动视图底部线
- */
-@property (nonatomic,strong) UIImageView * slideMenuBottomLine;
-
-/**
- *     从1开始 目前选中的第几个,也可以赋值更改选中(超过数组最大值无效)
- */
-@property (nonatomic,assign) NSInteger selectIndex;
-
-/**
- *     menuTitle 宽度大小 设置后所有menuTitle的宽度为设置宽度
- */
-@property (nonatomic,assign) CGFloat menuTitleWidth;
-
-/**
- title滑动视图 标题行数 默认1行
- */
-@property (nonatomic,assign) CGFloat menuTitleNumberOfLine;
-
-/**
- *     选中的格式 默认为  SlideMenuViewSelectStyleHaveLine | SlideMenuViewSelectStyleChangeColor
- */
-@property (nonatomic,assign) BKSlideMenuViewSelectStyle slideMenuViewSelectStyle;
-
-/**
- *     未选中的Title 的字号
- */
-@property (nonatomic,strong) UIFont * normalMenuTitleFont;
-
-/**
- *     未选中的Title字 的颜色
- *     设置格式必须是 [UIColor colorWithRed:(CGFloat) green:(CGFloat) blue:(CGFloat) alpha:(CGFloat)]
- */
-@property (nonatomic,strong) UIColor * normalMenuTitleColor;
-
-/**
- *     选中的Title字 的颜色
- *     设置格式必须是 [UIColor colorWithRed:(CGFloat) green:(CGFloat) blue:(CGFloat) alpha:(CGFloat)]
- */
-@property (nonatomic,strong) UIColor * selectMenuTitleColor;
-
-#pragma mark - 选中色块view
-
-/**
- *     选中的View
- */
-@property (nonatomic,strong) UIView * selectView;
-
-/**
- 选中view的高
- */
-@property (nonatomic,assign) CGFloat selectViewHeight;
-
-/**
- 选中view对滑动title视图底的高
- */
-@property (nonatomic,assign) CGFloat selectViewDistance;
-
-#pragma mark - 滑动主视图
-
-/**
- *  滑动主视图
- */
-@property (nonatomic,strong) UICollectionView * slideView;
-
-#pragma mark - 方法
-
-/**
- *     创建方法
- */
--(instancetype)initWithFrame:(CGRect)frame vcArray:(NSArray*)vcArray;
-
-/**
- *     移动 SlideView 至第 index 页 从0开始
- */
--(void)rollSlideViewToIndexView:(NSInteger)index;
+@property (nonatomic,strong) UICollectionView * collectionView;
 
 @end
 

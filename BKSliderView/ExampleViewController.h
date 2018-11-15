@@ -11,5 +11,6 @@
 @interface ExampleViewController : UIViewController
 
 -(void)createUIWithIndex:(NSInteger)index;
+-(void)changeContentFrame;
 
 @end
