@@ -80,6 +80,16 @@
  */
 -(void)slideView:(BKSlideView*)slideView didEndDraggingBgScrollView:(UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 
+#pragma mark - 导航视图刷新UI代理
+
+/**
+ 导航视图刷新UI代理
+
+ @param slideView BKSlideView
+ @param menuView 导航视图
+ */
+-(void)slideView:(BKSlideView *)slideView refreshMenuUIView:(BKSlideMenuView*)menuView;
+
 @end
 
 @interface BKSlideView : UIView

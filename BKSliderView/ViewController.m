@@ -70,6 +70,7 @@ NS_INLINE CGFloat get_system_nav_height() {
     self.slideView.menuView.menuNumberOfLines = 2;
     self.slideView.menuView.bk_height = 70;
     self.slideView.selectIndex = 5;
+//    self.slideView.menuView.menuTypesetting = BKSlideMenuTypesettingEqualWidth;
     [self.view addSubview:self.slideView];
     
     UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];

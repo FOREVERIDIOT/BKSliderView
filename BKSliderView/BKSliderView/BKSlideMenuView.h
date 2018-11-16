@@ -16,6 +16,11 @@ typedef NS_OPTIONS(NSUInteger, BKSlideMenuSelectStyle) {
     BKSlideMenuSelectStyleChangeFont = 1 << 2          //选中的字体大小会有变化
 };
 
+typedef NS_ENUM(NSUInteger, BKSlideMenuTypesetting) {
+    BKSlideMenuTypesettingEqualSpace = 0,              //间距相等
+    BKSlideMenuTypesettingEqualWidth                   //menu等宽
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BKSlideMenuView : UIView
@@ -51,7 +56,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 导航视图设置
 
 /**
- 间距 默认30
+ menu排版 默认BKSlideMenuTypesettingEqualSpace
+ 选BKSlideMenuTypesettingEqualSpace时参数menuSpace有效
+ 选BKSlideMenuTypesettingEqualWidth时 例menu有3个时menu的宽为BKSlideMenuView.width/3 间距为0
+ */
+@property (nonatomic,assign) BKSlideMenuTypesetting menuTypesetting;
+/**
+ 间距 默认20
  */
 @property (nonatomic,assign) CGFloat menuSpace;
 /**
@@ -94,6 +105,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,copy) void (^switchSelectIndexCompleteCallBack)(void);
 
+#pragma mark - 导航视图刷新回调
+
+@property (nonatomic,copy) void (^refreshMenuUICallBack)(BKSlideMenuView * menuView);
+
 #pragma mark - 滑动slideView的方法
 
 /**
@@ -102,6 +117,15 @@ NS_ASSUME_NONNULL_BEGIN
  @param collectionView slideView
  */
 -(void)scrollCollectionView:(UICollectionView*)collectionView;
+
+#pragma mark - 获取可见的menu
+
+/**
+ 获取可见的menu
+
+ @return menu数组
+ */
+-(NSArray<BKSlideMenu*>*)getVisibleMenu;
 
 @end
 

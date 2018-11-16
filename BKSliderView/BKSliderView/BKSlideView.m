@@ -246,6 +246,11 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
         [_menuView setSwitchSelectIndexCompleteCallBack:^{
             weakSelf.isTapMenu = NO;
         }];
+        [_menuView setRefreshMenuUICallBack:^(BKSlideMenuView * _Nonnull menuView) {
+            if ([weakSelf.delegate respondsToSelector:@selector(slideView:refreshMenuUIView:)]) {
+                [weakSelf.delegate slideView:weakSelf refreshMenuUIView:menuView];
+            }
+        }];
     }
     return _menuView;
 }

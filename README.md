@@ -96,4 +96,5 @@ BKSlideView * slideView = [[BKSlideView alloc] initWithFrame:(CGRect) delegate:(
 ```
 1.0 第一版完成
 1.1 第一版太乱，更新成第二版
+1.1 添加menu排版 等间距|等宽
 ```

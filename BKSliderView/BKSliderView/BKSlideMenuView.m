@@ -65,6 +65,12 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 
 #pragma mark - 导航视图设置
 
+-(void)setMenuTypesetting:(BKSlideMenuTypesetting)menuTypesetting
+{
+    _menuTypesetting = menuTypesetting;
+    [self reloadContentView];
+}
+
 -(void)setMenuSpace:(CGFloat)menuSpace
 {
     _menuSpace = menuSpace;
@@ -112,8 +118,10 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 {
     if (_menuSelectStyle & BKSlideMenuSelectStyleChangeFont) {
         _selectMenuTitleFontSize = selectMenuTitleFontSize;
-        [self reloadContentView];
+    }else {
+        _selectMenuTitleFontSize = self.normalMenuTitleFontSize;
     }
+    [self reloadContentView];
 }
 
 -(void)setNormalMenuTitleColor:(UIColor *)normalMenuTitleColor
@@ -165,7 +173,8 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 
 -(void)initData
 {
-    self.menuSpace = 30;
+    self.menuTypesetting = BKSlideMenuTypesettingEqualSpace;
+    self.menuSpace = 20;
     self.menuNumberOfLines = 1;
     self.menuSelectStyle = BKSlideMenuSelectStyleDisplayLine | BKSlideMenuSelectStyleChangeColor | BKSlideMenuSelectStyleChangeFont;
     self.normalMenuTitleFontSize = 14;
@@ -229,20 +238,31 @@ const float kSelectViewAnimateTimeInterval = 0.25;
         BKSlideTotalMenuPropertyModel * model = [[BKSlideTotalMenuPropertyModel alloc] init];
         model.color = color;
         model.font = font;
-        model.rect = CGRectMake(CGRectGetMaxX(lastRect) + self.menuSpace, 0, width, self.contentView.bk_height);
+        model.titleWidth = width;
+        if (self.menuTypesetting == BKSlideMenuTypesettingEqualSpace) {
+            model.rect = CGRectMake(CGRectGetMaxX(lastRect) + self.menuSpace, 0, width, self.contentView.bk_height);
+        }else {
+            model.rect = CGRectMake(CGRectGetMaxX(lastRect), 0, self.contentView.bk_width/[self.titles count], self.contentView.bk_height);
+        }
         [self.menuModel.total addObject:model];
     
         lastRect = model.rect;
     }
-    self.contentView.contentSize = CGSizeMake(CGRectGetMaxX(lastRect) + self.menuSpace, self.contentView.bk_height);
-    
-    CGFloat maxOffsetX = self.contentView.contentSize.width - self.contentView.bk_width;
-    if (self.contentView.contentOffset.x > maxOffsetX) {
-        self.contentView.contentOffset = CGPointMake(maxOffsetX, self.contentView.contentOffset.y);
+    if (self.menuTypesetting == BKSlideMenuTypesettingEqualSpace) {
+        self.contentView.contentSize = CGSizeMake(CGRectGetMaxX(lastRect) + self.menuSpace, self.contentView.bk_height);
+        
+        CGFloat maxOffsetX = self.contentView.contentSize.width - self.contentView.bk_width;
+        if (maxOffsetX > 0 && self.contentView.contentOffset.x > maxOffsetX) {
+            self.contentView.contentOffset = CGPointMake(maxOffsetX, self.contentView.contentOffset.y);
+        }
     }
     
     [self displayMenu];
     [self adjustSelectViewPosition];
+    
+    if (self.refreshMenuUICallBack) {
+        self.refreshMenuUICallBack(self);
+    }
 }
 
 #pragma mark - 导航内容视图中标题
@@ -420,8 +440,9 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     [self.menuModel.visible enumerateObjectsUsingBlock:^(BKSlideMenu * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (obj.displayIndex == self.selectIndex) {
             [UIView animateWithDuration:kSelectViewAnimateTimeInterval animations:^{
-                self.selectView.bk_x = obj.bk_x;
-                self.selectView.bk_width = obj.bk_width;
+                BKSlideTotalMenuPropertyModel * model = self.menuModel.total[obj.displayIndex];
+                self.selectView.bk_width = model.titleWidth;
+                self.selectView.bk_centerX = obj.bk_centerX;
                 //修改了selectView的位置后 修改menuView的偏移量
                 [self calcScrollContentOffsetAccordingToSelectViewPosition];
             }];
@@ -514,12 +535,19 @@ const float kSelectViewAnimateTimeInterval = 0.25;
         BKSlideTotalMenuPropertyModel * model = self.menuModel.total[i];
         //大小
         CGFloat width = [title calculateSizeWithUIHeight:self.contentView.bk_height font:model.font].width;
-        model.rect = CGRectMake(CGRectGetMaxX(lastRect) + self.menuSpace, 0, width, self.contentView.bk_height);
+        model.titleWidth = width;
+        if (self.menuTypesetting == BKSlideMenuTypesettingEqualSpace) {
+            model.rect = CGRectMake(CGRectGetMaxX(lastRect) + self.menuSpace, 0, width, self.contentView.bk_height);
+        }else {
+            model.rect = CGRectMake(CGRectGetMaxX(lastRect), 0, self.contentView.bk_width/[self.titles count], self.contentView.bk_height);
+        }
         [self.menuModel.total replaceObjectAtIndex:i withObject:model];
 
         lastRect = model.rect;
     }
-    self.contentView.contentSize = CGSizeMake(CGRectGetMaxX(lastRect) + self.menuSpace, self.contentView.bk_height);
+    if (self.menuTypesetting == BKSlideMenuTypesettingEqualSpace) {
+        self.contentView.contentSize = CGSizeMake(CGRectGetMaxX(lastRect) + self.menuSpace, self.contentView.bk_height);
+    }
     //赋值
     [self.menuModel.visible enumerateObjectsUsingBlock:^(BKSlideMenu * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         BKSlideTotalMenuPropertyModel * model = self.menuModel.total[obj.displayIndex];
@@ -532,13 +560,13 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     BKSlideTotalMenuPropertyModel * new_fromModel = self.menuModel.total[fromIndex];
     BKSlideTotalMenuPropertyModel * new_toModel = self.menuModel.total[toIndex];
     
-    CGFloat fromX = new_fromModel.rect.origin.x;
-    CGFloat fromWidth = new_fromModel.rect.size.width;
-    CGFloat toX = new_toModel.rect.origin.x;
-    CGFloat toWidth = new_toModel.rect.size.width;
+    CGFloat fromCenterX = CGRectGetMidX(new_fromModel.rect);
+    CGFloat fromWidth = new_fromModel.titleWidth;
+    CGFloat toCenterX = CGRectGetMidX(new_toModel.rect);
+    CGFloat toWidth = new_toModel.titleWidth;
     
-    self.selectView.bk_x = fromX + (toX - fromX) * scale;
     self.selectView.bk_width = (toWidth - fromWidth) * scale + fromWidth;
+    self.selectView.bk_centerX = fromCenterX + (toCenterX - fromCenterX) * scale;
 }
 
 #pragma mark - 根据选中线的位置计算滑动偏移量
@@ -568,6 +596,18 @@ const float kSelectViewAnimateTimeInterval = 0.25;
         }
         [self.contentView setContentOffset:CGPointMake(move, 0) animated:NO];
     }
+}
+
+#pragma mark - 获取可见的menu
+
+/**
+ 获取可见的menu
+ 
+ @return menu数组
+ */
+-(NSArray<BKSlideMenu*>*)getVisibleMenu
+{
+    return self.menuModel.visible;
 }
 
 @end

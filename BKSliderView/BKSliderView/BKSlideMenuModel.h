@@ -15,10 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BKSlideTotalMenuPropertyModel : NSObject
 
 /**
- 坐标
- */
-@property (nonatomic,assign) CGRect rect;
-/**
  字号
  */
 @property (nonatomic,strong) UIFont * font;
@@ -26,6 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
  颜色
  */
 @property (nonatomic,strong) UIColor * color;
+/**
+ 坐标
+ */
+@property (nonatomic,assign) CGRect rect;
+/**
+ menu的title宽
+ */
+@property (nonatomic,assign) CGFloat titleWidth;
 
 @end
 
