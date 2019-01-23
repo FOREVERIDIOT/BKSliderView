@@ -1,14 +1,14 @@
 //
-//  UIView+BKSlideView.m
+//  UIView+BKSliderView.m
 //  BKSliderView
 //
 //  Created by zhaolin on 2018/11/13.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "UIView+BKSlideView.h"
+#import "UIView+BKSliderView.h"
 
-@implementation UIView (BKSlideView)
+@implementation UIView (BKSliderView)
 
 #pragma mark - 附加属性
 

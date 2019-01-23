@@ -10,8 +10,6 @@
 
 @interface ExampleViewController ()<UITableViewDelegate,UITableViewDataSource>
 
-@property (nonatomic,assign) NSInteger index;
-
 @property (nonatomic,strong) UITableView * tableView;
 
 @end
@@ -25,9 +23,8 @@
     self.view.backgroundColor = [UIColor whiteColor];
 }
 
--(void)createUIWithIndex:(NSInteger)index
+-(void)firstDisplay
 {
-    self.index = index;
     [self.view addSubview:self.tableView];
 }
 

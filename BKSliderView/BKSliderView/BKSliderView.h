@@ -1,33 +1,18 @@
+//
+//  BKSliderView.h
+//
+//  Created on 16/2/2.
+//  Copyright © 2016年 BIKE. All rights reserved.
+//
 
-# BKSliderView 
+#import <UIKit/UIKit.h>
+#import "BKSliderMenuView.h"
+@class BKSliderView;
 
-## 介绍
-```
-很懒 就不介绍了 注释挺全 自己进项目里看吧
-```
+@protocol BKSliderViewDelegate <NSObject>
 
-## 例图
-![image](https://github.com/FOREVERIDIOT/BKSliderView/blob/master/Images/r.gif)
+@optional
 
-## 创建
-
-```objc
-1.创建viewController数组
-NSMutableArray * viewControllers = [NSMutableArray array];
-for (int i = 0; i<10; i++) {
-    UIViewController * vc = [[UIViewController alloc] init];
-    //title必须传 且 不能重复
-    vc.title = [NSString stringWithFormat:@"第%d个",i];
-    [viewControllers addObject:vc];
-}
-2.创建BKSliderView并添加到view上 遵循代理 赋值viewControllers
-BKSliderView * sliderView = [[BKSliderView alloc] initWithFrame:(CGRect) delegate:(id<BKSliderViewDelegate>) viewControllers:(NSArray *)];
-[view addSubview:sliderView];
-```
-
-## 可选代理
-
-```objc
 /**
  第一次显示对应index的vc
  
@@ -106,12 +91,79 @@ BKSliderView * sliderView = [[BKSliderView alloc] initWithFrame:(CGRect) delegat
  @param menuView 导航视图
  */
 -(void)sliderView:(BKSliderView *)sliderView refreshMenuUI:(BKSliderMenuView*)menuView;
-```
 
-## 版本
-```
-1.0 第一版完成
-1.1 第一版太乱，更新成第二版
-1.1 添加menu排版 等间距|等宽
-1.2 添加部分menu属性 自定义menu 优化显示和代理方法
-```
+@end
+
+@interface BKSliderView : UIView
+
+/**
+ 初始化方法
+
+ @param frame 坐标大小
+ @param delegate 代理
+ @param viewControllers 展示的vc数组 (以vc的title作为创建标志符)
+ @return BKSliderView
+ */
+-(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKSliderViewDelegate>)delegate viewControllers:(NSArray*)viewControllers;
+
+/**
+ 代理
+ */
+@property (nonatomic,weak) id<BKSliderViewDelegate> delegate;
+/**
+ 展示的vc数组 (以vc的title作为创建标志符)
+ */
+@property (nonatomic,copy) NSArray<UIViewController*> * viewControllers;
+/**
+ 选中索引 从0开始
+ (selectIndex >= [viewControllers count] - 1 时 selectIndex = [viewControllers count] - 1)
+ */
+@property (nonatomic,assign) NSUInteger selectIndex;
+
+#pragma mark - 主视图
+
+/**
+ 主视图（竖直滚动）
+ */
+@property (nonatomic,strong) UIScrollView * bgScrollView;
+
+#pragma mark - 第二级视图
+
+/**
+ 头视图
+ */
+@property (nonatomic,strong) UIView * headerView;
+
+/**
+ 内容视图(包含导航和内容)
+ */
+@property (nonatomic,strong) UIView * contentView;
+
+#pragma mark - 导航视图（第三级）
+
+/**
+ 导航视图
+ */
+@property (nonatomic,strong) BKSliderMenuView * menuView;
+
+#pragma mark - 内容视图（第三级）
+
+/**
+ 详情内容视图
+ */
+@property (nonatomic,strong) UICollectionView * collectionView;
+
+/**
+ 用自定义的滑动手势代替系统的滑动手势(因项目需求需要嵌套两层sliderView，并且两层都需要使用左右滑动，所以这个属性诞生了)
+ */
+@property (nonatomic,assign) BOOL useCsPanGestureOnCollectionView;
+
+/**
+ 自定义滑动手势
+ */
+@property (nonatomic,strong,readonly) UIPanGestureRecognizer * csCollectionViewPanGesture;
+
+@end
+
+
+

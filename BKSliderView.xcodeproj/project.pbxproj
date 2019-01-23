@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D05DB4321F816CB00B55FEE /* UIView+BKSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3621F816CA00B55FEE /* UIView+BKSliderView.m */; };
+		1D05DB4421F816CB00B55FEE /* NSAttributedString+BKSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3821F816CB00B55FEE /* NSAttributedString+BKSliderView.m */; };
+		1D05DB4521F816CB00B55FEE /* BKSliderMenuPropertyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3921F816CB00B55FEE /* BKSliderMenuPropertyModel.m */; };
+		1D05DB4621F816CB00B55FEE /* BKSliderMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3A21F816CB00B55FEE /* BKSliderMenu.m */; };
+		1D05DB4721F816CB00B55FEE /* BKSliderMenuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3B21F816CB00B55FEE /* BKSliderMenuModel.m */; };
+		1D05DB4821F816CB00B55FEE /* BKSliderMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3D21F816CB00B55FEE /* BKSliderMenuView.m */; };
+		1D05DB4921F816CB00B55FEE /* NSString+BKSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB3E21F816CB00B55FEE /* NSString+BKSliderView.m */; };
+		1D05DB4A21F816CB00B55FEE /* BKSliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D05DB4021F816CB00B55FEE /* BKSliderView.m */; };
 		1D07EDA61F1D9486006F9794 /* ExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D07EDA51F1D9486006F9794 /* ExampleViewController.m */; };
-		1D12E34C219EB89D009CF1B9 /* BKSlideMenuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D12E342219EB89D009CF1B9 /* BKSlideMenuModel.m */; };
-		1D12E34D219EB89D009CF1B9 /* BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D12E343219EB89D009CF1B9 /* BKSlideView.m */; };
-		1D12E34E219EB89D009CF1B9 /* NSString+BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D12E345219EB89D009CF1B9 /* NSString+BKSlideView.m */; };
-		1D12E34F219EB89D009CF1B9 /* UIView+BKSlideView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D12E349219EB89D009CF1B9 /* UIView+BKSlideView.m */; };
-		1D12E350219EB89D009CF1B9 /* BKSlideMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D12E34A219EB89D009CF1B9 /* BKSlideMenu.m */; };
-		1D12E351219EB89D009CF1B9 /* BKSlideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D12E34B219EB89D009CF1B9 /* BKSlideMenuView.m */; };
 		2A1B3CD11C95735700D04EFF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CD01C95735700D04EFF /* main.m */; };
 		2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A1B3CD31C95735700D04EFF /* AppDelegate.m */; };
 		2A1B3CDC1C95735700D04EFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1B3CDB1C95735700D04EFF /* Assets.xcassets */; };
@@ -22,20 +24,24 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D05DB3321F816CA00B55FEE /* UIView+BKSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+BKSliderView.h"; sourceTree = "<group>"; };
+		1D05DB3421F816CA00B55FEE /* NSAttributedString+BKSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+BKSliderView.h"; sourceTree = "<group>"; };
+		1D05DB3521F816CA00B55FEE /* BKSliderMenuModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSliderMenuModel.h; sourceTree = "<group>"; };
+		1D05DB3621F816CA00B55FEE /* UIView+BKSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+BKSliderView.m"; sourceTree = "<group>"; };
+		1D05DB3721F816CA00B55FEE /* BKSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSliderView.h; sourceTree = "<group>"; };
+		1D05DB3821F816CB00B55FEE /* NSAttributedString+BKSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+BKSliderView.m"; sourceTree = "<group>"; };
+		1D05DB3921F816CB00B55FEE /* BKSliderMenuPropertyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSliderMenuPropertyModel.m; sourceTree = "<group>"; };
+		1D05DB3A21F816CB00B55FEE /* BKSliderMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSliderMenu.m; sourceTree = "<group>"; };
+		1D05DB3B21F816CB00B55FEE /* BKSliderMenuModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSliderMenuModel.m; sourceTree = "<group>"; };
+		1D05DB3C21F816CB00B55FEE /* BKSliderMenuPropertyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSliderMenuPropertyModel.h; sourceTree = "<group>"; };
+		1D05DB3D21F816CB00B55FEE /* BKSliderMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSliderMenuView.m; sourceTree = "<group>"; };
+		1D05DB3E21F816CB00B55FEE /* NSString+BKSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+BKSliderView.m"; sourceTree = "<group>"; };
+		1D05DB3F21F816CB00B55FEE /* NSString+BKSliderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+BKSliderView.h"; sourceTree = "<group>"; };
+		1D05DB4021F816CB00B55FEE /* BKSliderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSliderView.m; sourceTree = "<group>"; };
+		1D05DB4121F816CB00B55FEE /* BKSliderMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSliderMenuView.h; sourceTree = "<group>"; };
+		1D05DB4221F816CB00B55FEE /* BKSliderMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSliderMenu.h; sourceTree = "<group>"; };
 		1D07EDA41F1D9486006F9794 /* ExampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleViewController.h; sourceTree = "<group>"; };
 		1D07EDA51F1D9486006F9794 /* ExampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleViewController.m; sourceTree = "<group>"; };
-		1D12E340219EB89D009CF1B9 /* BKSlideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideMenuView.h; sourceTree = "<group>"; };
-		1D12E341219EB89D009CF1B9 /* BKSlideMenuModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideMenuModel.h; sourceTree = "<group>"; };
-		1D12E342219EB89D009CF1B9 /* BKSlideMenuModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideMenuModel.m; sourceTree = "<group>"; };
-		1D12E343219EB89D009CF1B9 /* BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideView.m; sourceTree = "<group>"; };
-		1D12E344219EB89D009CF1B9 /* NSString+BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+BKSlideView.h"; sourceTree = "<group>"; };
-		1D12E345219EB89D009CF1B9 /* NSString+BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+BKSlideView.m"; sourceTree = "<group>"; };
-		1D12E346219EB89D009CF1B9 /* UIView+BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+BKSlideView.h"; sourceTree = "<group>"; };
-		1D12E347219EB89D009CF1B9 /* BKSlideView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideView.h; sourceTree = "<group>"; };
-		1D12E348219EB89D009CF1B9 /* BKSlideMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSlideMenu.h; sourceTree = "<group>"; };
-		1D12E349219EB89D009CF1B9 /* UIView+BKSlideView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+BKSlideView.m"; sourceTree = "<group>"; };
-		1D12E34A219EB89D009CF1B9 /* BKSlideMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideMenu.m; sourceTree = "<group>"; };
-		1D12E34B219EB89D009CF1B9 /* BKSlideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSlideMenuView.m; sourceTree = "<group>"; };
 		2A1B3CCC1C95735700D04EFF /* BKSliderView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKSliderView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A1B3CD01C95735700D04EFF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2A1B3CD21C95735700D04EFF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -61,18 +67,22 @@
 		1D12E32D219EB88F009CF1B9 /* BKSliderView */ = {
 			isa = PBXGroup;
 			children = (
-				1D12E348219EB89D009CF1B9 /* BKSlideMenu.h */,
-				1D12E34A219EB89D009CF1B9 /* BKSlideMenu.m */,
-				1D12E341219EB89D009CF1B9 /* BKSlideMenuModel.h */,
-				1D12E342219EB89D009CF1B9 /* BKSlideMenuModel.m */,
-				1D12E340219EB89D009CF1B9 /* BKSlideMenuView.h */,
-				1D12E34B219EB89D009CF1B9 /* BKSlideMenuView.m */,
-				1D12E347219EB89D009CF1B9 /* BKSlideView.h */,
-				1D12E343219EB89D009CF1B9 /* BKSlideView.m */,
-				1D12E344219EB89D009CF1B9 /* NSString+BKSlideView.h */,
-				1D12E345219EB89D009CF1B9 /* NSString+BKSlideView.m */,
-				1D12E346219EB89D009CF1B9 /* UIView+BKSlideView.h */,
-				1D12E349219EB89D009CF1B9 /* UIView+BKSlideView.m */,
+				1D05DB4221F816CB00B55FEE /* BKSliderMenu.h */,
+				1D05DB3A21F816CB00B55FEE /* BKSliderMenu.m */,
+				1D05DB3521F816CA00B55FEE /* BKSliderMenuModel.h */,
+				1D05DB3B21F816CB00B55FEE /* BKSliderMenuModel.m */,
+				1D05DB3C21F816CB00B55FEE /* BKSliderMenuPropertyModel.h */,
+				1D05DB3921F816CB00B55FEE /* BKSliderMenuPropertyModel.m */,
+				1D05DB4121F816CB00B55FEE /* BKSliderMenuView.h */,
+				1D05DB3D21F816CB00B55FEE /* BKSliderMenuView.m */,
+				1D05DB3721F816CA00B55FEE /* BKSliderView.h */,
+				1D05DB4021F816CB00B55FEE /* BKSliderView.m */,
+				1D05DB3421F816CA00B55FEE /* NSAttributedString+BKSliderView.h */,
+				1D05DB3821F816CB00B55FEE /* NSAttributedString+BKSliderView.m */,
+				1D05DB3F21F816CB00B55FEE /* NSString+BKSliderView.h */,
+				1D05DB3E21F816CB00B55FEE /* NSString+BKSliderView.m */,
+				1D05DB3321F816CA00B55FEE /* UIView+BKSliderView.h */,
+				1D05DB3621F816CA00B55FEE /* UIView+BKSliderView.m */,
 			);
 			path = BKSliderView;
 			sourceTree = "<group>";
@@ -189,16 +199,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D05DB4A21F816CB00B55FEE /* BKSliderView.m in Sources */,
 				2A1B3CFC1C9573E400D04EFF /* ViewController.m in Sources */,
 				1D07EDA61F1D9486006F9794 /* ExampleViewController.m in Sources */,
-				1D12E350219EB89D009CF1B9 /* BKSlideMenu.m in Sources */,
-				1D12E34C219EB89D009CF1B9 /* BKSlideMenuModel.m in Sources */,
+				1D05DB4921F816CB00B55FEE /* NSString+BKSliderView.m in Sources */,
+				1D05DB4421F816CB00B55FEE /* NSAttributedString+BKSliderView.m in Sources */,
+				1D05DB4521F816CB00B55FEE /* BKSliderMenuPropertyModel.m in Sources */,
+				1D05DB4721F816CB00B55FEE /* BKSliderMenuModel.m in Sources */,
+				1D05DB4821F816CB00B55FEE /* BKSliderMenuView.m in Sources */,
 				2A1B3CD41C95735700D04EFF /* AppDelegate.m in Sources */,
-				1D12E34F219EB89D009CF1B9 /* UIView+BKSlideView.m in Sources */,
-				1D12E351219EB89D009CF1B9 /* BKSlideMenuView.m in Sources */,
-				1D12E34E219EB89D009CF1B9 /* NSString+BKSlideView.m in Sources */,
+				1D05DB4321F816CB00B55FEE /* UIView+BKSliderView.m in Sources */,
+				1D05DB4621F816CB00B55FEE /* BKSliderMenu.m in Sources */,
 				2A1B3CD11C95735700D04EFF /* main.m in Sources */,
-				1D12E34D219EB89D009CF1B9 /* BKSlideView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

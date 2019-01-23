@@ -7,9 +7,9 @@
 //
 
 #import "ViewController.h"
-#import "BKSlideView.h"
+#import "BKSliderView.h"
 #import "ExampleViewController.h"
-#import "UIView+BKSlideView.h"
+#import "UIView+BKSliderView.h"
 
 /**
  判断是否是iPhone X系列
@@ -35,13 +35,20 @@ NS_INLINE CGFloat get_system_nav_height() {
     return is_iPhoneX_series() ? (44.f+44.f) : 64.f;
 }
 
-@interface ViewController ()<BKSlideViewDelegate>
+@interface ViewController ()<BKSliderViewDelegate>
 
-@property (nonatomic,strong) BKSlideView * slideView;
+@property (nonatomic,strong) BKSliderView * sliderView;
 
 @end
 
 @implementation ViewController
+
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    _sliderView.frame = CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height());
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -54,9 +61,12 @@ NS_INLINE CGFloat get_system_nav_height() {
     self.view.backgroundColor = [UIColor whiteColor];
     
     NSMutableArray * viewControllers = [NSMutableArray array];
-    for (int i = 0 ; i<10; i++) {
-        ExampleViewController * vc = [[ExampleViewController alloc]init];
-        if (i == 3) {
+    for (int i = 0 ; i < 10; i++) {
+        ExampleViewController * vc = [[ExampleViewController alloc] init];
+        vc.index = i;
+        if (i == 0) {
+            vc.title = [NSString stringWithFormat:@"换行\n换行\n换行\n第%d个",i];
+        }else if (i == 3) {
             vc.title = [NSString stringWithFormat:@"换行\n第%d个",i];
         }else if (i == 5) {
             vc.title = [NSString stringWithFormat:@"比较长的第%d个",i];
@@ -66,67 +76,63 @@ NS_INLINE CGFloat get_system_nav_height() {
         [viewControllers addObject:vc];
     }
     
-    self.slideView = [[BKSlideView alloc] initWithFrame:CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height()) delegate:self viewControllers:viewControllers];
-    self.slideView.menuView.menuNumberOfLines = 2;
-    self.slideView.menuView.bk_height = 70;
-    self.slideView.selectIndex = 5;
+    self.sliderView = [[BKSliderView alloc] initWithFrame:CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height()) delegate:self viewControllers:viewControllers];
+    self.sliderView.menuView.menuNumberOfLines = 2;
+    self.sliderView.menuView.bk_height = 70;
+    self.sliderView.selectIndex = 5;
 //    self.slideView.menuView.menuTypesetting = BKSlideMenuTypesettingEqualWidth;
-    [self.view addSubview:self.slideView];
+    [self.view addSubview:self.sliderView];
     
     UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
     yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
-    self.slideView.headerView = yellowColorHeaderView;
+    self.sliderView.headerView = yellowColorHeaderView;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         ExampleViewController * vc = [[ExampleViewController alloc]init];
         vc.title = @"我是新添加的vc";
-        NSMutableArray * viewControllers = [self.slideView.viewControllers mutableCopy];
+        NSMutableArray * viewControllers = [self.sliderView.viewControllers mutableCopy];
         [viewControllers addObject:vc];
-        self.slideView.viewControllers = viewControllers;
+        self.sliderView.viewControllers = viewControllers;
     });
 }
 
--(void)slideView:(BKSlideView*)slideView createViewControllerWithIndex:(NSUInteger)index
+-(void)sliderView:(BKSliderView *)sliderView firstDisplayViewController:(UIViewController *)viewController index:(NSUInteger)index
 {
-    ExampleViewController * vc = (ExampleViewController*)self.slideView.viewControllers[index];
-    [vc createUIWithIndex:index];
+    ExampleViewController * vc = (ExampleViewController*)viewController;
+    [vc firstDisplay];
 }
 
--(void)slideViewDidChangeFrame:(BKSlideView *)slideView
-{
-    NSLog(@"修改详情内容视图的frame");
-    [self.slideView.viewControllers enumerateObjectsUsingBlock:^(UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        ExampleViewController * vc = (ExampleViewController*)obj;
-        [vc changeContentFrame];
-    }];
-}
-
--(void)slideView:(BKSlideView *)slideView leaveIndex:(NSUInteger)leaveIndex
+-(void)sliderView:(BKSliderView *)sliderView willLeaveIndex:(NSUInteger)leaveIndex
 {
     NSLog(@"离开了%ld",leaveIndex);
 }
 
--(void)slideView:(BKSlideView *)slideView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex
+-(void)sliderView:(BKSliderView *)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex
 {
     NSLog(@"离开了%ld 来到了%ld",leaveIndex,switchIndex);
 }
 
--(void)slideView:(BKSlideView *)slideView didScrollBgScrollView:(UIScrollView*)bgScrollView
+-(void)sliderView:(BKSliderView *)sliderView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
+{
+    NSLog(@"离开中%ld 来到中%ld 百分比%f",leavingIndex,switchingIndex,percentage);
+}
+
+-(void)sliderView:(BKSliderView *)sliderView didScrollBgScrollView:(UIScrollView *)bgScrollView
 {
     NSLog(@"滑动主视图");
 }
 
--(void)slideView:(BKSlideView *)slideView willBeginDraggingBgScrollView:(UIScrollView*)bgScrollView
+-(void)sliderView:(BKSliderView *)sliderView willBeginDraggingBgScrollView:(UIScrollView *)bgScrollView
 {
     NSLog(@"开始滑动主视图");
 }
 
--(void)slideView:(BKSlideView *)slideView didEndDeceleratingBgScrollView:(UIScrollView*)bgScrollView
+-(void)sliderView:(BKSliderView *)sliderView didEndDeceleratingBgScrollView:(UIScrollView *)bgScrollView
 {
     NSLog(@"主视图惯性结束");
 }
 
--(void)slideView:(BKSlideView *)slideView didEndDraggingBgScrollView:(UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate
+-(void)sliderView:(BKSliderView *)sliderView didEndDraggingBgScrollView:(UIScrollView *)bgScrollView willDecelerate:(BOOL)decelerate
 {
     NSLog(@"主视图停止拖拽");
 }

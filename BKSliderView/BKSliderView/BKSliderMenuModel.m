@@ -1,20 +1,16 @@
 //
-//  BKSlideMenuModel.m
+//  BKSliderMenuModel.m
 //  BKSliderView
 //
 //  Created by zhaolin on 2018/11/15.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "BKSlideMenuModel.h"
+#import "BKSliderMenuModel.h"
 
-@implementation BKSlideTotalMenuPropertyModel
+@implementation BKSliderMenuModel
 
-@end
-
-@implementation BKSlideMenuModel
-
--(NSMutableArray<BKSlideTotalMenuPropertyModel *> *)total
+-(NSMutableArray<BKSliderMenuPropertyModel *> *)total
 {
     if (!_total) {
         _total = [NSMutableArray array];
@@ -30,7 +26,7 @@
     return _visibleIndexs;
 }
 
--(NSMutableArray<BKSlideMenu *> *)visible
+-(NSMutableArray<BKSliderMenu *> *)visible
 {
     if (!_visible) {
         _visible = [NSMutableArray array];
@@ -38,7 +34,7 @@
     return _visible;
 }
 
--(NSMutableArray<BKSlideMenu *> *)cache
+-(NSMutableArray<BKSliderMenu *> *)cache
 {
     if (!_cache) {
         _cache = [NSMutableArray array];

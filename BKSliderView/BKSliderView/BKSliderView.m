@@ -1,5 +1,5 @@
 //
-//  BKSlideView.m
+//  BKSliderView.m
 //
 //  Created on 16/2/2.
 //  Copyright © 2016年 BIKE. All rights reserved.
@@ -8,13 +8,12 @@
 #define BK_POINTS_FROM_PIXELS(__PIXELS) (__PIXELS / [[UIScreen mainScreen] scale])
 #define BK_ONE_PIXEL BK_POINTS_FROM_PIXELS(1.0)
 
-#import "BKSlideView.h"
-#import "UIView+BKSlideView.h"
-#import "objc/runtime.h"
+#import "BKSliderView.h"
+#import "UIView+BKSliderView.h"
 
 NSString * const kSliderViewCellID = @"kSliderViewCellID";
 
-@interface BKSlideView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+@interface BKSliderView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKSliderMenuViewDelegate,UIGestureRecognizerDelegate>
 
 /**
  已经存在的vc
@@ -27,13 +26,14 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 @property (nonatomic,assign) NSInteger leaveIndex;
 
 /**
- 是否点击menu
+ 主视图是否正在滚动中
  */
-@property (nonatomic,assign) BOOL isTapMenu;
+@property (nonatomic,assign) BOOL bgScrollViewIsScrolling;
 
 @end
 
-@implementation BKSlideView
+@implementation BKSliderView
+@synthesize csCollectionViewPanGesture = _csCollectionViewPanGesture;
 
 #pragma mark - 展示的vc数组
 
@@ -71,7 +71,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 
 #pragma mark - init
 
--(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKSlideViewDelegate>)delegate viewControllers:(NSArray *)viewControllers
+-(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKSliderViewDelegate>)delegate viewControllers:(NSArray *)viewControllers
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -89,11 +89,33 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     if (newSuperview) {
         self.bgScrollView.frame = self.bounds;
         if (![[self.bgScrollView subviews] containsObject:self.headerView]) {
-            self.contentView.frame = self.bgScrollView.bounds;
+            self.contentView.frame = CGRectMake(0, 0, self.bgScrollView.bk_width, self.bgScrollView.bk_height);
+        }else {
+            if (self.bgScrollView.contentOffset.y > self.headerView.bk_height) {
+                self.contentView.frame = CGRectMake(0, self.bgScrollView.contentOffset.y, self.bgScrollView.bk_width, self.bgScrollView.bk_height);
+            }else {
+                self.contentView.frame = CGRectMake(0, CGRectGetMaxY(self.headerView.frame), self.bgScrollView.bk_width, self.bgScrollView.bk_height);
+            }
+        }
+    }
+}
+
+-(void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    self.bgScrollView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height);
+    if (![[self.bgScrollView subviews] containsObject:self.headerView]) {
+        self.contentView.frame = CGRectMake(0, 0, self.bgScrollView.bk_width, self.bgScrollView.bk_height);
+    }else {
+        if (self.bgScrollView.contentOffset.y > self.headerView.bk_height) {
+            self.contentView.frame = CGRectMake(0, self.bgScrollView.contentOffset.y, self.bgScrollView.bk_width, self.bgScrollView.bk_height);
         }else {
             self.contentView.frame = CGRectMake(0, CGRectGetMaxY(self.headerView.frame), self.bgScrollView.bk_width, self.bgScrollView.bk_height);
         }
     }
+    self.menuView.frame = CGRectMake(0, 0, self.contentView.bk_width, self.menuView.bk_height);
+    self.collectionView.frame = CGRectMake(0, CGRectGetMaxY(self.menuView.frame), self.contentView.bk_width, self.contentView.bk_height - CGRectGetMaxY(self.menuView.frame));
 }
 
 #pragma - 初始化UI
@@ -111,7 +133,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 -(UIScrollView*)bgScrollView
 {
     if (!_bgScrollView) {
-        _bgScrollView = [[UIScrollView alloc]initWithFrame:self.bounds];
+        _bgScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, self.bk_width, self.bk_height)];
         _bgScrollView.backgroundColor = [UIColor clearColor];
         _bgScrollView.showsHorizontalScrollIndicator = NO;
         _bgScrollView.showsVerticalScrollIndicator = NO;
@@ -140,7 +162,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
  根据详情内容视图内容长度(比如UIScrollView的contentSize.height)改变主视图的contentSize.height
  
  @param index 第几页
- @param isScrollEnd slideView是否滑动结束
+ @param isScrollEnd sliderView是否滑动结束
  */
 -(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index isScrollEnd:(BOOL)isScrollEnd
 {
@@ -223,7 +245,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 -(UIView*)contentView
 {
     if (!_contentView) {
-        _contentView = [[UIView alloc] initWithFrame:self.bgScrollView.bounds];
+        _contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bgScrollView.bk_width, self.bgScrollView.bk_height)];
         _contentView.backgroundColor = [UIColor clearColor];
     }
     return _contentView;
@@ -232,55 +254,55 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 #pragma mark - 第三级视图
 #pragma mark - 导航视图
 
--(BKSlideMenuView*)menuView
+-(BKSliderMenuView*)menuView
 {
     if (!_menuView) {
-        _menuView = [[BKSlideMenuView alloc] initWithFrame:CGRectMake(0, 0, self.contentView.bk_width, 45)];
-        __weak typeof(self) weakSelf = self;
-        [_menuView setChangeMenuViewFrameCallBack:^{
-            [weakSelf changeMenuViewFrame];
-        }];
-        [_menuView setSwitchSelectIndexCallBack:^(NSUInteger selectIndex) {
-            [weakSelf tapMenuSwitchSelectIndex:selectIndex];
-        }];
-        [_menuView setSwitchSelectIndexCompleteCallBack:^{
-            weakSelf.isTapMenu = NO;
-        }];
-        [_menuView setRefreshMenuUICallBack:^(BKSlideMenuView * _Nonnull menuView) {
-            if ([weakSelf.delegate respondsToSelector:@selector(slideView:refreshMenuUIView:)]) {
-                [weakSelf.delegate slideView:weakSelf refreshMenuUIView:menuView];
-            }
-        }];
+        _menuView = [[BKSliderMenuView alloc] initWithFrame:CGRectMake(0, 0, self.contentView.bk_width, 45)];
+        _menuView.delegate = self;
     }
     return _menuView;
 }
+
+#pragma mark - BKSliderMenuViewDelegate
 
 -(void)changeMenuViewFrame
 {
     self.collectionView.bk_y = CGRectGetMaxY(self.menuView.frame);
     self.collectionView.bk_height = self.contentView.bk_height - CGRectGetMaxY(self.menuView.frame);
     [self.collectionView reloadData];
-    
-    if ([self.delegate respondsToSelector:@selector(slideViewDidChangeFrame:)]) {
-        [self.delegate slideViewDidChangeFrame:self];
+}
+
+-(void)switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
+{
+    if (switchingIndex > [self.viewControllers count] - 1 || switchingIndex < 0 || leavingIndex > [self.viewControllers count] - 1 || leavingIndex < 0) {
+        return;
+    }
+    if ([self.delegate respondsToSelector:@selector(sliderView:switchingIndex:leavingIndex:percentage:)]) {
+        [self.delegate sliderView:self switchingIndex:switchingIndex leavingIndex:leavingIndex percentage:percentage];
     }
 }
 
 -(void)tapMenuSwitchSelectIndex:(NSUInteger)selectIndex
 {
-    if (self.isTapMenu) {
-        return;
-    }
-    self.isTapMenu = YES;
-    
     CGFloat rollLength = self.collectionView.bk_width * selectIndex;
     [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
-    
-    if ([self.delegate respondsToSelector:@selector(slideView:leaveIndex:)]) {
-        [self.delegate slideView:self leaveIndex:self.selectIndex];
+    //即将离开代理
+    if ([self.delegate respondsToSelector:@selector(sliderView:willLeaveIndex:)]) {
+        [self.delegate sliderView:self willLeaveIndex:self.selectIndex];
     }
-    
+    //离开中代理
+    if ([self.delegate respondsToSelector:@selector(sliderView:switchingIndex:leavingIndex:percentage:)]) {
+        [self.delegate sliderView:self switchingIndex:selectIndex leavingIndex:self.selectIndex percentage:1];
+    }
+    //已经离开
     [self switchSelectIndex:selectIndex];
+}
+
+-(void)refreshMenuUI:(BKSliderMenuView*)menuView
+{
+    if ([self.delegate respondsToSelector:@selector(sliderView:refreshMenuUI:)]) {
+        [self.delegate sliderView:self refreshMenuUI:menuView];
+    }
 }
 
 #pragma mark - 内容视图
@@ -299,7 +321,6 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
         
         UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.itemSize = CGSizeMake(self.contentView.bk_width, self.contentView.bk_height - CGRectGetMaxY(self.menuView.frame));
         layout.minimumLineSpacing = 0;
         layout.minimumInteritemSpacing = 0;
         
@@ -344,10 +365,12 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
     [cell addSubview:vc.view];
     
-    if ([self.delegate respondsToSelector:@selector(slideView:createViewControllerWithIndex:)]) {
-        if (![self.existingViewControllers containsObject:vc.title]) {
-            [self.existingViewControllers addObject:vc.title];
-            [self.delegate slideView:self createViewControllerWithIndex:indexPath.item];
+    if (![self.existingViewControllers containsObject:vc.title]) {
+        [self.existingViewControllers addObject:vc.title];
+        if ([self.delegate respondsToSelector:@selector(sliderView:firstDisplayViewController:index:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate sliderView:self firstDisplayViewController:vc index:indexPath.item];
+            });
         }
     }
     
@@ -361,8 +384,8 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     self.leaveIndex = self.selectIndex;
     self.selectIndex = selectIndex;
     
-    if ([self.delegate respondsToSelector:@selector(slideView:switchIndex:leaveIndex:)]) {
-        [self.delegate slideView:self switchIndex:self.selectIndex leaveIndex:self.leaveIndex];
+    if ([self.delegate respondsToSelector:@selector(sliderView:switchIndex:leaveIndex:)]) {
+        [self.delegate sliderView:self switchIndex:self.selectIndex leaveIndex:self.leaveIndex];
     }
     [self changeBgScrollContentSizeWithNowIndex:_selectIndex isScrollEnd:YES];
 }
@@ -372,16 +395,18 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     if (scrollView == self.collectionView) {
-        if ([self.delegate respondsToSelector:@selector(slideView:leaveIndex:)]) {
-            [self.delegate slideView:self leaveIndex:self.selectIndex];
+        if ([self.delegate respondsToSelector:@selector(sliderView:willLeaveIndex:)]) {
+            [self.delegate sliderView:self willLeaveIndex:self.selectIndex];
         }
         
-        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
     }else if (scrollView == self.bgScrollView) {
+        
+        self.bgScrollViewIsScrolling = YES;
+        
         [self changeBgScrollContentSizeWithNowIndex:self.selectIndex isScrollEnd:YES];
         
-        if ([self.delegate respondsToSelector:@selector(slideView:willBeginDraggingBgScrollView:)]) {
-            [self.delegate slideView:self willBeginDraggingBgScrollView:self.bgScrollView];
+        if ([self.delegate respondsToSelector:@selector(sliderView:willBeginDraggingBgScrollView:)]) {
+            [self.delegate sliderView:self willBeginDraggingBgScrollView:self.bgScrollView];
         }
     }
 }
@@ -389,15 +414,15 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == self.collectionView) {
-        if (self.isTapMenu) {
+        if (self.menuView.isTapMenuSwitchingIndex) {
             return;
         }
         [self.menuView scrollCollectionView:self.collectionView];
 
     }else if (scrollView == self.bgScrollView) {
         
-        if ([self.delegate respondsToSelector:@selector(slideView:didScrollBgScrollView:)]) {
-            [self.delegate slideView:self didScrollBgScrollView:self.bgScrollView];
+        if ([self.delegate respondsToSelector:@selector(sliderView:didScrollBgScrollView:)]) {
+            [self.delegate sliderView:self didScrollBgScrollView:self.bgScrollView];
         }
         
         if (self.headerView) {
@@ -419,26 +444,16 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     }
 }
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    if (scrollView == self.collectionView) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
-        });
-    }
-}
-
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    if (!decelerate) {
-        if (scrollView == self.collectionView) {
-            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
-        }
-    }
-    
     if (scrollView == self.bgScrollView) {
-        if ([self.delegate respondsToSelector:@selector(slideView:didEndDraggingBgScrollView:willDecelerate:)]) {
-            [self.delegate slideView:self didEndDraggingBgScrollView:_bgScrollView willDecelerate:decelerate];
+        
+        if (!decelerate) {
+            self.bgScrollViewIsScrolling = NO;
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(sliderView:didEndDraggingBgScrollView:willDecelerate:)]) {
+            [self.delegate sliderView:self didEndDraggingBgScrollView:_bgScrollView willDecelerate:decelerate];
         }
     }
 }
@@ -447,8 +462,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 {
     if (scrollView == self.collectionView) {
         
-        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
-        if (self.isTapMenu) {
+        if (self.menuView.isTapMenuSwitchingIndex) {
             return;
         }
 
@@ -462,12 +476,133 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
         [self switchSelectIndex:item];
         
     }else if (scrollView == _bgScrollView) {
-        if ([_delegate respondsToSelector:@selector(slideView:didEndDeceleratingBgScrollView:)]) {
-            [_delegate slideView:self didEndDeceleratingBgScrollView:_bgScrollView];
+        
+        self.bgScrollViewIsScrolling = NO;
+        
+        if ([_delegate respondsToSelector:@selector(sliderView:didEndDeceleratingBgScrollView:)]) {
+            [_delegate sliderView:self didEndDeceleratingBgScrollView:_bgScrollView];
         }
     }
 }
 
+#pragma mark - UIPanGestureRecognizer
+
+-(void)setUseCsPanGestureOnCollectionView:(BOOL)useCsPanGestureOnCollectionView
+{
+    _useCsPanGestureOnCollectionView = useCsPanGestureOnCollectionView;
+    if (useCsPanGestureOnCollectionView) {
+        self.collectionView.scrollEnabled = NO;
+        [self.collectionView addGestureRecognizer:self.csCollectionViewPanGesture];
+    }else {
+        self.collectionView.scrollEnabled = YES;
+        [self.collectionView removeGestureRecognizer:self.csCollectionViewPanGesture];
+        self.csCollectionViewPanGesture = nil;
+    }
+}
+
+-(UIPanGestureRecognizer *)csCollectionViewPanGesture
+{
+    if (!_csCollectionViewPanGesture) {
+        _csCollectionViewPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(csCollectionViewPanGesture:)];
+        _csCollectionViewPanGesture.delegate = self;
+    }
+    return _csCollectionViewPanGesture;
+}
+
+-(void)setCsCollectionViewPanGesture:(UIPanGestureRecognizer *)csCollectionViewPanGesture
+{
+    _csCollectionViewPanGesture = csCollectionViewPanGesture;
+}
+
+-(void)csCollectionViewPanGesture:(UIPanGestureRecognizer*)panGesture
+{
+    if (!panGesture.enabled) {
+        return;
+    }
+    
+    UICollectionView * collectionView = (UICollectionView*)panGesture.view;
+    CGPoint tPoint = [panGesture translationInView:collectionView];
+    switch (panGesture.state) {
+        case UIGestureRecognizerStateBegan:
+        {
+            [[collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                obj.userInteractionEnabled = NO;
+            }];
+            [self scrollViewWillBeginDragging:collectionView];
+        }
+            break;
+        case UIGestureRecognizerStateChanged:
+        {
+            CGFloat contentOffsetX = collectionView.contentOffset.x - tPoint.x;
+            if (contentOffsetX < 0) {
+                contentOffsetX = 0;
+            }else if (contentOffsetX > collectionView.contentSize.width - collectionView.bk_width) {
+                contentOffsetX = collectionView.contentSize.width - collectionView.bk_width;
+            }
+            [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y)];
+        }
+            break;
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+        {
+            CGPoint velocity = [panGesture velocityInView:panGesture.view];
+            NSInteger item;
+            if (velocity.x > 500) {
+                item = collectionView.contentOffset.x / collectionView.bk_width - 1;
+            }else if (velocity.x < -500) {
+                item = collectionView.contentOffset.x / collectionView.bk_width + 1;
+            }else {
+                item = round(collectionView.contentOffset.x / collectionView.bk_width);
+            }
+            CGFloat contentOffsetX = item * collectionView.bk_width;
+            [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y) animated:YES];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (self.csCollectionViewPanGesture.state == UIGestureRecognizerStateEnded || self.csCollectionViewPanGesture.state == UIGestureRecognizerStateCancelled ||
+                    self.csCollectionViewPanGesture.state == UIGestureRecognizerStateFailed ||
+                    self.csCollectionViewPanGesture.state == UIGestureRecognizerStatePossible) {
+                    [[collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                        obj.userInteractionEnabled = YES;
+                    }];
+                    [self scrollViewDidEndDecelerating:collectionView];
+                }
+            });
+        }
+            break;
+        default:
+            break;
+    }
+    
+    [panGesture setTranslation:CGPointZero inView:collectionView];
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    if (!self.bgScrollViewIsScrolling && self.csCollectionViewPanGesture == gestureRecognizer) {
+        //如果collectionView滑动中禁止其他所有手势
+        if (gestureRecognizer.state == UIGestureRecognizerStateChanged || gestureRecognizer.state == UIGestureRecognizerStateEnded || gestureRecognizer.state == UIGestureRecognizerStateCancelled || gestureRecognizer.state == UIGestureRecognizerStateFailed) {
+            return NO;
+        }
+        UIPanGestureRecognizer * panGesture = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint tPoint = [panGesture translationInView:panGesture.view];
+        if (fabs(tPoint.x) > fabs(tPoint.y)) {
+            UICollectionView * collectionView = (UICollectionView*)panGesture.view;
+            CGFloat contentOffsetX = collectionView.contentOffset.x - tPoint.x;
+            if (contentOffsetX >= 0 && contentOffsetX <= collectionView.contentSize.width - collectionView.bk_width) {
+                return NO;
+            }
+        }
+    }
+    
+    self.csCollectionViewPanGesture.enabled = NO;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.csCollectionViewPanGesture.enabled = YES;
+    });
+    
+    return YES;
+}
 
 
 @end

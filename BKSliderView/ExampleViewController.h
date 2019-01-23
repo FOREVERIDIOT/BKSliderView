@@ -10,7 +10,8 @@
 
 @interface ExampleViewController : UIViewController
 
--(void)createUIWithIndex:(NSInteger)index;
--(void)changeContentFrame;
+@property (nonatomic,assign) NSInteger index;
+
+-(void)firstDisplay;
 
 @end

@@ -1,16 +1,31 @@
 //
-//  NSString+BKSlideView.m
+//  NSString+BKSliderView.m
 //  BKSliderView
 //
 //  Created by zhaolin on 2018/11/14.
 //  Copyright © 2018年 BIKE. All rights reserved.
 //
 
-#import "NSString+BKSlideView.h"
+#import "NSString+BKSliderView.h"
 
-@implementation NSString (BKSlideView)
+@implementation NSString (BKSliderView)
 
 #pragma mark - 文本计算
+
+-(CGSize)calculateSizeWithUIWidth:(CGFloat)width font:(UIFont*)font
+{
+    if (!self || width <= 0 || !font) {
+        return CGSizeZero;
+    }
+    
+    CGRect rect = [self boundingRectWithSize:CGSizeMake(width, MAXFLOAT)
+                                     options: NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin
+                                  attributes:@{NSFontAttributeName: font}
+                                     context:nil];
+    
+    return rect.size;
+}
+
 
 -(CGSize)calculateSizeWithUIHeight:(CGFloat)height font:(UIFont*)font
 {

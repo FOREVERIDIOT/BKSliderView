@@ -1,5 +1,5 @@
 //
-//  UIView+BKSlideView.h
+//  UIView+BKSliderView.h
 //  BKSliderView
 //
 //  Created by zhaolin on 2018/11/13.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIView (BKSlideView)
+@interface UIView (BKSliderView)
 
 /**
  x

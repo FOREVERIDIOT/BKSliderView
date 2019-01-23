@@ -1,5 +1,5 @@
 //
-//  NSString+BKSlideView.h
+//  NSString+BKSliderView.h
 //  BKSliderView
 //
 //  Created by zhaolin on 2018/11/14.
@@ -11,9 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSString (BKSlideView)
+@interface NSString (BKSliderView)
 
 #pragma mark - 文本计算
+
+/**
+ 计算文本大小(固定宽)
+ 
+ @param width 固定宽度
+ @param font 字体大小
+ @return 文本大小
+ */
+-(CGSize)calculateSizeWithUIWidth:(CGFloat)width font:(UIFont*)font;
 
 /**
  计算文本大小(固定高)
