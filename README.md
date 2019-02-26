@@ -112,6 +112,7 @@ BKSliderView * sliderView = [[BKSliderView alloc] initWithFrame:(CGRect) delegat
 ```
 1.0 第一版完成
 1.1 第一版太乱，更新成第二版
-1.1 添加menu排版 等间距|等宽
-1.2 添加部分menu属性 自定义menu 优化显示和代理方法
+1.2.1 添加menu排版 等间距|等宽
+1.2.2 添加部分menu属性 自定义menu 优化显示和代理方法
+1.2.3 优化menuView复用方法
 ```

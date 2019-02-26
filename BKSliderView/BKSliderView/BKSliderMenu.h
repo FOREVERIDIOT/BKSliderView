@@ -64,6 +64,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,assign) NSTextAlignment textAlignment;
 
+#pragma mark - 触发事件
+
+@property (nonatomic,copy) void (^clickSelfCallBack)(BKSliderMenu * menu);
+
 @end
 
 NS_ASSUME_NONNULL_END

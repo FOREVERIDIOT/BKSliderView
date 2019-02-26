@@ -25,6 +25,9 @@
         self.displayIndex = -1;
         self.numberOfLines = 1;
         self.backgroundColor = [UIColor clearColor];
+        
+        UITapGestureRecognizer * selfTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selfTap)];
+        [self addGestureRecognizer:selfTap];
     }
     return self;
 }
@@ -136,6 +139,15 @@
                                   (self.bk_height - height)/2 + self.contentInset.top - self.contentInset.bottom,
                                   self.bk_width - self.contentInset.left - self.contentInset.right,
                                   height)];
+}
+
+#pragma mark - 触发事件
+
+-(void)selfTap
+{
+    if (self.clickSelfCallBack) {
+        self.clickSelfCallBack(self);
+    }
 }
 
 @end

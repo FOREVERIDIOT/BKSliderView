@@ -344,12 +344,39 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 }
 
 /**
- 获取对应index的menu
-
- @param index 索引
+ 创建menu
+ 
+ @param identifier 标识符
  @return menu
  */
--(BKSliderMenu*)getMenuForItemAtIndex:(NSInteger)index
+-(BKSliderMenu*)createMenuWithReuseIdentifier:(NSString*)identifier
+{
+    BKSliderMenu * menu = [[BKSliderMenu alloc] initWithIdentifer:identifier];
+    menu.textColor = self.menuNormalTitleColor;
+    menu.font = [self getMenuFontSize:self.menuNormalTitleFontSize];
+    menu.numberOfLines = self.menuNumberOfLines;
+    menu.lineSpacing = self.menuLineSpacing;
+    menu.contentInset = self.menuContentInset;
+    menu.textAlignment = NSTextAlignmentCenter;
+    menu.userInteractionEnabled = YES;
+    __weak typeof(self) weakSelf = self;
+    [menu setClickSelfCallBack:^(BKSliderMenu * _Nonnull menu) {
+        [[UIApplication sharedApplication].keyWindow endEditing:YES];
+        if (weakSelf.selectIndex == menu.displayIndex) {
+            return;
+        }
+        weakSelf.selectIndex = menu.displayIndex;
+    }];
+    return menu;
+}
+
+/**
+ 复用menu
+ 
+ @param identifier 标识符
+ @return menu
+ */
+-(BKSliderMenu * _Nullable)dequeueReusableMenuWithReuseIdentifier:(NSString*)identifier forIndex:(NSUInteger)index
 {
     BKSliderMenu * menu = nil;
     for (BKSliderMenu * m in self.menuModel.visible) {
@@ -359,10 +386,10 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     }
     //如果menu已经显示 则返回显示的menu 如果没有显示创建menu
     if (!menu) {
-        //查看有没有能复用的menu
-        menu = [self dequeueReusableMenuWithIdentifier:kSlideMenuID];
-        if (!menu) {//没有则创建
-            menu = [self createMenuWithIdentifer:kSlideMenuID];
+        if ([self.menuModel.cache count] == 0) {//没有则创建
+            menu = [self createMenuWithReuseIdentifier:identifier];
+        }else {//有则复用
+            menu = [self.menuModel.cache firstObject];
         }
     }
     return menu;
@@ -388,43 +415,6 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     menu.contentInset = self.menuContentInset;
 }
 
-/**
- 从缓存里取复用menu
- 
- @param identifier 标识符
- @return menu
- */
--(BKSliderMenu * _Nullable)dequeueReusableMenuWithIdentifier:(NSString*)identifier
-{
-    if ([self.menuModel.cache count] == 0) {
-        return nil;
-    }
-    BKSliderMenu * menu = [self.menuModel.cache firstObject];
-    return menu;
-}
-
-/**
- 创建menu
- 
- @param identifier 标识符
- @return menu
- */
--(BKSliderMenu*)createMenuWithIdentifer:(NSString*)identifier
-{
-    BKSliderMenu * menu = [[BKSliderMenu alloc] initWithIdentifer:identifier];
-    menu.textColor = self.menuNormalTitleColor;
-    menu.font = [self getMenuFontSize:self.menuNormalTitleFontSize];
-    menu.numberOfLines = self.menuNumberOfLines;
-    menu.lineSpacing = self.menuLineSpacing;
-    menu.contentInset = self.menuContentInset;
-    menu.textAlignment = NSTextAlignmentCenter;
-    menu.userInteractionEnabled = YES;
-    
-    UITapGestureRecognizer * menuTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuTap:)];
-    [menu addGestureRecognizer:menuTap];
-    return menu;
-}
-
 #pragma mark - menu标题font
 
 -(UIFont*)getMenuFontSize:(CGFloat)fontSize
@@ -446,19 +436,6 @@ const float kSelectViewAnimateTimeInterval = 0.25;
         }
             break;
     }
-}
-
-#pragma mark - 点击标题
-
--(void)menuTap:(UITapGestureRecognizer*)recognizer
-{
-    [[UIApplication sharedApplication].keyWindow endEditing:YES];
-    
-    BKSliderMenu * menu = (BKSliderMenu*)recognizer.view;
-    if (self.selectIndex == menu.displayIndex) {
-        return;
-    }
-    self.selectIndex = menu.displayIndex;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -493,7 +470,7 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     //滑入显示区域 添加
     [self.menuModel.total enumerateObjectsUsingBlock:^(BKSliderMenuPropertyModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (CGRectIntersectsRect(obj.rect, displayRect) && ![self.menuModel.visibleIndexs containsObject:@(idx)]) {
-            BKSliderMenu * menu = [self getMenuForItemAtIndex:idx];
+            BKSliderMenu * menu = [self dequeueReusableMenuWithReuseIdentifier:kSlideMenuID forIndex:idx];
             [self assignDataForMenu:menu index:idx];
             [self.contentView addSubview:menu];
             [self.menuModel.visibleIndexs addObject:@(idx)];
