@@ -25,36 +25,31 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    NSLog(@"%lu,viewWillAppear", self.index);
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    NSLog(@"%lu,viewDidAppear", self.index);
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    NSLog(@"%lu,viewWillDisappear", self.index);
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    NSLog(@"%lu,viewDidDisappear", self.index);
 }
 
 -(void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    NSLog(@"%lu,%@", self.index, NSStringFromCGRect(self.view.frame));
 }
 
 -(void)dealloc
 {
-    NSLog(@"%ld释放", self.index);
+   
 }
 
 @end
