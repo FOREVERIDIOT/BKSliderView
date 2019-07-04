@@ -1,0 +1,423 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D1BC3F122CDDD2400FED481 /* BKPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3DD22CDDD2300FED481 /* BKPageControlView.m */; };
+		1D1BC3F222CDDD2400FED481 /* BKPageControlViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3DE22CDDD2300FED481 /* BKPageControlViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1D1BC3F322CDDD2400FED481 /* BKPageControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3DF22CDDD2300FED481 /* BKPageControlView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1D1BC3F422CDDD2400FED481 /* NSAttributedString+BKPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3E122CDDD2300FED481 /* NSAttributedString+BKPageControlView.m */; };
+		1D1BC3F522CDDD2400FED481 /* NSString+BKPageControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3E222CDDD2300FED481 /* NSString+BKPageControlView.h */; };
+		1D1BC3F622CDDD2400FED481 /* UIView+BKPageControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3E322CDDD2300FED481 /* UIView+BKPageControlView.h */; };
+		1D1BC3F722CDDD2400FED481 /* NSAttributedString+BKPageControlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3E422CDDD2300FED481 /* NSAttributedString+BKPageControlView.h */; };
+		1D1BC3F822CDDD2400FED481 /* NSString+BKPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3E522CDDD2300FED481 /* NSString+BKPageControlView.m */; };
+		1D1BC3F922CDDD2400FED481 /* UIView+BKPageControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3E622CDDD2300FED481 /* UIView+BKPageControlView.m */; };
+		1D1BC3FA22CDDD2400FED481 /* BKPageControlViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3E722CDDD2400FED481 /* BKPageControlViewController.m */; };
+		1D1BC3FB22CDDD2400FED481 /* BKPageControlMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3E922CDDD2400FED481 /* BKPageControlMenu.m */; };
+		1D1BC3FC22CDDD2400FED481 /* BKPageControlMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3EA22CDDD2400FED481 /* BKPageControlMenuView.m */; };
+		1D1BC3FD22CDDD2400FED481 /* BKPageControlMenuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3EB22CDDD2400FED481 /* BKPageControlMenuModel.m */; };
+		1D1BC3FE22CDDD2400FED481 /* BKPageControlMenuPropertyModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3EC22CDDD2400FED481 /* BKPageControlMenuPropertyModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1D1BC3FF22CDDD2400FED481 /* BKPageControlMenu.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3ED22CDDD2400FED481 /* BKPageControlMenu.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1D1BC40022CDDD2400FED481 /* BKPageControlMenuPropertyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D1BC3EE22CDDD2400FED481 /* BKPageControlMenuPropertyModel.m */; };
+		1D1BC40122CDDD2400FED481 /* BKPageControlMenuModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3EF22CDDD2400FED481 /* BKPageControlMenuModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1D1BC40222CDDD2400FED481 /* BKPageControlMenuView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3F022CDDD2400FED481 /* BKPageControlMenuView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D1BC3CC22CDDB0E00FED481 /* BKPageControlView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BKPageControlView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D1BC3DA22CDDC4800FED481 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1D1BC3DD22CDDD2300FED481 /* BKPageControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPageControlView.m; sourceTree = "<group>"; };
+		1D1BC3DE22CDDD2300FED481 /* BKPageControlViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlViewController.h; sourceTree = "<group>"; };
+		1D1BC3DF22CDDD2300FED481 /* BKPageControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlView.h; sourceTree = "<group>"; };
+		1D1BC3E122CDDD2300FED481 /* NSAttributedString+BKPageControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+BKPageControlView.m"; sourceTree = "<group>"; };
+		1D1BC3E222CDDD2300FED481 /* NSString+BKPageControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+BKPageControlView.h"; sourceTree = "<group>"; };
+		1D1BC3E322CDDD2300FED481 /* UIView+BKPageControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+BKPageControlView.h"; sourceTree = "<group>"; };
+		1D1BC3E422CDDD2300FED481 /* NSAttributedString+BKPageControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+BKPageControlView.h"; sourceTree = "<group>"; };
+		1D1BC3E522CDDD2300FED481 /* NSString+BKPageControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+BKPageControlView.m"; sourceTree = "<group>"; };
+		1D1BC3E622CDDD2300FED481 /* UIView+BKPageControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+BKPageControlView.m"; sourceTree = "<group>"; };
+		1D1BC3E722CDDD2400FED481 /* BKPageControlViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPageControlViewController.m; sourceTree = "<group>"; };
+		1D1BC3E922CDDD2400FED481 /* BKPageControlMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPageControlMenu.m; sourceTree = "<group>"; };
+		1D1BC3EA22CDDD2400FED481 /* BKPageControlMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPageControlMenuView.m; sourceTree = "<group>"; };
+		1D1BC3EB22CDDD2400FED481 /* BKPageControlMenuModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPageControlMenuModel.m; sourceTree = "<group>"; };
+		1D1BC3EC22CDDD2400FED481 /* BKPageControlMenuPropertyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlMenuPropertyModel.h; sourceTree = "<group>"; };
+		1D1BC3ED22CDDD2400FED481 /* BKPageControlMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlMenu.h; sourceTree = "<group>"; };
+		1D1BC3EE22CDDD2400FED481 /* BKPageControlMenuPropertyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPageControlMenuPropertyModel.m; sourceTree = "<group>"; };
+		1D1BC3EF22CDDD2400FED481 /* BKPageControlMenuModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlMenuModel.h; sourceTree = "<group>"; };
+		1D1BC3F022CDDD2400FED481 /* BKPageControlMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlMenuView.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D1BC3C922CDDB0E00FED481 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1D1BC3C222CDDB0E00FED481 = {
+			isa = PBXGroup;
+			children = (
+				1D1BC3CE22CDDB0E00FED481 /* BKPageControlView */,
+				1D1BC3D922CDDC4800FED481 /* Supporting Files */,
+				1D1BC3CD22CDDB0E00FED481 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1D1BC3CD22CDDB0E00FED481 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D1BC3CC22CDDB0E00FED481 /* BKPageControlView.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1D1BC3CE22CDDB0E00FED481 /* BKPageControlView */ = {
+			isa = PBXGroup;
+			children = (
+				1D1BC3E022CDDD2300FED481 /* Extension */,
+				1D1BC3E822CDDD2400FED481 /* Menu */,
+				1D1BC3DF22CDDD2300FED481 /* BKPageControlView.h */,
+				1D1BC3DD22CDDD2300FED481 /* BKPageControlView.m */,
+				1D1BC3DE22CDDD2300FED481 /* BKPageControlViewController.h */,
+				1D1BC3E722CDDD2400FED481 /* BKPageControlViewController.m */,
+			);
+			path = BKPageControlView;
+			sourceTree = "<group>";
+		};
+		1D1BC3D922CDDC4800FED481 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1D1BC3DA22CDDC4800FED481 /* Info.plist */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1D1BC3E022CDDD2300FED481 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				1D1BC3E422CDDD2300FED481 /* NSAttributedString+BKPageControlView.h */,
+				1D1BC3E122CDDD2300FED481 /* NSAttributedString+BKPageControlView.m */,
+				1D1BC3E222CDDD2300FED481 /* NSString+BKPageControlView.h */,
+				1D1BC3E522CDDD2300FED481 /* NSString+BKPageControlView.m */,
+				1D1BC3E322CDDD2300FED481 /* UIView+BKPageControlView.h */,
+				1D1BC3E622CDDD2300FED481 /* UIView+BKPageControlView.m */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		1D1BC3E822CDDD2400FED481 /* Menu */ = {
+			isa = PBXGroup;
+			children = (
+				1D1BC3F022CDDD2400FED481 /* BKPageControlMenuView.h */,
+				1D1BC3EA22CDDD2400FED481 /* BKPageControlMenuView.m */,
+				1D1BC3ED22CDDD2400FED481 /* BKPageControlMenu.h */,
+				1D1BC3E922CDDD2400FED481 /* BKPageControlMenu.m */,
+				1D1BC3EF22CDDD2400FED481 /* BKPageControlMenuModel.h */,
+				1D1BC3EB22CDDD2400FED481 /* BKPageControlMenuModel.m */,
+				1D1BC3EC22CDDD2400FED481 /* BKPageControlMenuPropertyModel.h */,
+				1D1BC3EE22CDDD2400FED481 /* BKPageControlMenuPropertyModel.m */,
+			);
+			path = Menu;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		1D1BC3C722CDDB0E00FED481 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D1BC3F322CDDD2400FED481 /* BKPageControlView.h in Headers */,
+				1D1BC40122CDDD2400FED481 /* BKPageControlMenuModel.h in Headers */,
+				1D1BC3F222CDDD2400FED481 /* BKPageControlViewController.h in Headers */,
+				1D1BC3FE22CDDD2400FED481 /* BKPageControlMenuPropertyModel.h in Headers */,
+				1D1BC40222CDDD2400FED481 /* BKPageControlMenuView.h in Headers */,
+				1D1BC3FF22CDDD2400FED481 /* BKPageControlMenu.h in Headers */,
+				1D1BC3F522CDDD2400FED481 /* NSString+BKPageControlView.h in Headers */,
+				1D1BC3F722CDDD2400FED481 /* NSAttributedString+BKPageControlView.h in Headers */,
+				1D1BC3F622CDDD2400FED481 /* UIView+BKPageControlView.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1D1BC3CB22CDDB0E00FED481 /* BKPageControlView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D1BC3D422CDDB0E00FED481 /* Build configuration list for PBXNativeTarget "BKPageControlView" */;
+			buildPhases = (
+				1D1BC3C722CDDB0E00FED481 /* Headers */,
+				1D1BC3C822CDDB0E00FED481 /* Sources */,
+				1D1BC3C922CDDB0E00FED481 /* Frameworks */,
+				1D1BC3CA22CDDB0E00FED481 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BKPageControlView;
+			productName = BKPageControlView;
+			productReference = 1D1BC3CC22CDDB0E00FED481 /* BKPageControlView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1D1BC3C322CDDB0E00FED481 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = BIKE;
+				TargetAttributes = {
+					1D1BC3CB22CDDB0E00FED481 = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 1D1BC3C622CDDB0E00FED481 /* Build configuration list for PBXProject "BKPageControlView" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 1D1BC3C222CDDB0E00FED481;
+			productRefGroup = 1D1BC3CD22CDDB0E00FED481 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D1BC3CB22CDDB0E00FED481 /* BKPageControlView */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D1BC3CA22CDDB0E00FED481 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D1BC3C822CDDB0E00FED481 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D1BC3F422CDDD2400FED481 /* NSAttributedString+BKPageControlView.m in Sources */,
+				1D1BC3FA22CDDD2400FED481 /* BKPageControlViewController.m in Sources */,
+				1D1BC3FB22CDDD2400FED481 /* BKPageControlMenu.m in Sources */,
+				1D1BC3F822CDDD2400FED481 /* NSString+BKPageControlView.m in Sources */,
+				1D1BC3FD22CDDD2400FED481 /* BKPageControlMenuModel.m in Sources */,
+				1D1BC40022CDDD2400FED481 /* BKPageControlMenuPropertyModel.m in Sources */,
+				1D1BC3F122CDDD2400FED481 /* BKPageControlView.m in Sources */,
+				1D1BC3FC22CDDD2400FED481 /* BKPageControlMenuView.m in Sources */,
+				1D1BC3F922CDDD2400FED481 /* UIView+BKPageControlView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D1BC3D222CDDB0E00FED481 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		1D1BC3D322CDDB0E00FED481 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		1D1BC3D522CDDB0E00FED481 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 779S864B3K;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/Supporting Files/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = BIKE.BKPageControlView;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1D1BC3D622CDDB0E00FED481 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 779S864B3K;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/Supporting Files/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = BIKE.BKPageControlView;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D1BC3C622CDDB0E00FED481 /* Build configuration list for PBXProject "BKPageControlView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D1BC3D222CDDB0E00FED481 /* Debug */,
+				1D1BC3D322CDDB0E00FED481 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1D1BC3D422CDDB0E00FED481 /* Build configuration list for PBXNativeTarget "BKPageControlView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D1BC3D522CDDB0E00FED481 /* Debug */,
+				1D1BC3D622CDDB0E00FED481 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1D1BC3C322CDDB0E00FED481 /* Project object */;
+}

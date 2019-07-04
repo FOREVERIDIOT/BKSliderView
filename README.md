@@ -15,27 +15,19 @@
 1.创建viewController数组
 NSMutableArray * viewControllers = [NSMutableArray array];
 for (int i = 0; i<10; i++) {
-    UIViewController * vc = [[UIViewController alloc] init];
+    BKPageControlViewController * vc = [[BKPageControlViewController alloc] init];
     //title必须传 且 不能重复
     vc.title = [NSString stringWithFormat:@"第%d个",i];
     [viewControllers addObject:vc];
 }
 2.创建BKSliderView并添加到view上 遵循代理 赋值viewControllers
-BKSliderView * sliderView = [[BKSliderView alloc] initWithFrame:(CGRect) delegate:(id<BKSliderViewDelegate>) viewControllers:(NSArray *)];
+BKSliderView * sliderView = [[BKPageControlView alloc] initWithFrame:(CGRect) delegate:(id<BKPageControlViewDelegate>) childControllers:(NSArray<BKPageControlViewController *> *) superVC:(UIViewController *)];
 [view addSubview:sliderView];
 ```
 
 ## 可选代理
 
 ```objc
-/**
- 第一次显示对应index的vc
- 
- @param sliderView BKSliderView
- @param viewController 控制器
- @param index 索引
- */
--(void)sliderView:(BKSliderView*)sliderView firstDisplayViewController:(UIViewController*)viewController index:(NSUInteger)index;
 
 /**
  准备离开index
@@ -106,13 +98,4 @@ BKSliderView * sliderView = [[BKSliderView alloc] initWithFrame:(CGRect) delegat
  @param menuView 导航视图
  */
 -(void)sliderView:(BKSliderView *)sliderView refreshMenuUI:(BKSliderMenuView*)menuView;
-```
-
-## 版本
-```
-1.0 第一版完成
-1.1 第一版太乱，更新成第二版
-1.2.1 添加menu排版 等间距|等宽
-1.2.2 添加部分menu属性 自定义menu 优化显示和代理方法
-1.2.3 优化menuView复用方法
 ```
