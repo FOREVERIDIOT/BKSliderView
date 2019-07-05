@@ -74,6 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - 触发事件
 
+/**
+ 点击回调
+ */
 @property (nonatomic,copy) void (^clickSelfCallBack)(BKPageControlMenu * menu);
 
 @end

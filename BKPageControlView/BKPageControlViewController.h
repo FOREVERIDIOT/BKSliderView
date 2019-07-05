@@ -17,6 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,assign) NSUInteger index;
 /**
+ 分页控制视图所在的父控制器
+ */
+@property (nonatomic,weak) UIViewController * superVC;
+/**
  主滚动视图(用于计算出BKPageControlView主视图的contentSize)
  此属性会自动获取，也可以自己赋值更改。
  */

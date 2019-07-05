@@ -11,31 +11,47 @@
 #import <BKPageControlView/BKPageControlView.h>
 #import "ExampleViewController.h"
 #import "UIView+Extension.h"
+#import "ThirdViewController.h"
 
 @interface SecondViewController ()<BKPageControlViewDelegate>
 
-@property (nonatomic,strong) BKPageControlView * sliderView;
+@property (nonatomic,strong) BKPageControlView * pageControlView;
 
 @end
 
 @implementation SecondViewController
 
--(void)viewWillLayoutSubviews
-{
-    [super viewWillLayoutSubviews];
-    
-    _sliderView.frame = CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height());
-}
-
-- (void)viewDidLoad {
+-(void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
     self.automaticallyAdjustsScrollViewInsets = NO;
-    
-    self.title = @"基本展示界面";
-    
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    switch (self.selectIndexPath.row) {
+        case 0:
+        {
+            self.title = @"基本演示Demo";
+        }
+            break;
+        case 1:
+        {
+            self.title = @"开始选中第5个演示Demo";
+        }
+            break;
+        case 2:
+        {
+            self.title = @"带headerView演示Demo";
+        }
+            break;
+        case 3:
+        {
+            self.title = @"用手势滑动演示Demo";
+        }
+            break;
+        default:
+            break;
+    }
     
     NSMutableArray * viewControllers = [NSMutableArray array];
     for (int i = 0 ; i < 10; i++) {
@@ -52,59 +68,143 @@
         [viewControllers addObject:vc];
     }
     
-    self.sliderView = [[BKPageControlView alloc] initWithFrame:CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height()) delegate:self childControllers:viewControllers superVC:self];
-    self.sliderView.menuView.menuNumberOfLines = 2;
-    self.sliderView.menuView.bk_height = 70;
-    self.sliderView.selectIndex = 5;
-//    self.slideView.menuView.menuTypesetting = BKSlideMenuTypesettingEqualWidth;
-    [self.view addSubview:self.sliderView];
+    self.pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height()) delegate:self childControllers:viewControllers superVC:self];
+    self.pageControlView.menuView.menuNumberOfLines = 2;
+    self.pageControlView.menuView.bk_height = 70;
+    [self.view addSubview:self.pageControlView];
     
-    UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
-    yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
-    self.sliderView.headerView = yellowColorHeaderView;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        ExampleViewController * vc = [[ExampleViewController alloc]init];
-        vc.title = @"我是新添加的vc";
-        NSMutableArray * viewControllers = [self.sliderView.childControllers mutableCopy];
-        [viewControllers addObject:vc];
-        self.sliderView.childControllers = viewControllers;
-    });
+    switch (self.selectIndexPath.row) {
+        case 1:
+        {
+            self.pageControlView.selectIndex = 5;
+        }
+            break;
+        case 2:
+        {
+            UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+            yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
+            self.pageControlView.headerView = yellowColorHeaderView;
+        }
+            break;
+        case 3:
+        {
+            UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+            yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
+            self.pageControlView.headerView = yellowColorHeaderView;
+            
+            ThirdViewController * vc = [[ThirdViewController alloc] init];
+            vc.title = @"测试pageControlView嵌套pageControlView";
+            NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
+            [childControllers insertObject:vc atIndex:1];
+            self.pageControlView.childControllers = [childControllers copy];
+        }
+            break;
+        default:
+            break;
+    }
 }
 
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    _pageControlView.frame = CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height());
+}
+
+#pragma mark - BKPageControlViewDelegate
+
+/**
+ 准备离开index
+ 
+ @param leaveIndex 离开的index
+ */
 -(void)sliderView:(BKPageControlView *)sliderView willLeaveIndex:(NSUInteger)leaveIndex
 {
-    NSLog(@"离开了%ld",leaveIndex);
+    
 }
 
--(void)sliderView:(BKPageControlView *)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex
-{
-    NSLog(@"离开了%ld 来到了%ld",leaveIndex,switchIndex);
-}
-
+/**
+ 切换index中
+ 
+ @param sliderView BKPageControlView
+ @param switchingIndex 切换中的index
+ @param leavingIndex 离开中的index
+ @param percentage 百分比
+ */
 -(void)sliderView:(BKPageControlView *)sliderView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
 {
-    NSLog(@"离开中%ld 来到中%ld 百分比%f",leavingIndex,switchingIndex,percentage);
+    
 }
 
+/**
+ 切换index
+ 
+ @param sliderView BKPageControlView
+ @param switchIndex 切换的index
+ @param leaveIndex 离开的index
+ */
+-(void)sliderView:(BKPageControlView *)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex
+{
+    
+}
+
+#pragma mark - 主视图滑动代理
+
+/**
+ 滑动主视图
+ 
+ @param sliderView BKPageControlView
+ @param bgScrollView 主视图
+ */
 -(void)sliderView:(BKPageControlView *)sliderView didScrollBgScrollView:(UIScrollView *)bgScrollView
 {
-    NSLog(@"滑动主视图");
+    
 }
 
+/**
+ 开始滑动主视图
+ 
+ @param sliderView BKPageControlView
+ @param bgScrollView 主视图
+ */
 -(void)sliderView:(BKPageControlView *)sliderView willBeginDraggingBgScrollView:(UIScrollView *)bgScrollView
 {
-    NSLog(@"开始滑动主视图");
+    
 }
 
+/**
+ 主视图惯性结束
+ 
+ @param sliderView BKPageControlView
+ @param bgScrollView 主视图
+ */
 -(void)sliderView:(BKPageControlView *)sliderView didEndDeceleratingBgScrollView:(UIScrollView *)bgScrollView
 {
-    NSLog(@"主视图惯性结束");
+    
 }
 
+/**
+ 主视图停止拖拽
+ 
+ @param sliderView BKPageControlView
+ @param bgScrollView 主视图
+ */
 -(void)sliderView:(BKPageControlView *)sliderView didEndDraggingBgScrollView:(UIScrollView *)bgScrollView willDecelerate:(BOOL)decelerate
 {
-    NSLog(@"主视图停止拖拽");
+    
+}
+
+/**
+ 设置导航视图中menu上的icon和选中的icon
+ 
+ @param menu menu
+ @param iconImageView icon
+ @param selectIconImageView 选中的icon
+ @param index 索引
+ */
+-(void)sliderView:(BKPageControlView *)sliderView menu:(BKPageControlMenu *)menu settingIconImageView:(UIImageView *)iconImageView selectIconImageView:(UIImageView *)selectIconImageView atIndex:(NSUInteger)index
+{
+    
 }
 
 @end

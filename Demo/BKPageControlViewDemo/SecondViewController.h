@@ -10,5 +10,10 @@
 
 @interface SecondViewController : UIViewController
 
+/**
+ 点击进来的indexPath
+ */
+@property (nonatomic,assign) NSIndexPath * selectIndexPath;
+
 @end
 

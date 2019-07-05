@@ -19,37 +19,8 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor whiteColor];
-}
-
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
--(void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
--(void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-}
-
--(void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-}
-
--(void)viewWillLayoutSubviews
-{
-    [super viewWillLayoutSubviews];
-}
-
--(void)dealloc
-{
-   
 }
 
 @end

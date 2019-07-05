@@ -9,8 +9,11 @@
 #import "FirstViewController.h"
 #import "SecondViewController.h"
 #import "Inline.h"
+#import "UIView+Extension.h"
 
-@interface FirstViewController ()
+@interface FirstViewController ()<UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic,strong) UITableView * tableView;
 
 @end
 
@@ -23,18 +26,82 @@
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"首页";
     
-    UIButton * exampleBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    exampleBtn.frame = CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height());
-    [exampleBtn setTitle:@"例子" forState:UIControlStateNormal];
-    [exampleBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    exampleBtn.titleLabel.font = [UIFont systemFontOfSize:20];
-    [exampleBtn addTarget:self action:@selector(exampleBtnClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:exampleBtn];
+    [self.view addSubview:self.tableView];
 }
 
--(void)exampleBtnClick
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    _tableView.frame = CGRectMake(0, get_system_nav_height(), self.view.bk_width, self.view.bk_height - get_system_nav_height());
+}
+
+#pragma mark - UITableView
+
+-(UITableView*)tableView
+{
+    if (!_tableView) {
+        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, get_system_nav_height(), self.view.bk_width, self.view.bk_height - get_system_nav_height()) style:UITableViewStylePlain];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        if (@available(iOS 11.0, *)) {
+            _tableView.estimatedRowHeight = 0;
+            _tableView.estimatedSectionFooterHeight = 0;
+            _tableView.estimatedSectionHeaderHeight = 0;
+            _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+        _tableView.tableFooterView = [UIView new];
+    }
+    return _tableView;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 4;
+}
+
+-(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString * identifier = @"cell";
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    switch (indexPath.row) {
+        case 0:
+        {
+            cell.textLabel.text = @"基本演示Demo";
+        }
+            break;
+        case 1:
+        {
+            cell.textLabel.text = @"开始选中第5个演示Demo";
+        }
+            break;
+        case 2:
+        {
+            cell.textLabel.text = @"带headerView演示Demo";
+        }
+            break;
+        case 3:
+        {
+            cell.textLabel.text = @"用手势滑动演示Demo";
+        }
+            break;
+        default:
+            break;
+    }
+    
+    
+    return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SecondViewController * vc = [[SecondViewController alloc] init];
+    vc.selectIndexPath = indexPath;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

@@ -14,7 +14,7 @@
 #import "NSString+BKPageControlView.h"
 #import "BKPageControlMenuModel.h"
 
-NSString * const kSlideMenuID = @"kSlideMenuID";
+NSString * const kBKPageControlMenuID = @"kBKPageControlMenuID";
 const float kSelectViewAnimateTimeInterval = 0.25;
 
 @interface BKPageControlMenuView()<UIScrollViewDelegate>
@@ -479,7 +479,7 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     //滑入显示区域 添加
     [self.menuModel.total enumerateObjectsUsingBlock:^(BKPageControlMenuPropertyModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (CGRectIntersectsRect(obj.rect, displayRect) && ![self.menuModel.visibleIndexs containsObject:@(idx)]) {
-            BKPageControlMenu * menu = [self dequeueReusableMenuWithReuseIdentifier:kSlideMenuID forIndex:idx];
+            BKPageControlMenu * menu = [self dequeueReusableMenuWithReuseIdentifier:kBKPageControlMenuID forIndex:idx];
             [self assignDataForMenu:menu index:idx];
             [self.contentView addSubview:menu];
             [self.menuModel.visibleIndexs addObject:@(idx)];
@@ -736,20 +736,6 @@ const float kSelectViewAnimateTimeInterval = 0.25;
         }
         [self.contentView setContentOffset:CGPointMake(move, 0) animated:NO];
     }
-}
-
-#pragma mark - 设置menu的临时属性(刷新后失效)
-
--(void)settingTempMenuTitleNormalFontSize:(CGFloat)normalFontSize selectFontSize:(CGFloat)selectFontSize normalColor:(UIColor*)normalColor selectColor:(UIColor*)selectColor switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
-{
-    for (int i = 0; i < [self.titles count]; i++) {
-        BKPageControlMenuPropertyModel * model = self.menuModel.total[i];
-        model.color = normalColor;
-        model.font = [self getMenuFontSize:normalFontSize];
-        [self.menuModel.total replaceObjectAtIndex:i withObject:model];
-    }
-    
-    [self changeSelectPropertyWithFromIndex:leavingIndex toIndex:switchingIndex percentage:percentage normalFontSize:normalFontSize selectFontSize:selectFontSize normalColor:normalColor selectColor:selectColor];
 }
 
 #pragma mark - 获取可见的menu

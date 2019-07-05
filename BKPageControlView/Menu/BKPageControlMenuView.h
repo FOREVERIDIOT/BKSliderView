@@ -177,21 +177,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong) UIColor * menuSelectTitleColor;
 
-#pragma mark - 设置menu的临时属性(刷新后失效)
-
-/**
- 设置menu的临时属性(刷新后失效)
-
- @param normalFontSize 默认字号
- @param selectFontSize 选中字号
- @param normalColor 默认颜色
- @param selectColor 选中颜色
- @param switchingIndex 切换中的index
- @param leavingIndex 离开中的index
- @param percentage 百分比
- */
--(void)settingTempMenuTitleNormalFontSize:(CGFloat)normalFontSize selectFontSize:(CGFloat)selectFontSize normalColor:(UIColor*)normalColor selectColor:(UIColor*)selectColor switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
-
 #pragma mark - 滑动sliderView的方法
 
 /**

@@ -19,7 +19,7 @@
 
  @param leaveIndex 离开的index
  */
--(void)sliderView:(BKPageControlView*)sliderView willLeaveIndex:(NSUInteger)leaveIndex;
+-(void)sliderView:(nonnull BKPageControlView*)sliderView willLeaveIndex:(NSUInteger)leaveIndex;
 
 /**
  切换index中
@@ -29,7 +29,7 @@
  @param leavingIndex 离开中的index
  @param percentage 百分比
  */
--(void)sliderView:(BKPageControlView *)sliderView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
+-(void)sliderView:(nonnull BKPageControlView *)sliderView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
 
 /**
  切换index
@@ -38,7 +38,7 @@
  @param switchIndex 切换的index
  @param leaveIndex 离开的index
  */
--(void)sliderView:(BKPageControlView*)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex;
+-(void)sliderView:(nonnull BKPageControlView*)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex;
 
 #pragma mark - 主视图滑动代理
 
@@ -48,7 +48,7 @@
  @param sliderView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView*)sliderView didScrollBgScrollView:(UIScrollView*)bgScrollView;
+-(void)sliderView:(nonnull BKPageControlView*)sliderView didScrollBgScrollView:(nonnull UIScrollView*)bgScrollView;
 
 /**
  开始滑动主视图
@@ -56,7 +56,7 @@
  @param sliderView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView*)sliderView willBeginDraggingBgScrollView:(UIScrollView*)bgScrollView;
+-(void)sliderView:(nonnull BKPageControlView*)sliderView willBeginDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView;
 
 /**
  主视图惯性结束
@@ -64,7 +64,7 @@
  @param sliderView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView*)sliderView didEndDeceleratingBgScrollView:(UIScrollView*)bgScrollView;
+-(void)sliderView:(nonnull BKPageControlView*)sliderView didEndDeceleratingBgScrollView:(nonnull UIScrollView*)bgScrollView;
 
 /**
  主视图停止拖拽
@@ -72,7 +72,7 @@
  @param sliderView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView*)sliderView didEndDraggingBgScrollView:(UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
+-(void)sliderView:(nonnull BKPageControlView*)sliderView didEndDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 
 #pragma mark - 导航
 
@@ -84,7 +84,7 @@
  @param selectIconImageView 选中的icon
  @param index 索引
  */
--(void)sliderView:(BKPageControlView *)sliderView menu:(BKPageControlMenu*)menu settingIconImageView:(UIImageView*)iconImageView selectIconImageView:(UIImageView*)selectIconImageView atIndex:(NSUInteger)index;
+-(void)sliderView:(nonnull BKPageControlView *)sliderView menu:(nonnull BKPageControlMenu*)menu settingIconImageView:(nonnull UIImageView*)iconImageView selectIconImageView:(nonnull UIImageView*)selectIconImageView atIndex:(NSUInteger)index;
 
 @end
 
@@ -101,20 +101,20 @@
  @param superVC 父视图 (用于保存子控制器)
  @return BKPageControlView
  */
--(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKPageControlViewDelegate>)delegate childControllers:(NSArray<BKPageControlViewController*>*)childControllers superVC:(UIViewController*)superVC;
+-(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<BKPageControlViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
 
 /**
  代理
  */
-@property (nonatomic,weak) id<BKPageControlViewDelegate> delegate;
+@property (nonatomic,weak,nullable) id<BKPageControlViewDelegate> delegate;
 /**
  展示的子控制器数组 (子控制器的标题就是目录中的标题)
  */
-@property (nonatomic,copy) NSArray<BKPageControlViewController*> * childControllers;
+@property (nonatomic,copy,nullable) NSArray<BKPageControlViewController*> * childControllers;
 /**
  父视图 (用于保存展示的子控制器)
  */
-@property (nonatomic,weak,readonly) UIViewController * superVC;
+@property (nonatomic,weak,readonly,nullable) UIViewController * superVC;
 
 /**
  选中索引 从0开始
@@ -127,33 +127,33 @@
 /**
  主视图（竖直滚动）
  */
-@property (nonatomic,strong) UIScrollView * bgScrollView;
+@property (nonatomic,strong,nonnull) UIScrollView * bgScrollView;
 
 #pragma mark - 第二级视图
 
 /**
  头视图
  */
-@property (nonatomic,strong) UIView * headerView;
+@property (nonatomic,strong,nullable) UIView * headerView;
 
 /**
  内容视图(包含导航和内容)
  */
-@property (nonatomic,strong) UIView * contentView;
+@property (nonatomic,strong,nonnull) UIView * contentView;
 
 #pragma mark - 导航视图（第三级）
 
 /**
  导航视图
  */
-@property (nonatomic,strong) BKPageControlMenuView * menuView;
+@property (nonatomic,strong,nonnull) BKPageControlMenuView * menuView;
 
 #pragma mark - 内容视图（第三级）
 
 /**
  详情内容视图
  */
-@property (nonatomic,strong) UICollectionView * collectionView;
+@property (nonatomic,strong,nonnull) UICollectionView * collectionView;
 /**
  详情内容视图左右插入量 默认0
  */
@@ -167,7 +167,7 @@
 /**
  自定义滑动手势
  */
-@property (nonatomic,strong,readonly) UIPanGestureRecognizer * csCollectionViewPanGesture;
+@property (nonatomic,strong,readonly,nullable) UIPanGestureRecognizer * csCollectionViewPanGesture;
 
 @end
 

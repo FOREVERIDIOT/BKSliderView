@@ -11,7 +11,7 @@
 #import "BKPageControlView.h"
 #import "UIView+BKPageControlView.h"
 
-NSString * const kSliderViewCellID = @"kSliderViewCellID";
+NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 @interface BKPageControlView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKPageControlMenuViewDelegate,UIGestureRecognizerDelegate>
 
@@ -27,6 +27,11 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
  内容视图是否正在滚动中
  */
 @property (nonatomic,assign) BOOL collectionViewIsScrolling;
+
+/**
+ panGesture定时器
+ */
+@property (nonatomic,strong) NSTimer * panGestureTimer;
 
 @end
 
@@ -50,7 +55,9 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     NSMutableArray * titles = [NSMutableArray array];
     for (int i = 0; i < [_childControllers count]; i++) {
         BKPageControlViewController * vc = _childControllers[i];
+        NSAssert([vc isKindOfClass:[BKPageControlViewController class]], @"控制器必须为BKPageControlViewController或者BKPageControlViewController的子控制器");
         vc.index = i;
+        vc.superVC = self.superVC;
         NSAssert(vc.title != nil, @"未创建标题");
         NSUInteger existCount = 0;
         for (BKPageControlViewController * vc2 in _childControllers) {
@@ -90,6 +97,10 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 -(void)setSuperVC:(UIViewController *)superVC
 {
     _superVC = superVC;
+    for (int i = 0; i < [self.childControllers count]; i++) {
+        BKPageControlViewController * vc = self.childControllers[i];
+        vc.superVC = _superVC;
+    }
 }
 
 -(UIViewController*)superVC
@@ -279,6 +290,9 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
             if ([obj isKindOfClass:[UIScrollView class]]) {
                 vc.mainScrollView = obj;
                 *stop = YES;
+            }else if ([obj isKindOfClass:[BKPageControlView class]]) {
+                vc.mainScrollView = ((BKPageControlView*)obj).bgScrollView;
+                *stop = YES;
             }
         }];
     }
@@ -372,7 +386,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
         if (@available(iOS 11.0, *)) {
             _collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
-        [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:kSliderViewCellID];
+        [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:kBKPageControlViewCellID];
     }
     return _collectionView;
 }
@@ -389,7 +403,7 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:kSliderViewCellID forIndexPath:indexPath];
+    UICollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:kBKPageControlViewCellID forIndexPath:indexPath];
     
     return cell;
 }
@@ -569,9 +583,13 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     switch (panGesture.state) {
         case UIGestureRecognizerStateBegan:
         {
+            [self.panGestureTimer invalidate];
+            self.panGestureTimer = nil;
+            
             [[collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 obj.userInteractionEnabled = NO;
             }];
+            
             [self scrollViewWillBeginDragging:collectionView];
         }
             break;
@@ -589,28 +607,27 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
         case UIGestureRecognizerStateEnded:
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStatePossible:
         {
             CGPoint velocity = [panGesture velocityInView:panGesture.view];
             NSInteger item;
-            if (velocity.x > 500) {
-                item = collectionView.contentOffset.x / collectionView.bk_width - 1;
-            }else if (velocity.x < -500) {
-                item = collectionView.contentOffset.x / collectionView.bk_width + 1;
+            if (velocity.x > 0) {
+                item = ceil(collectionView.contentOffset.x / collectionView.bk_width - 1);
+            }else if (velocity.x < 0) {
+                item = floor(collectionView.contentOffset.x / collectionView.bk_width + 1);
             }else {
                 item = round(collectionView.contentOffset.x / collectionView.bk_width);
             }
+            if (item < 0) {
+                item = 0;
+            }else if (item > [self.childControllers count] - 1) {
+                item = [self.childControllers count] - 1;
+            }
             CGFloat contentOffsetX = item * collectionView.bk_width;
             [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y) animated:YES];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if (self.csCollectionViewPanGesture.state == UIGestureRecognizerStateEnded || self.csCollectionViewPanGesture.state == UIGestureRecognizerStateCancelled ||
-                    self.csCollectionViewPanGesture.state == UIGestureRecognizerStateFailed ||
-                    self.csCollectionViewPanGesture.state == UIGestureRecognizerStatePossible) {
-                    [[collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        obj.userInteractionEnabled = YES;
-                    }];
-                    [self scrollViewDidEndDecelerating:collectionView];
-                }
-            });
+            
+            self.panGestureTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(panGestureTimerMethod) userInfo:nil repeats:NO];
+            [[NSRunLoop mainRunLoop] addTimer:self.panGestureTimer forMode:NSRunLoopCommonModes];
         }
             break;
         default:
@@ -618,6 +635,14 @@ NSString * const kSliderViewCellID = @"kSliderViewCellID";
     }
     
     [panGesture setTranslation:CGPointZero inView:collectionView];
+}
+
+-(void)panGestureTimerMethod
+{
+    [[self.collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.userInteractionEnabled = YES;
+    }];
+    [self scrollViewDidEndDecelerating:self.collectionView];
 }
 
 #pragma mark - UIGestureRecognizerDelegate
