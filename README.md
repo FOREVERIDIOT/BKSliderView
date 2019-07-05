@@ -8,6 +8,7 @@
 
 ## 例图
 ![image](https://github.com/FOREVERIDIOT/BKSliderView/blob/master/Images/r.gif)
+![image](https://github.com/FOREVERIDIOT/BKSliderView/blob/master/Images/r1.gif)
 
 ## 创建
 

@@ -583,10 +583,15 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 -(void)scrollCollectionView:(UICollectionView*)collectionView
 {
     CGFloat offsetX = collectionView.contentOffset.x;
-    NSInteger item = offsetX / collectionView.bk_width;
+    NSInteger item = 0;
     //一页滑动的百分比
-    CGFloat page_offsetX = (CGFloat)((NSInteger)offsetX % (NSInteger)collectionView.bk_width);
-    CGFloat percentage = page_offsetX / collectionView.bk_width;
+    CGFloat page_offsetX = 0;
+    CGFloat percentage = 0;
+    if (collectionView.bk_width != 0) {
+        item = offsetX / collectionView.bk_width;
+        page_offsetX = (CGFloat)((NSInteger)offsetX % (NSInteger)collectionView.bk_width);
+        percentage = page_offsetX / collectionView.bk_width;
+    }
     //往左滑
     NSInteger fromIndex = item;
     NSInteger toIndex;
