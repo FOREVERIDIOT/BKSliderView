@@ -578,7 +578,7 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     }];
 }
 
-#pragma mark - 滑动sliderView的方法
+#pragma mark - 滑动pageControlView的方法
 
 -(void)scrollCollectionView:(UICollectionView*)collectionView
 {

@@ -6,8 +6,9 @@
 //  Copyright © 2017年 BIKE. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import <BKPageControlView/BKPageControlView.h>
 
-@interface ExampleViewController : BKPageControlViewController
+@interface ExampleViewController : UIViewController <BKPageControlViewController>
 
 @end

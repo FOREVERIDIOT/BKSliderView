@@ -177,12 +177,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,strong) UIColor * menuSelectTitleColor;
 
-#pragma mark - 滑动sliderView的方法
+#pragma mark - 滑动pageControlView的方法
 
 /**
- 滚动sliderView
+ 滚动pageControlView
 
- @param collectionView sliderView
+ @param collectionView pageControlView
  */
 -(void)scrollCollectionView:(UICollectionView*)collectionView;
 

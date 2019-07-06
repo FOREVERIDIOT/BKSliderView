@@ -2,30 +2,31 @@
 //  BKPageControlViewController.h
 //  BKPageControlView
 //
-//  Created by zhaolin on 2019/7/3.
+//  Created by zhaolin on 2019/7/5.
 //  Copyright © 2019 BIKE. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#ifndef BKPageControlViewController_h
+#define BKPageControlViewController_h
 
-NS_ASSUME_NONNULL_BEGIN
+@protocol BKPageControlViewController <NSObject>
 
-@interface BKPageControlViewController : UIViewController
+@required
 
 /**
  所在索引
  */
-@property (nonatomic,assign) NSUInteger index;
+@property (nonatomic,assign) NSUInteger bk_index;
 /**
  分页控制视图所在的父控制器
  */
-@property (nonatomic,weak) UIViewController * superVC;
+@property (nonatomic,weak) UIViewController * bk_superVC;
 /**
  主滚动视图(用于计算出BKPageControlView主视图的contentSize)
  此属性会自动获取，也可以自己赋值更改。
  */
-@property (nonatomic,weak) UIScrollView * mainScrollView;
+@property (nonatomic,weak) UIScrollView * bk_mainScrollView;
 
 @end
 
-NS_ASSUME_NONNULL_END
+#endif /* BKPageControlViewController_h */

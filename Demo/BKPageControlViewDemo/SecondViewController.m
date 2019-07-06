@@ -118,7 +118,7 @@
  
  @param leaveIndex 离开的index
  */
--(void)sliderView:(BKPageControlView *)sliderView willLeaveIndex:(NSUInteger)leaveIndex
+-(void)pageControlView:(BKPageControlView *)pageControlView willLeaveIndex:(NSUInteger)leaveIndex
 {
     
 }
@@ -126,12 +126,12 @@
 /**
  切换index中
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param switchingIndex 切换中的index
  @param leavingIndex 离开中的index
  @param percentage 百分比
  */
--(void)sliderView:(BKPageControlView *)sliderView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
+-(void)pageControlView:(BKPageControlView *)pageControlView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
 {
     
 }
@@ -139,11 +139,11 @@
 /**
  切换index
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param switchIndex 切换的index
  @param leaveIndex 离开的index
  */
--(void)sliderView:(BKPageControlView *)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex
+-(void)pageControlView:(BKPageControlView *)pageControlView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex
 {
     
 }
@@ -153,10 +153,10 @@
 /**
  滑动主视图
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView *)sliderView didScrollBgScrollView:(UIScrollView *)bgScrollView
+-(void)pageControlView:(BKPageControlView *)pageControlView didScrollBgScrollView:(UIScrollView *)bgScrollView
 {
     
 }
@@ -164,10 +164,10 @@
 /**
  开始滑动主视图
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView *)sliderView willBeginDraggingBgScrollView:(UIScrollView *)bgScrollView
+-(void)pageControlView:(BKPageControlView *)pageControlView willBeginDraggingBgScrollView:(UIScrollView *)bgScrollView
 {
     
 }
@@ -175,10 +175,10 @@
 /**
  主视图惯性结束
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView *)sliderView didEndDeceleratingBgScrollView:(UIScrollView *)bgScrollView
+-(void)pageControlView:(BKPageControlView *)pageControlView didEndDeceleratingBgScrollView:(UIScrollView *)bgScrollView
 {
     
 }
@@ -186,10 +186,10 @@
 /**
  主视图停止拖拽
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(BKPageControlView *)sliderView didEndDraggingBgScrollView:(UIScrollView *)bgScrollView willDecelerate:(BOOL)decelerate
+-(void)pageControlView:(BKPageControlView *)pageControlView didEndDraggingBgScrollView:(UIScrollView *)bgScrollView willDecelerate:(BOOL)decelerate
 {
     
 }
@@ -202,7 +202,7 @@
  @param selectIconImageView 选中的icon
  @param index 索引
  */
--(void)sliderView:(BKPageControlView *)sliderView menu:(BKPageControlMenu *)menu settingIconImageView:(UIImageView *)iconImageView selectIconImageView:(UIImageView *)selectIconImageView atIndex:(NSUInteger)index
+-(void)pageControlView:(BKPageControlView *)pageControlView menu:(BKPageControlMenu *)menu settingIconImageView:(UIImageView *)iconImageView selectIconImageView:(UIImageView *)selectIconImageView atIndex:(NSUInteger)index
 {
     
 }

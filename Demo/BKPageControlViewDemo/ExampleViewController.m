@@ -17,12 +17,15 @@
 @end
 
 @implementation ExampleViewController
+@synthesize bk_index = _bk_index;
+@synthesize bk_superVC = _bk_superVC;
+@synthesize bk_mainScrollView = _bk_mainScrollView;
 
--(void)setIndex:(NSUInteger)index
+-(void)setBk_index:(NSUInteger)bk_index
 {
-    [super setIndex:index];
+    _bk_index = bk_index;
     if (self.totalCount == 0) {
-        self.totalCount = (self.index + 1) * 5;
+        self.totalCount = (_bk_index + 1) * 5;
     }
 }
 

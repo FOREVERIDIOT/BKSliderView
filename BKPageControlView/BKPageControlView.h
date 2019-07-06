@@ -19,60 +19,60 @@
 
  @param leaveIndex 离开的index
  */
--(void)sliderView:(nonnull BKPageControlView*)sliderView willLeaveIndex:(NSUInteger)leaveIndex;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView willLeaveIndex:(NSUInteger)leaveIndex;
 
 /**
  切换index中
 
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param switchingIndex 切换中的index
  @param leavingIndex 离开中的index
  @param percentage 百分比
  */
--(void)sliderView:(nonnull BKPageControlView *)sliderView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
+-(void)pageControlView:(nonnull BKPageControlView *)pageControlView switchingIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
 
 /**
  切换index
 
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param switchIndex 切换的index
  @param leaveIndex 离开的index
  */
--(void)sliderView:(nonnull BKPageControlView*)sliderView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView switchIndex:(NSUInteger)switchIndex leaveIndex:(NSUInteger)leaveIndex;
 
 #pragma mark - 主视图滑动代理
 
 /**
  滑动主视图
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(nonnull BKPageControlView*)sliderView didScrollBgScrollView:(nonnull UIScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didScrollBgScrollView:(nonnull UIScrollView*)bgScrollView;
 
 /**
  开始滑动主视图
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(nonnull BKPageControlView*)sliderView willBeginDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView willBeginDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView;
 
 /**
  主视图惯性结束
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(nonnull BKPageControlView*)sliderView didEndDeceleratingBgScrollView:(nonnull UIScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDeceleratingBgScrollView:(nonnull UIScrollView*)bgScrollView;
 
 /**
  主视图停止拖拽
  
- @param sliderView BKPageControlView
+ @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)sliderView:(nonnull BKPageControlView*)sliderView didEndDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 
 #pragma mark - 导航
 
@@ -84,7 +84,7 @@
  @param selectIconImageView 选中的icon
  @param index 索引
  */
--(void)sliderView:(nonnull BKPageControlView *)sliderView menu:(nonnull BKPageControlMenu*)menu settingIconImageView:(nonnull UIImageView*)iconImageView selectIconImageView:(nonnull UIImageView*)selectIconImageView atIndex:(NSUInteger)index;
+-(void)pageControlView:(nonnull BKPageControlView *)pageControlView menu:(nonnull BKPageControlMenu*)menu settingIconImageView:(nonnull UIImageView*)iconImageView selectIconImageView:(nonnull UIImageView*)selectIconImageView atIndex:(NSUInteger)index;
 
 @end
 
@@ -97,20 +97,20 @@
 
  @param frame 坐标大小
  @param delegate 代理
- @param childControllers 展示的子控制器数组 (子控制器的标题就是目录中的标题)
+ @param childControllers 展示的子控制器数组 必须遵循代理BKPageControlViewController (子控制器的标题就是目录中的标题)
  @param superVC 父视图 (用于保存子控制器)
  @return BKPageControlView
  */
--(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<BKPageControlViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
+-(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<UIViewController<BKPageControlViewController>*>*)childControllers superVC:(nonnull UIViewController*)superVC;
 
 /**
  代理
  */
 @property (nonatomic,weak,nullable) id<BKPageControlViewDelegate> delegate;
 /**
- 展示的子控制器数组 (子控制器的标题就是目录中的标题)
+ 展示的子控制器数组 必须遵循代理BKPageControlViewController (子控制器的标题就是目录中的标题)
  */
-@property (nonatomic,copy,nullable) NSArray<BKPageControlViewController*> * childControllers;
+@property (nonatomic,copy,nullable) NSArray<UIViewController<BKPageControlViewController>*> * childControllers;
 /**
  父视图 (用于保存展示的子控制器)
  */
@@ -160,7 +160,7 @@
 @property (nonatomic,assign) CGFloat contentLrInsets;
 
 /**
- 用自定义的滑动手势代替系统的滑动手势(因项目需求需要嵌套两层sliderView，并且两层都需要使用左右滑动，所以这个属性诞生了)
+ 用自定义的滑动手势代替系统的滑动手势(因项目需求需要嵌套两层pageControlView，并且两层都需要使用左右滑动，所以这个属性诞生了)
  */
 @property (nonatomic,assign) BOOL useCsPanGestureOnCollectionView;
 

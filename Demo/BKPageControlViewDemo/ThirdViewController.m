@@ -8,9 +8,8 @@
 
 #import "ThirdViewController.h"
 #import "Inline.h"
-#import <BKPageControlView/BKPageControlView.h>
-#import "ExampleViewController.h"
 #import "UIView+Extension.h"
+#import "ExampleViewController.h"
 
 @interface ThirdViewController ()<BKPageControlViewDelegate>
 
@@ -19,6 +18,9 @@
 @end
 
 @implementation ThirdViewController
+@synthesize bk_index = _bk_index;
+@synthesize bk_superVC = _bk_superVC;
+@synthesize bk_mainScrollView = _bk_mainScrollView;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
