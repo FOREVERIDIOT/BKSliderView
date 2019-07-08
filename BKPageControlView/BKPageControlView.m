@@ -613,9 +613,17 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
                         //在此处不需要重新计算主滚动视图的偏移量Y 但是得需要计算一下子控制器中的主滚动视图的偏移量Y 所以用isNeedReCalcBgScrollViewContentOffsetY这个参数替代判断了
                         if (self.isNeedReCalcBgScrollViewContentOffsetY) {
                             //当主滚动式图的偏移量Y小于0 && 子控制器中的主滚动视图的偏移量Y大于0 需把偏移量Y传递
-                            if (self.bgScrollView.contentOffset.y < 0 && scrollView.contentOffset.y > 0) {
-                                scrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + contentOffsetY);
-                                self.bgScrollView.contentOffset = CGPointZero;
+                            if (self.bgScrollView.contentOffset.y < 0) {
+                                if (scrollView.contentOffset.y > 0) {
+                                    //主滚动式图的偏移量Y小于0时 滑动速度会因scrollView橡皮筋效果影响 因此给主滚动视图添加一个top插入量
+                                    self.bgScrollView.contentInset = UIEdgeInsetsMake(self.bk_height, 0, 0, 0);
+                                    CGFloat calc_contentOffsetY = scrollView.contentOffset.y + contentOffsetY;
+                                    scrollView.contentOffset = CGPointMake(0, calc_contentOffsetY < 0 ? 0 : calc_contentOffsetY);
+                                    self.bgScrollView.contentOffset = CGPointZero;
+                                }else {
+                                    //当主滚动式图的偏移量Y小于0 && 子控制器中的主滚动视图的偏移量Y小于0 把插入量归0
+                                    self.bgScrollView.contentInset = UIEdgeInsetsZero;
+                                }
                             }
                         }else {
                             scrollView.contentOffset = CGPointZero;
