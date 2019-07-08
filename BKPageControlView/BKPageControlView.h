@@ -94,6 +94,16 @@
 
 /**
  初始化方法
+ 
+ @param frame 坐标大小
+ @param childControllers 展示的子控制器数组 必须遵循代理BKPageControlViewController (子控制器的标题就是目录中的标题)
+ @param superVC 父视图 (用于保存子控制器)
+ @return BKPageControlView
+ */
+-(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<UIViewController<BKPageControlViewController>*>*)childControllers superVC:(nonnull UIViewController*)superVC;
+
+/**
+ 初始化方法
 
  @param frame 坐标大小
  @param delegate 代理
@@ -116,11 +126,17 @@
  */
 @property (nonatomic,weak,readonly,nullable) UIViewController * superVC;
 
+#pragma mark - 索引
+
 /**
  选中索引 从0开始
- (selectIndex >= [viewControllers count] - 1 时 selectIndex = [viewControllers count] - 1)
+ (displayIndex >= [viewControllers count] - 1 时 displayIndex = [viewControllers count] - 1)
  */
-@property (nonatomic,assign) NSUInteger selectIndex;
+@property (nonatomic,assign) NSUInteger displayIndex;
+/**
+ 当前选中索引显示的控制器
+ */
+@property (nonatomic,nonnull,readonly) UIViewController<BKPageControlViewController> * displayVC;
 
 #pragma mark - 主视图
 
@@ -163,7 +179,6 @@
  用自定义的滑动手势代替系统的滑动手势(因项目需求需要嵌套两层pageControlView，并且两层都需要使用左右滑动，所以这个属性诞生了)
  */
 @property (nonatomic,assign) BOOL useCsPanGestureOnCollectionView;
-
 /**
  自定义滑动手势
  */

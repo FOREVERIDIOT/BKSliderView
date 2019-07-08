@@ -17,6 +17,8 @@
 		1D1BC42E22CDE24B00FED481 /* BKPageControlView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D1BC42D22CDE24B00FED481 /* BKPageControlView.framework */; };
 		1D1BC42F22CDE24B00FED481 /* BKPageControlView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D1BC42D22CDE24B00FED481 /* BKPageControlView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1D3E5E9A22CF1C1D00EDDEC2 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3E5E9922CF1C1D00EDDEC2 /* ThirdViewController.m */; };
+		1DEBE0F422D2D54D00D4A540 /* ExampleViewTController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0F322D2D54D00D4A540 /* ExampleViewTController.m */; };
+		1DEBE0F722D2E28B00D4A540 /* ExampleTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0F622D2E28B00D4A540 /* ExampleTableView.m */; };
 		2DEF8AE0E996DE3E62DE5495 /* Pods_BKPageControlViewDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05946E5ED0A5DEF1115F9608 /* Pods_BKPageControlViewDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +56,10 @@
 		1D1BC42D22CDE24B00FED481 /* BKPageControlView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BKPageControlView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D3E5E9822CF1C1D00EDDEC2 /* ThirdViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
 		1D3E5E9922CF1C1D00EDDEC2 /* ThirdViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
+		1DEBE0F222D2D54D00D4A540 /* ExampleViewTController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExampleViewTController.h; sourceTree = "<group>"; };
+		1DEBE0F322D2D54D00D4A540 /* ExampleViewTController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExampleViewTController.m; sourceTree = "<group>"; };
+		1DEBE0F522D2E28B00D4A540 /* ExampleTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExampleTableView.h; sourceTree = "<group>"; };
+		1DEBE0F622D2E28B00D4A540 /* ExampleTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExampleTableView.m; sourceTree = "<group>"; };
 		22F6A6FE4CACDF8483EC6038 /* Pods-BKPageControlViewDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BKPageControlViewDemo.debug.xcconfig"; path = "Target Support Files/Pods-BKPageControlViewDemo/Pods-BKPageControlViewDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		C5C119AEE01EB1D1F0A32679 /* Pods-BKPageControlViewDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BKPageControlViewDemo.release.xcconfig"; path = "Target Support Files/Pods-BKPageControlViewDemo/Pods-BKPageControlViewDemo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -103,6 +109,10 @@
 				1D3E5E9922CF1C1D00EDDEC2 /* ThirdViewController.m */,
 				1D1BC3BA22CDD48400FED481 /* ExampleViewController.h */,
 				1D1BC3BE22CDD48400FED481 /* ExampleViewController.m */,
+				1DEBE0F222D2D54D00D4A540 /* ExampleViewTController.h */,
+				1DEBE0F322D2D54D00D4A540 /* ExampleViewTController.m */,
+				1DEBE0F522D2E28B00D4A540 /* ExampleTableView.h */,
+				1DEBE0F622D2E28B00D4A540 /* ExampleTableView.m */,
 				1D1BC3BB22CDD48400FED481 /* Inline.h */,
 				1D1BC41522CDE06400FED481 /* UIView+Extension.h */,
 				1D1BC41622CDE06400FED481 /* UIView+Extension.m */,
@@ -246,8 +256,10 @@
 			files = (
 				1D1BC41722CDE06400FED481 /* UIView+Extension.m in Sources */,
 				1D1BC3BF22CDD48400FED481 /* SecondViewController.m in Sources */,
+				1DEBE0F422D2D54D00D4A540 /* ExampleViewTController.m in Sources */,
 				1D1BC3C022CDD48400FED481 /* FirstViewController.m in Sources */,
 				1D1BC39422CDD39100FED481 /* main.m in Sources */,
+				1DEBE0F722D2E28B00D4A540 /* ExampleTableView.m in Sources */,
 				1D1BC3C122CDD48400FED481 /* ExampleViewController.m in Sources */,
 				1D1BC38622CDD39000FED481 /* AppDelegate.m in Sources */,
 				1D3E5E9A22CF1C1D00EDDEC2 /* ThirdViewController.m in Sources */,

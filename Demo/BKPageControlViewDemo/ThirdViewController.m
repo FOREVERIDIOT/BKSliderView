@@ -11,7 +11,7 @@
 #import "UIView+Extension.h"
 #import "ExampleViewController.h"
 
-@interface ThirdViewController ()<BKPageControlViewDelegate>
+@interface ThirdViewController ()
 
 @property (nonatomic,strong) BKPageControlView * pageControlView;
 
@@ -36,7 +36,7 @@
         [viewControllers addObject:vc];
     }
     
-    self.pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectZero delegate:self childControllers:viewControllers superVC:self];
+    self.pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectZero childControllers:viewControllers superVC:self];
     self.pageControlView.useCsPanGestureOnCollectionView = YES;
     [self.view addSubview:self.pageControlView];
     
@@ -44,6 +44,11 @@
     redColorHeaderView.backgroundColor = [UIColor redColor];
     self.pageControlView.headerView = redColorHeaderView;
 }
+
+//-(void)dealloc
+//{
+//    NSLog(@"释放ThirdViewController");
+//}
 
 -(void)viewWillLayoutSubviews
 {

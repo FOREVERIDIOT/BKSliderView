@@ -22,7 +22,7 @@
  */
 @property (nonatomic,weak) UIViewController * bk_superVC;
 /**
- 主滚动视图(用于计算出BKPageControlView主视图的contentSize)
+ 子控制器的主滚动视图(用于计算出BKPageControlView主视图的contentSize)
  此属性会自动获取，也可以自己赋值更改。
  */
 @property (nonatomic,weak) UIScrollView * bk_mainScrollView;

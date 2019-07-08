@@ -12,6 +12,7 @@
 #import "ExampleViewController.h"
 #import "UIView+Extension.h"
 #import "ThirdViewController.h"
+#import "ExampleViewTController.h"
 
 @interface SecondViewController ()<BKPageControlViewDelegate>
 
@@ -46,7 +47,12 @@
             break;
         case 3:
         {
-            self.title = @"用手势滑动演示Demo";
+            self.title = @"嵌套pageControlView用手势滑动演示Demo";
+        }
+            break;
+        case 4:
+        {
+            self.title = @"换子控制器mainScrollview演示Demo";
         }
             break;
         default:
@@ -76,7 +82,7 @@
     switch (self.selectIndexPath.row) {
         case 1:
         {
-            self.pageControlView.selectIndex = 5;
+            self.pageControlView.displayIndex = 5;
         }
             break;
         case 2:
@@ -99,10 +105,28 @@
             self.pageControlView.childControllers = [childControllers copy];
         }
             break;
+        case 4:
+        {
+            UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+            yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
+            self.pageControlView.headerView = yellowColorHeaderView;
+            
+            ExampleViewTController * vc = [[ExampleViewTController alloc] init];
+            vc.title = @"测试换子控制器mainScrollview";
+            NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
+            [childControllers insertObject:vc atIndex:1];
+            self.pageControlView.childControllers = [childControllers copy];
+        }
+            break;
         default:
             break;
     }
 }
+
+//-(void)dealloc
+//{
+//    NSLog(@"释放SecondViewController");
+//}
 
 -(void)viewWillLayoutSubviews
 {

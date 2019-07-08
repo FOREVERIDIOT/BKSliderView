@@ -37,6 +37,11 @@
     [self.view addSubview:self.tableView];
 }
 
+//-(void)dealloc
+//{
+//    NSLog(@"释放ExampleViewController");
+//}
+
 -(void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];

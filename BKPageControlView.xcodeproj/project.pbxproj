@@ -24,6 +24,8 @@
 		1D1BC40122CDDD2400FED481 /* BKPageControlMenuModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3EF22CDDD2400FED481 /* BKPageControlMenuModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1D1BC40222CDDD2400FED481 /* BKPageControlMenuView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D1BC3F022CDDD2400FED481 /* BKPageControlMenuView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1D3E5E9C22CF49A800EDDEC2 /* BKPageControlViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D3E5E9B22CF49A800EDDEC2 /* BKPageControlViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1DEBE0FA22D2E9B800D4A540 /* BKPageControlKVOModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DEBE0F822D2E9B800D4A540 /* BKPageControlKVOModel.h */; };
+		1DEBE0FB22D2E9B800D4A540 /* BKPageControlKVOModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DEBE0F922D2E9B800D4A540 /* BKPageControlKVOModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +48,8 @@
 		1D1BC3EF22CDDD2400FED481 /* BKPageControlMenuModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlMenuModel.h; sourceTree = "<group>"; };
 		1D1BC3F022CDDD2400FED481 /* BKPageControlMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPageControlMenuView.h; sourceTree = "<group>"; };
 		1D3E5E9B22CF49A800EDDEC2 /* BKPageControlViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKPageControlViewController.h; sourceTree = "<group>"; };
+		1DEBE0F822D2E9B800D4A540 /* BKPageControlKVOModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKPageControlKVOModel.h; sourceTree = "<group>"; };
+		1DEBE0F922D2E9B800D4A540 /* BKPageControlKVOModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKPageControlKVOModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +87,8 @@
 				1D1BC3E822CDDD2400FED481 /* Menu */,
 				1D1BC3DF22CDDD2300FED481 /* BKPageControlView.h */,
 				1D1BC3DD22CDDD2300FED481 /* BKPageControlView.m */,
+				1DEBE0F822D2E9B800D4A540 /* BKPageControlKVOModel.h */,
+				1DEBE0F922D2E9B800D4A540 /* BKPageControlKVOModel.m */,
 				1D3E5E9B22CF49A800EDDEC2 /* BKPageControlViewController.h */,
 			);
 			path = BKPageControlView;
@@ -140,6 +146,7 @@
 				1D1BC3F522CDDD2400FED481 /* NSString+BKPageControlView.h in Headers */,
 				1D1BC3F722CDDD2400FED481 /* NSAttributedString+BKPageControlView.h in Headers */,
 				1D1BC3F622CDDD2400FED481 /* UIView+BKPageControlView.h in Headers */,
+				1DEBE0FA22D2E9B800D4A540 /* BKPageControlKVOModel.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,6 +219,7 @@
 			files = (
 				1D1BC3F422CDDD2400FED481 /* NSAttributedString+BKPageControlView.m in Sources */,
 				1D1BC3FB22CDDD2400FED481 /* BKPageControlMenu.m in Sources */,
+				1DEBE0FB22D2E9B800D4A540 /* BKPageControlKVOModel.m in Sources */,
 				1D1BC3F822CDDD2400FED481 /* NSString+BKPageControlView.m in Sources */,
 				1D1BC3FD22CDDD2400FED481 /* BKPageControlMenuModel.m in Sources */,
 				1D1BC40022CDDD2400FED481 /* BKPageControlMenuPropertyModel.m in Sources */,
