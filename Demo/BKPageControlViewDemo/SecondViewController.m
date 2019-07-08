@@ -107,6 +107,8 @@
             break;
         case 4:
         {
+            self.pageControlView.bgScrollViewScrollOrder = BKPageControlBgScrollViewScrollOrderFirstScrollContentView;
+            
             UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
             yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
             self.pageControlView.headerView = yellowColorHeaderView;

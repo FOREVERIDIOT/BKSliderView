@@ -35,7 +35,7 @@
     // Do any additional setup after loading the view.
     
     self.fTotalCount = 5;
-    self.sTotalCount = 20;
+    self.sTotalCount = 200;
     
     [self.view addSubview:self.fTableView];
     [self.view addSubview:self.sTableView];
@@ -101,13 +101,13 @@
             _sTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
         _sTableView.tableFooterView = [UIView new];
-        _sTableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [weakSelf.sTableView.mj_footer endRefreshing];
-                weakSelf.sTotalCount = weakSelf.sTotalCount + 10;
-                [weakSelf.sTableView reloadData];
-            });
-        }];
+//        _sTableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [weakSelf.sTableView.mj_footer endRefreshing];
+//                weakSelf.sTotalCount = weakSelf.sTotalCount + 10;
+//                [weakSelf.sTableView reloadData];
+//            });
+//        }];
     }
     return _sTableView;
 }

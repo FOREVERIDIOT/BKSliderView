@@ -10,6 +10,11 @@
 #import "BKPageControlMenuView.h"
 @class BKPageControlView;
 
+typedef NS_ENUM(NSUInteger, BKPageControlBgScrollViewScrollOrder) {//主视图滑动顺序
+    BKPageControlBgScrollViewScrollOrderNormal = 0,                //正常滑动顺序
+    BKPageControlBgScrollViewScrollOrderFirstScrollContentView     //先滑动内容视图
+};
+
 @protocol BKPageControlViewDelegate <NSObject>
 
 @optional
@@ -144,6 +149,10 @@
  主视图（竖直滚动）
  */
 @property (nonatomic,strong,nonnull) UIScrollView * bgScrollView;
+/**
+ 主视图的滑动顺序
+ */
+@property (nonatomic,assign) BKPageControlBgScrollViewScrollOrder bgScrollViewScrollOrder;
 
 #pragma mark - 第二级视图
 
