@@ -144,9 +144,9 @@
 				1D1BC40222CDDD2400FED481 /* BKPageControlMenuView.h in Headers */,
 				1D1BC3FF22CDDD2400FED481 /* BKPageControlMenu.h in Headers */,
 				1D1BC3F522CDDD2400FED481 /* NSString+BKPageControlView.h in Headers */,
+				1DEBE0FA22D2E9B800D4A540 /* BKPageControlKVOModel.h in Headers */,
 				1D1BC3F722CDDD2400FED481 /* NSAttributedString+BKPageControlView.h in Headers */,
 				1D1BC3F622CDDD2400FED481 /* UIView+BKPageControlView.h in Headers */,
-				1DEBE0FA22D2E9B800D4A540 /* BKPageControlKVOModel.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
