@@ -22,6 +22,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 @property (nonatomic,strong) NSMutableArray<BKPageControlKVOModel*> * subControllersKvos;
 
 /**
+ 是否需要在InLayoutSubviews方法中修改 collectionView的偏移量
+ */
+@property (nonatomic,assign) BOOL isNeedEditCollectionViewContentOffsetInLayoutSubviews;
+/**
  离开的index
  */
 @property (nonatomic,assign) NSInteger leaveIndex;
@@ -178,11 +182,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
     }
     self.menuView.frame = CGRectMake(0, 0, self.contentView.bk_width, self.menuView.bk_height);
-    //检测collectionView的宽度是否为0
-    BOOL collectionViewWIsZero = self.collectionView.bk_width == 0 ? YES : NO;
     self.collectionView.frame = CGRectMake(self.contentLrInsets, CGRectGetMaxY(self.menuView.frame), self.contentView.bk_width - self.contentLrInsets*2, self.contentView.bk_height - CGRectGetMaxY(self.menuView.frame));
-    //若果为0 是因为创建时frame赋值为CGRectZero了 在此判断一下如果宽为0 选中的index不为0 改变contentOffSet
-    if (collectionViewWIsZero && self.displayIndex != 0) {
+    if (self.isNeedReCalcBgScrollViewContentOffsetY) {
+        self.isNeedReCalcBgScrollViewContentOffsetY = NO;
         CGFloat rollLength = self.collectionView.bk_width * self.displayIndex;
         [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
     }
@@ -374,8 +376,12 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)tapMenuSwitchSelectIndex:(NSUInteger)selectIndex
 {
-    CGFloat rollLength = self.collectionView.bk_width * selectIndex;
-    [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+    if (self.collectionView.bk_width == 0 || self.collectionView.contentSize.width == 0) {
+        self.isNeedReCalcBgScrollViewContentOffsetY = YES;
+    }else {
+        CGFloat rollLength = self.collectionView.bk_width * selectIndex;
+        [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+    }
     //即将离开代理
     if ([self.delegate respondsToSelector:@selector(pageControlView:willLeaveIndex:)]) {
         [self.delegate pageControlView:self willLeaveIndex:self.displayIndex];
