@@ -74,7 +74,7 @@
         [viewControllers addObject:vc];
     }
     
-    self.pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectMake(0, get_system_nav_height(), self.view.frame.size.width, self.view.frame.size.height - get_system_nav_height()) delegate:self childControllers:viewControllers superVC:self];
+    self.pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectZero delegate:self childControllers:viewControllers superVC:self];
     self.pageControlView.menuView.menuNumberOfLines = 2;
     self.pageControlView.menuView.bk_height = 70;
     [self.view addSubview:self.pageControlView];

@@ -178,7 +178,14 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
     }
     self.menuView.frame = CGRectMake(0, 0, self.contentView.bk_width, self.menuView.bk_height);
+    //检测collectionView的宽度是否为0
+    BOOL collectionViewWIsZero = self.collectionView.bk_width == 0 ? YES : NO;
     self.collectionView.frame = CGRectMake(self.contentLrInsets, CGRectGetMaxY(self.menuView.frame), self.contentView.bk_width - self.contentLrInsets*2, self.contentView.bk_height - CGRectGetMaxY(self.menuView.frame));
+    //若果为0 是因为创建时frame赋值为CGRectZero了 在此判断一下如果宽为0 选中的index不为0 改变contentOffSet
+    if (collectionViewWIsZero && self.displayIndex != 0) {
+        CGFloat rollLength = self.collectionView.bk_width * self.displayIndex;
+        [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+    }
 }
 
 -(void)dealloc
