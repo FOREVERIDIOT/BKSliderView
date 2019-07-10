@@ -107,7 +107,8 @@
             break;
         case 4:
         {
-            self.pageControlView.bgScrollViewScrollOrder = BKPageControlBgScrollViewScrollOrderFirstScrollContentView;
+            self.pageControlView.bgScrollView.contentInset = UIEdgeInsetsMake(100, 0, 0, 0);
+            self.pageControlView.bgScrollView.scrollOrder = BKPageControlBgScrollViewScrollOrderFirstScrollContentView;
             
             UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
             yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
@@ -182,7 +183,7 @@
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(BKPageControlView *)pageControlView didScrollBgScrollView:(UIScrollView *)bgScrollView
+-(void)pageControlView:(BKPageControlView *)pageControlView didScrollBgScrollView:(BKPageControlBgScrollView *)bgScrollView
 {
     
 }
@@ -193,7 +194,20 @@
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(BKPageControlView *)pageControlView willBeginDraggingBgScrollView:(UIScrollView *)bgScrollView
+-(void)pageControlView:(BKPageControlView *)pageControlView willBeginDraggingBgScrollView:(BKPageControlBgScrollView *)bgScrollView
+{
+    
+}
+
+/**
+ 主视图即将停止拖拽
+ 
+ @param pageControlView BKPageControlView
+ @param bgScrollView 主视图
+ @param velocity 速度
+ @param targetContentOffset 目标偏移量
+ */
+-(void)pageControlView:(BKPageControlView *)pageControlView willEndDraggingBgScrollView:(BKPageControlBgScrollView *)bgScrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
     
 }
@@ -204,7 +218,7 @@
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(BKPageControlView *)pageControlView didEndDeceleratingBgScrollView:(UIScrollView *)bgScrollView
+-(void)pageControlView:(BKPageControlView *)pageControlView didEndDeceleratingBgScrollView:(BKPageControlBgScrollView *)bgScrollView
 {
     
 }
@@ -215,7 +229,7 @@
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(BKPageControlView *)pageControlView didEndDraggingBgScrollView:(UIScrollView *)bgScrollView willDecelerate:(BOOL)decelerate
+-(void)pageControlView:(BKPageControlView *)pageControlView didEndDraggingBgScrollView:(BKPageControlBgScrollView *)bgScrollView willDecelerate:(BOOL)decelerate
 {
     
 }

@@ -7,13 +7,9 @@
 
 #import <UIKit/UIKit.h>
 #import "BKPageControlViewController.h"
+#import "BKPageControlBgScrollView.h"
 #import "BKPageControlMenuView.h"
 @class BKPageControlView;
-
-typedef NS_ENUM(NSUInteger, BKPageControlBgScrollViewScrollOrder) {//主视图滑动顺序
-    BKPageControlBgScrollViewScrollOrderNormal = 0,                //正常滑动顺序
-    BKPageControlBgScrollViewScrollOrderFirstScrollContentView     //先滑动内容视图
-};
 
 @protocol BKPageControlViewDelegate <NSObject>
 
@@ -53,7 +49,7 @@ typedef NS_ENUM(NSUInteger, BKPageControlBgScrollViewScrollOrder) {//主视图�
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView didScrollBgScrollView:(nonnull UIScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didScrollBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
 
 /**
  开始滑动主视图
@@ -61,15 +57,17 @@ typedef NS_ENUM(NSUInteger, BKPageControlBgScrollViewScrollOrder) {//主视图�
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView willBeginDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView willBeginDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
 
 /**
- 主视图惯性结束
- 
+ 主视图即将停止拖拽
+
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
+ @param velocity 速度
+ @param targetContentOffset 目标偏移量
  */
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDeceleratingBgScrollView:(nonnull UIScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView willEndDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView withVelocity:(CGPoint)velocity targetContentOffset:(nonnull inout CGPoint *)targetContentOffset;
 
 /**
  主视图停止拖拽
@@ -77,7 +75,15 @@ typedef NS_ENUM(NSUInteger, BKPageControlBgScrollViewScrollOrder) {//主视图�
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
  */
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDraggingBgScrollView:(nonnull UIScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
+
+/**
+ 主视图惯性结束
+ 
+ @param pageControlView BKPageControlView
+ @param bgScrollView 主视图
+ */
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDeceleratingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
 
 #pragma mark - 导航
 
@@ -148,11 +154,7 @@ typedef NS_ENUM(NSUInteger, BKPageControlBgScrollViewScrollOrder) {//主视图�
 /**
  主视图（竖直滚动）
  */
-@property (nonatomic,strong,nonnull) UIScrollView * bgScrollView;
-/**
- 主视图的滑动顺序
- */
-@property (nonatomic,assign) BKPageControlBgScrollViewScrollOrder bgScrollViewScrollOrder;
+@property (nonatomic,strong,nonnull) BKPageControlBgScrollView * bgScrollView;
 
 #pragma mark - 第二级视图
 
