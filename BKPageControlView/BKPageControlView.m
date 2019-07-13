@@ -73,8 +73,12 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     for (int i = 0; i < [_childControllers count]; i++) {
         UIViewController<BKPageControlViewController> * vc = _childControllers[i];
         NSAssert([vc conformsToProtocol:@protocol(BKPageControlViewController)], @"控制器必须遵循BKPageControlViewController代理");
-        vc.bk_index = i;
-        vc.bk_pageControlView = self;
+        if ([vc respondsToSelector:@selector(setBk_index:)]) {
+            vc.bk_index = i;
+        }
+        if ([vc respondsToSelector:@selector(setBk_pageControlView:)]) {
+            vc.bk_pageControlView = self;
+        }
         NSAssert(vc.title != nil, @"未创建标题");
         NSUInteger existCount = 0;
         for (UIViewController * vc2 in _childControllers) {
@@ -314,18 +318,26 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(UIScrollView*)getFrontScrollViewWithNowIndex:(NSInteger)index
 {
     UIViewController<BKPageControlViewController> * vc = self.childControllers[index];
-    if (!vc.bk_mainScrollView) {
+    __block UIScrollView * scrollView = nil;
+    BOOL isExistBK_mainScrollView = [vc respondsToSelector:@selector(setBk_mainScrollView:)];
+    if (isExistBK_mainScrollView) {
+        scrollView = vc.bk_mainScrollView;
+    }
+    if (!scrollView) {
         [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj isKindOfClass:[UIScrollView class]]) {
-                vc.bk_mainScrollView = obj;
+                scrollView = obj;
                 *stop = YES;
             }else if ([obj isKindOfClass:[BKPageControlView class]]) {
-                vc.bk_mainScrollView = ((BKPageControlView*)obj).bgScrollView;
+                scrollView = ((BKPageControlView*)obj).bgScrollView;
                 *stop = YES;
             }
         }];
     }
-    return vc.bk_mainScrollView;
+    if (isExistBK_mainScrollView) {
+        vc.bk_mainScrollView = scrollView;
+    }
+    return scrollView;
 }
 
 #pragma mark - 内容视图
@@ -451,16 +463,18 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     
     [self changeBgScrollContentSizeWithNowIndex:indexPath.item];
     
-    BKPageControlKVOModel * kvoModel = [self getCurrentChildControllerKvoModelWithController:vc];
-    NSMutableArray * kvoKeyPaths = [NSMutableArray array];
-    [vc addObserver:self forKeyPath:@"bk_mainScrollView" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-    [kvoKeyPaths addObject:@"bk_mainScrollView"];
-    if (vc.bk_mainScrollView) {
-        [vc addObserver:self forKeyPath:@"bk_mainScrollView.contentSize" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-        [kvoKeyPaths addObject:@"bk_mainScrollView.contentSize"];
+    if ([vc respondsToSelector:@selector(setBk_mainScrollView:)]) {
+        BKPageControlKVOModel * kvoModel = [self getCurrentChildControllerKvoModelWithController:vc];
+        NSMutableArray * kvoKeyPaths = [NSMutableArray array];
+        [vc addObserver:self forKeyPath:@"bk_mainScrollView" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
+        [kvoKeyPaths addObject:@"bk_mainScrollView"];
+        if (vc.bk_mainScrollView) {
+            [vc addObserver:self forKeyPath:@"bk_mainScrollView.contentSize" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
+            [kvoKeyPaths addObject:@"bk_mainScrollView.contentSize"];
+        }
+        kvoModel.kvoKeyPaths = [kvoKeyPaths copy];
+        [self.subControllersKvos addObject:kvoModel];
     }
-    kvoModel.kvoKeyPaths = [kvoKeyPaths copy];
-    [self.subControllersKvos addObject:kvoModel];
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath

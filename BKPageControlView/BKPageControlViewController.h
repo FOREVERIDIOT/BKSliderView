@@ -15,6 +15,8 @@
 
 @required
 
+@optional
+
 /**
  分页控制视图
  */
@@ -28,6 +30,8 @@
  此属性会自动获取，也可以自己赋值更改。
  */
 @property (nonatomic,weak) UIScrollView * bk_mainScrollView;
+
+//@property (nonatomic,assign) CGFloat superContentView
 
 @end
 

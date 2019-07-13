@@ -28,10 +28,11 @@
 
 -(void)setInteriorAddContentInsets:(UIEdgeInsets)interiorAddContentInsets
 {
-    self.contentInset = UIEdgeInsetsMake(_interiorContentInsets.top + interiorAddContentInsets.top,
-                                         _interiorContentInsets.left + interiorAddContentInsets.left,
-                                         _interiorContentInsets.bottom + interiorAddContentInsets.bottom,
-                                         _interiorContentInsets.right + interiorAddContentInsets.right);
+    UIEdgeInsets interiorContentInsets = self.interiorContentInsets;
+    self.contentInset = UIEdgeInsetsMake(interiorContentInsets.top + interiorAddContentInsets.top,
+                                         interiorContentInsets.left + interiorAddContentInsets.left,
+                                         interiorContentInsets.bottom + interiorAddContentInsets.bottom,
+                                         interiorContentInsets.right + interiorAddContentInsets.right);
     _interiorAddContentInsets = interiorAddContentInsets;
 }
 
