@@ -31,8 +31,6 @@
  */
 @property (nonatomic,weak) UIScrollView * bk_mainScrollView;
 
-//@property (nonatomic,assign) CGFloat superContentView
-
 @end
 
 #endif /* BKPageControlViewController_h */
