@@ -22,8 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,assign) BKPageControlBgScrollViewScrollOrder scrollOrder;
 /**
+ SDK内部使用的内容添加插入量 使用此属性时已减去SDK内部添加内容插入量
+ */
+@property (nonatomic,assign) UIEdgeInsets interiorContentInsets;
+/**
  SDK内部添加内容插入量
- 使用contentInset时已减去此属性添加的插入量
  */
 @property (nonatomic,assign) UIEdgeInsets interiorAddContentInsets;
 

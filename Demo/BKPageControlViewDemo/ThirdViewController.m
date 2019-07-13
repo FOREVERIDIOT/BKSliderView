@@ -19,7 +19,7 @@
 
 @implementation ThirdViewController
 @synthesize bk_index = _bk_index;
-@synthesize bk_superVC = _bk_superVC;
+@synthesize bk_pageControlView = _bk_pageControlView;
 @synthesize bk_mainScrollView = _bk_mainScrollView;
 
 - (void)viewDidLoad {

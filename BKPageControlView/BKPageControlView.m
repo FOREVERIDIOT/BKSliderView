@@ -74,7 +74,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         UIViewController<BKPageControlViewController> * vc = _childControllers[i];
         NSAssert([vc conformsToProtocol:@protocol(BKPageControlViewController)], @"控制器必须遵循BKPageControlViewController代理");
         vc.bk_index = i;
-        vc.bk_superVC = self.superVC;
+        vc.bk_pageControlView = self;
         NSAssert(vc.title != nil, @"未创建标题");
         NSUInteger existCount = 0;
         for (UIViewController * vc2 in _childControllers) {
@@ -119,10 +119,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(void)setSuperVC:(UIViewController *)superVC
 {
     _superVC = superVC;
-    for (int i = 0; i < [self.childControllers count]; i++) {
-        UIViewController<BKPageControlViewController> * vc = self.childControllers[i];
-        vc.bk_superVC = _superVC;
-    }
 }
 
 -(UIViewController*)superVC
@@ -626,15 +622,15 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
                         //在此处不需要重新计算主滚动视图的偏移量Y 但是得需要计算一下子控制器中的主滚动视图的偏移量Y 所以用isNeedReCalcBgScrollViewContentOffsetY这个参数替代判断了
                         if (self.isNeedReCalcBgScrollViewContentOffsetY) {
                             //当主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top) && 子控制器中的主滚动视图的偏移量Y大于0 需把偏移量Y传递
-                            if (self.bgScrollView.contentOffset.y < -self.bgScrollView.contentInset.top) {
+                            if (self.bgScrollView.contentOffset.y < -self.bgScrollView.interiorContentInsets.top) {
                                 if (scrollView.contentOffset.y > 0) {
                                     //主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top)时 滑动速度会因scrollView橡皮筋效果影响 因此给主滚动视图添加一个top插入量
                                     self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsMake(self.bk_height, 0, 0, 0);
                                     //真正的偏移量 当有contentInset时 contentOffsetY会偏移个self.bgScrollView.contentInset.top
-                                    CGFloat r_contentOffsetY = contentOffsetY + self.bgScrollView.contentInset.top;
+                                    CGFloat r_contentOffsetY = contentOffsetY + self.bgScrollView.interiorContentInsets.top;
                                     CGFloat calc_contentOffsetY = scrollView.contentOffset.y + r_contentOffsetY;
                                     scrollView.contentOffset = CGPointMake(0, calc_contentOffsetY < 0 ? 0 : calc_contentOffsetY);
-                                    self.bgScrollView.contentOffset = CGPointMake(0, -self.bgScrollView.contentInset.top);
+                                    self.bgScrollView.contentOffset = CGPointMake(0, -self.bgScrollView.interiorContentInsets.top);
                                 }else {
                                     //当主滚动式图的偏移量Y小于0 && 子控制器中的主滚动视图的偏移量Y小于0 把插入量归0
                                     self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsZero;
@@ -673,6 +669,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     }else if (scrollView == self.bgScrollView) {
         if (!decelerate) {
             self.bgScrollViewIsScrolling = NO;
+            //当主滚动式图惯性结束后把插入量归0
+            self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsZero;
         }
         
         if ([self.delegate respondsToSelector:@selector(pageControlView:didEndDraggingBgScrollView:willDecelerate:)]) {
@@ -701,6 +699,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         
     }else if (scrollView == self.bgScrollView) {
         self.bgScrollViewIsScrolling = NO;
+        //当主滚动式图惯性结束后把插入量归0
+        self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsZero;
         
         if ([self.delegate respondsToSelector:@selector(pageControlView:didEndDeceleratingBgScrollView:)]) {
             [self.delegate pageControlView:self didEndDeceleratingBgScrollView:self.bgScrollView];
