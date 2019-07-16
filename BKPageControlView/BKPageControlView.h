@@ -71,9 +71,10 @@
 
 /**
  主视图停止拖拽
- 
+
  @param pageControlView BKPageControlView
  @param bgScrollView 主视图
+ @param decelerate 是否有惯性
  */
 -(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 

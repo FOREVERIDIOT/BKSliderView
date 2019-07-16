@@ -79,6 +79,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         if ([vc respondsToSelector:@selector(setBk_pageControlView:)]) {
             vc.bk_pageControlView = self;
         }
+        if ([vc respondsToSelector:@selector(setBk_isFollowSuperScrollViewScrollDown:)]) {
+            vc.bk_isFollowSuperScrollViewScrollDown = YES;
+        }
         NSAssert(vc.title != nil, @"未创建标题");
         NSUInteger existCount = 0;
         for (UIViewController * vc2 in _childControllers) {
@@ -591,6 +594,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         if ([self.delegate respondsToSelector:@selector(pageControlView:willBeginDraggingBgScrollView:)]) {
             [self.delegate pageControlView:self willBeginDraggingBgScrollView:self.bgScrollView];
         }
+        
+        if ([self.displayVC respondsToSelector:@selector(bk_willBeginDraggingSuperBgScrollView:)]) {
+            [self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
+        }
     }
 }
 
@@ -605,6 +612,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     }else if (scrollView == self.bgScrollView) {
         if ([self.delegate respondsToSelector:@selector(pageControlView:didScrollBgScrollView:)]) {
             [self.delegate pageControlView:self didScrollBgScrollView:self.bgScrollView];
+        }
+        
+        if ([self.displayVC respondsToSelector:@selector(bk_didScrollSuperBgScrollView:)]) {
+            [self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
         }
         
         if (self.headerView) {
@@ -638,6 +649,11 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
                             //当主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top) && 子控制器中的主滚动视图的偏移量Y大于0 需把偏移量Y传递
                             if (self.bgScrollView.contentOffset.y < -self.bgScrollView.interiorContentInsets.top) {
                                 if (scrollView.contentOffset.y > 0) {
+                                    if ([self.displayVC respondsToSelector:@selector(setBk_isFollowSuperScrollViewScrollDown:)]) {
+                                        if (!self.displayVC.bk_isFollowSuperScrollViewScrollDown) {
+                                            return;
+                                        }
+                                    }
                                     //主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top)时 滑动速度会因scrollView橡皮筋效果影响 因此给主滚动视图添加一个top插入量
                                     self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsMake(self.bk_height, 0, 0, 0);
                                     //真正的偏移量 当有contentInset时 contentOffsetY会偏移个self.bgScrollView.contentInset.top
@@ -671,6 +687,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         if ([self.delegate respondsToSelector:@selector(pageControlView:willEndDraggingBgScrollView:withVelocity:targetContentOffset:)]) {
             [self.delegate pageControlView:self willEndDraggingBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
         }
+        
+        if ([self.displayVC respondsToSelector:@selector(bk_willEndDraggingSuperBgScrollView:withVelocity:targetContentOffset:)]) {
+            [self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+        }
     }
 }
 
@@ -689,6 +709,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         
         if ([self.delegate respondsToSelector:@selector(pageControlView:didEndDraggingBgScrollView:willDecelerate:)]) {
             [self.delegate pageControlView:self didEndDraggingBgScrollView:self.bgScrollView willDecelerate:decelerate];
+        }
+        
+        if ([self.displayVC respondsToSelector:@selector(bk_didEndDraggingSuperBgScrollView:willDecelerate:)]) {
+            [self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
         }
     }
 }
@@ -718,6 +742,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         
         if ([self.delegate respondsToSelector:@selector(pageControlView:didEndDeceleratingBgScrollView:)]) {
             [self.delegate pageControlView:self didEndDeceleratingBgScrollView:self.bgScrollView];
+        }
+        
+        if ([self.displayVC respondsToSelector:@selector(bk_didEndDeceleratingSuperBgScrollView:)]) {
+            [self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
         }
     }
 }
