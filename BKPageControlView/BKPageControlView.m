@@ -261,7 +261,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             //滚动视图的contentSize.height > 滚动视图自身height
             if (scrollView.contentSize.height > scrollView.bk_height) {
                 //算出滚动式图在父视图上少的高度
-                CGFloat scrollView_top_bottom_supperH = [scrollView superview].bk_height - scrollView.bk_height;
+                CGFloat scrollView_top_bottom_supperH = self.displayVC.view.bk_height - scrollView.bk_height;
                 //所有内容高度 = 头视图高度 + 导航视图高度 + 滚动视图的内容高度
                 CGFloat contentSizeHeight = self.headerView.bk_height + self.menuView.bk_height + scrollView_top_bottom_supperH + scrollView.contentSize.height;
                 //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度

@@ -10,6 +10,7 @@
 #import "Inline.h"
 #import "UIView+Extension.h"
 #import "ExampleViewController.h"
+#import "ExampleViewTController.h"
 
 @interface ThirdViewController ()
 
@@ -18,6 +19,7 @@
 @end
 
 @implementation ThirdViewController
+@synthesize bk_mainScrollView = _bk_mainScrollView;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -40,6 +42,14 @@
     UIView * redColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
     redColorHeaderView.backgroundColor = [UIColor redColor];
     self.pageControlView.headerView = redColorHeaderView;
+    
+    self.pageControlView.bgScrollView.scrollOrder = BKPageControlBgScrollViewScrollOrderFirstScrollContentView;
+    
+    ExampleViewTController * vc = [[ExampleViewTController alloc] init];
+    vc.title = @"测试换子控制器mainScrollview";
+    NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
+    [childControllers insertObject:vc atIndex:1];
+    self.pageControlView.childControllers = [childControllers copy];
 }
 
 //-(void)dealloc
@@ -51,7 +61,7 @@
 {
     [super viewWillLayoutSubviews];
     
-    self.pageControlView.frame = CGRectMake(0, 0, self.view.bk_width, self.view.bk_height);
+    self.pageControlView.frame = CGRectMake(0, 50, self.view.bk_width, self.view.bk_height - 50);
     self.pageControlView.menuView.menuEqualDivisionW = self.pageControlView.bk_width / [self.pageControlView.childControllers count];
 }
 
