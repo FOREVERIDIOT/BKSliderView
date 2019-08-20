@@ -18,7 +18,6 @@
 
 @implementation ExampleViewController
 @synthesize bk_index = _bk_index;
-@synthesize bk_mainScrollView = _bk_mainScrollView;
 
 -(void)setBk_index:(NSUInteger)bk_index
 {

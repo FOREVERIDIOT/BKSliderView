@@ -12,7 +12,7 @@ s.ios.deployment_target = '8.0'
 
 s.source_files = 'BKPageControlView/*.{h,m}', 'BKPageControlView/BgScrollView/*.{h,m}', 'BKPageControlView/Menu/*.{h,m}', 'BKPageControlView/Extension/*.{h,m}'
 s.public_header_files = 'BKPageControlView/BKPageControlView.h', 'BKPageControlView/BKPageControlViewController.h', 'BKPageControlView/BgScrollView/*.h', 'BKPageControlView/Menu/*.h'
-s.private_header_files = 'BKPageControlView/BKPageControlKVOModel.h', 'BKPageControlView/Extension/*.h'
+s.private_header_files = 'BKPageControlView/Extension/*.h'
 
 s.framework  = "UIKit"
 

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ExampleViewTController : UIViewController <BKPageControlViewController>
+@interface ExampleViewTController : BKPageControlViewController
 
 @end
 

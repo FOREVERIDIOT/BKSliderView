@@ -1,22 +1,25 @@
 //
 //  BKPageControlViewController.h
-//  BKPageControlView
+//  DSCnliveShopSDK
 //
-//  Created by zhaolin on 2019/7/5.
+//  Created by zhaolin on 2019/8/19.
 //  Copyright © 2019 BIKE. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 @class BKPageControlView;
 @class BKPageControlBgScrollView;
 
-#ifndef BKPageControlViewController_h
-#define BKPageControlViewController_h
+//修改主滚动视图 userInfo @{@"bk_index" : @(索引), @"bk_mainScrollView" : 主滚动视图UIScrollView}
+UIKIT_EXTERN NSString * _Nonnull const kBKPCViewChangeMainScrollViewNotification;
+//修改主滚动视图的contentSize userInfo @{@"bk_index" : @(索引), @"bk_mainScrollView" : 主滚动视图UIScrollView}
+UIKIT_EXTERN NSString * _Nonnull const kBKPCViewChangeMainScrollViewContentSizeNotification;
 
-@protocol BKPageControlViewController <NSObject>
+NS_ASSUME_NONNULL_BEGIN
 
-@required
+@interface BKPageControlViewController : UIViewController
 
-@optional
+#pragma mark - 属性
 
 /**
  分页控制视图
@@ -48,14 +51,14 @@
 
 /**
  滑动主视图
-
+ 
  @param bgScrollView 主滚动视图
  */
 -(void)bk_didScrollSuperBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
 
 /**
  主视图即将停止拖拽
-
+ 
  @param bgScrollView 主滚动视图
  @param velocity 速度
  @param targetContentOffset 目标偏移量
@@ -64,7 +67,7 @@
 
 /**
  主视图停止拖拽
-
+ 
  @param bgScrollView 主滚动视图
  @param decelerate 是否有惯性
  */
@@ -72,11 +75,11 @@
 
 /**
  主视图惯性结束
-
+ 
  @param bgScrollView 主滚动视图
  */
 -(void)bk_didEndDeceleratingSuperBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
 
 @end
 
-#endif /* BKPageControlViewController_h */
+NS_ASSUME_NONNULL_END

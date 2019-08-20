@@ -10,16 +10,10 @@
 
 #import "BKPageControlView.h"
 #import "UIView+BKPageControlView.h"
-#import "BKPageControlKVOModel.h"
 
 NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 @interface BKPageControlView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKPageControlMenuViewDelegate,UIGestureRecognizerDelegate>
-
-/**
- 子控制器kvo数组
- */
-@property (nonatomic,strong) NSMutableArray<BKPageControlKVOModel*> * subControllersKvos;
 
 /**
  是否需要在InLayoutSubviews方法中修改 collectionView的偏移量
@@ -44,11 +38,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
  */
 @property (nonatomic,strong) NSTimer * panGestureTimer;
 
-/**
- 是否需要重新计算主滚动视图的偏移量Y 仅self.bgScrollView.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView有效
- */
-@property (nonatomic,assign) BOOL isNeedReCalcBgScrollViewContentOffsetY;
-
 @end
 
 @implementation BKPageControlView
@@ -58,12 +47,12 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - 展示的vc数组
 
--(void)setChildControllers:(NSArray<UIViewController<BKPageControlViewController> *> *)childControllers
+-(void)setChildControllers:(NSArray<BKPageControlViewController *> *)childControllers
 {
     _childControllers = childControllers;
     
     [self.superVC.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj conformsToProtocol:@protocol(BKPageControlViewController)]) {
+        if ([obj isKindOfClass:[BKPageControlViewController class]]) {
             [obj willMoveToParentViewController:nil];
             [obj removeFromParentViewController];
         }
@@ -71,17 +60,11 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     
     NSMutableArray * titles = [NSMutableArray array];
     for (int i = 0; i < [_childControllers count]; i++) {
-        UIViewController<BKPageControlViewController> * vc = _childControllers[i];
-        NSAssert([vc conformsToProtocol:@protocol(BKPageControlViewController)], @"控制器必须遵循BKPageControlViewController代理");
-        if ([vc respondsToSelector:@selector(setBk_index:)]) {
-            vc.bk_index = i;
-        }
-        if ([vc respondsToSelector:@selector(setBk_pageControlView:)]) {
-            vc.bk_pageControlView = self;
-        }
-        if ([vc respondsToSelector:@selector(setBk_isFollowSuperScrollViewScrollDown:)]) {
-            vc.bk_isFollowSuperScrollViewScrollDown = YES;
-        }
+        BKPageControlViewController * vc = _childControllers[i];
+        NSAssert([vc isKindOfClass:[BKPageControlViewController class]], @"控制器必须继承BKPageControlViewController");
+        vc.bk_index = i;
+        vc.bk_pageControlView = self;
+        vc.bk_isFollowSuperScrollViewScrollDown = YES;
         NSAssert(vc.title != nil, @"未创建标题");
         NSUInteger existCount = 0;
         for (UIViewController * vc2 in _childControllers) {
@@ -108,7 +91,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     self.menuView.selectIndex = _displayIndex;
 }
 
--(UIViewController<BKPageControlViewController> *)displayVC
+-(BKPageControlViewController *)displayVC
 {
     return self.childControllers[self.displayIndex];
 }
@@ -135,12 +118,12 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - init
 
--(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<UIViewController<BKPageControlViewController>*>*)childControllers superVC:(nonnull UIViewController*)superVC
+-(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(NSArray<BKPageControlViewController *> *)childControllers superVC:(UIViewController *)superVC
 {
     return [self initWithFrame:frame delegate:nil childControllers:childControllers superVC:superVC];
 }
 
--(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKPageControlViewDelegate>)delegate childControllers:(NSArray<UIViewController<BKPageControlViewController> *> *)childControllers superVC:(UIViewController *)superVC
+-(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKPageControlViewDelegate>)delegate childControllers:(NSArray<BKPageControlViewController *> *)childControllers superVC:(UIViewController *)superVC
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -149,6 +132,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         self.superVC = superVC;
         
         [self initUI];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMainScrollViewNotification:) name:kBKPCViewChangeMainScrollViewNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMainScrollViewContentSizeNotification:) name:kBKPCViewChangeMainScrollViewContentSizeNotification object:nil];
     }
     return self;
 }
@@ -195,14 +180,30 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)dealloc
 {
-    [self.subControllersKvos enumerateObjectsUsingBlock:^(BKPageControlKVOModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        for (NSString * keyPath in obj.kvoKeyPaths) {
-            [obj.childController removeObserver:self forKeyPath:keyPath];
-        }
-        obj.childController = nil;
-        obj.kvoKeyPaths = nil;
-    }];
-    [self.subControllersKvos removeAllObjects];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kBKPCViewChangeMainScrollViewNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kBKPCViewChangeMainScrollViewContentSizeNotification object:nil];
+}
+
+#pragma mark - 通知
+
+-(void)changeMainScrollViewNotification:(NSNotification*)notification
+{
+    NSUInteger correspondingIndex = [notification.userInfo[@"bk_index"] integerValue];
+    if (correspondingIndex == self.displayIndex) {
+        dispatch_async(dispatch_get_main_queue(), ^{//用线程使修改contentSize在滑动中生效
+            [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
+        });
+    }
+}
+
+-(void)changeMainScrollViewContentSizeNotification:(NSNotification*)notification
+{
+    NSUInteger correspondingIndex = [notification.userInfo[@"bk_index"] integerValue];
+    if (correspondingIndex == self.displayIndex) {
+        dispatch_async(dispatch_get_main_queue(), ^{//用线程使修改contentSize在滑动中生效
+            [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
+        });
+    }
 }
 
 #pragma mark - 初始化UI
@@ -213,6 +214,18 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     [self.bgScrollView addSubview:self.contentView];
     [self.contentView addSubview:self.menuView];
     [self.contentView insertSubview:self.collectionView belowSubview:self.menuView];
+}
+
+#pragma mark - BKPageControlView嵌套
+
+-(void)setSuperLevelPageControlView:(BKPageControlView *)superLevelPageControlView
+{
+    _superLevelPageControlView = superLevelPageControlView;
+    if (_superLevelPageControlView) {
+        self.bgScrollView.scrollEnabled = NO;
+    }else {
+        self.bgScrollView.scrollEnabled = YES;
+    }
 }
 
 #pragma mark - 主视图
@@ -252,62 +265,64 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
  */
 -(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index
 {
-    //获取当前详情内容视图内的滚动视图
-    UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:index];
-    //如果详情内容视图中包含滚动视图 禁止滚动视图滑动能力
-    if (scrollView) {//有滚动视图
-        scrollView.scrollEnabled = NO;
-        //滚动视图的contentSize.height > 滚动视图自身height
-        if (scrollView.contentSize.height > scrollView.bk_height) {
-            //算出滚动式图在父视图上少的高度
-            CGFloat scrollView_top_bottom_supperH = self.displayVC.view.bk_height - scrollView.bk_height;
-            //所有内容高度 = 头视图高度 + 导航视图高度 + 滚动视图的内容高度
-            CGFloat contentSizeHeight = self.headerView.bk_height + self.menuView.bk_height + scrollView_top_bottom_supperH + scrollView.contentSize.height;
-            //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
-            if (contentSizeHeight > self.bgScrollView.contentSize.height) {
-                self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
-            }
-            
-            if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
-                if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
-                    //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
-                    scrollView.contentOffset = CGPointZero;
+    if (self.headerView || self.superLevelPageControlView) {
+        //获取当前详情内容视图内的滚动视图
+        UIScrollView * scrollView = [self getMainScrollViewWithCorrespondingIndex:index];
+        //如果详情内容视图中包含滚动视图 禁止滚动视图滑动能力
+        if (scrollView) {//有滚动视图
+            scrollView.scrollEnabled = NO;
+            //滚动视图的contentSize.height > 滚动视图自身height
+            if (scrollView.contentSize.height > scrollView.bk_height) {
+                //算出滚动式图在父视图上少的高度
+                CGFloat scrollView_top_bottom_supperH = self.displayVC.view.bk_height - scrollView.bk_height;
+                //所有内容高度 = 头视图高度 + 导航视图高度 + 滚动视图的内容高度
+                CGFloat contentSizeHeight = self.headerView.bk_height + self.menuView.bk_height + scrollView_top_bottom_supperH + scrollView.contentSize.height;
+                //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
+                if (contentSizeHeight > self.bgScrollView.contentSize.height) {
+                    self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
                 }
-            }else {
-                //如果主视图滑动高度 > 头视图高度 根据滚动视图的滑动高度修改主视图滑动高度
-                if (index == self.displayIndex) {
-                    self.bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + self.headerView.bk_height);
+                
+                if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
+                    if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+                        //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
+                        scrollView.contentOffset = CGPointZero;
+                    }
+                }else {
+                    //如果主视图滑动高度 > 头视图高度 根据滚动视图的滑动高度修改主视图滑动高度
+                    if (index == self.displayIndex) {
+                        self.bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + self.headerView.bk_height);
+                    }
                 }
+                //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
+                if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
+                    self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
+                }
+                return;
             }
-            //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
-            if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
-                self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
+        }
+        //有滚动视图 || 滚动视图的contentSize.height < 滚动视图自身height
+        //所有内容高度 = 头视图高度 + 详情内容视图高度
+        CGFloat contentSizeHeight = self.headerView.bk_height + self.contentView.bk_height;
+        //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
+        if (contentSizeHeight > self.bgScrollView.contentSize.height) {
+            self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
+        }
+        
+        if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
+            if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+                //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
+                scrollView.contentOffset = CGPointZero;
             }
-            return;
+        }else{
+            //如果主视图滑动高度 > 头视图高度 修改主视图滑动高度
+            if (index == self.displayIndex) {
+                self.bgScrollView.contentOffset = CGPointMake(0, self.headerView.bk_height);
+            }
         }
-    }
-    //有滚动视图 || 滚动视图的contentSize.height < 滚动视图自身height
-    //所有内容高度 = 头视图高度 + 详情内容视图高度
-    CGFloat contentSizeHeight = self.headerView.bk_height + self.contentView.bk_height;
-    //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
-    if (contentSizeHeight > self.bgScrollView.contentSize.height) {
-        self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
-    }
-    
-    if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
-        if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
-            //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
-            scrollView.contentOffset = CGPointZero;
+        //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
+        if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
+            self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
         }
-    }else{
-        //如果主视图滑动高度 > 头视图高度 修改主视图滑动高度
-        if (index == self.displayIndex) {
-            self.bgScrollView.contentOffset = CGPointMake(0, self.headerView.bk_height);
-        }
-    }
-    //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
-    if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
-        self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
     }
 }
 
@@ -316,29 +331,21 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
  
  @return 内容视图内的scrollview
  */
--(UIScrollView*)getFrontScrollViewWithNowIndex:(NSInteger)index
+-(UIScrollView*)getMainScrollViewWithCorrespondingIndex:(NSInteger)index
 {
-    UIViewController<BKPageControlViewController> * vc = self.childControllers[index];
-    __block UIScrollView * scrollView = nil;
-    BOOL isExistBK_mainScrollView = [vc respondsToSelector:@selector(setBk_mainScrollView:)];
-    if (isExistBK_mainScrollView) {
-        scrollView = vc.bk_mainScrollView;
-    }
-    if (!scrollView) {
+    BKPageControlViewController * vc = self.childControllers[index];
+    if (!vc.bk_mainScrollView) {
         [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj isKindOfClass:[UIScrollView class]]) {
-                scrollView = obj;
+                vc.bk_mainScrollView = obj;
                 *stop = YES;
             }else if ([obj isKindOfClass:[BKPageControlView class]]) {
-                scrollView = ((BKPageControlView*)obj).bgScrollView;
+                vc.bk_mainScrollView = ((BKPageControlView*)obj).bgScrollView;
                 *stop = YES;
             }
         }];
     }
-    if (isExistBK_mainScrollView) {
-        vc.bk_mainScrollView = scrollView;
-    }
-    return scrollView;
+    return vc.bk_mainScrollView;
 }
 
 #pragma mark - 内容视图
@@ -456,32 +463,18 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIViewController<BKPageControlViewController> * vc = self.childControllers[indexPath.item];
+    BKPageControlViewController * vc = self.childControllers[indexPath.item];
     vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
     [cell addSubview:vc.view];
     [self.superVC addChildViewController:vc];
     [vc didMoveToParentViewController:self.superVC];
     
     [self changeBgScrollContentSizeWithNowIndex:indexPath.item];
-    
-    if ([vc respondsToSelector:@selector(setBk_mainScrollView:)]) {
-        BKPageControlKVOModel * kvoModel = [self getCurrentChildControllerKvoModelWithController:vc];
-        NSMutableArray * kvoKeyPaths = [NSMutableArray array];
-        [vc addObserver:self forKeyPath:@"bk_mainScrollView" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-        [kvoKeyPaths addObject:@"bk_mainScrollView"];
-        if (vc.bk_mainScrollView) {
-            [vc addObserver:self forKeyPath:@"bk_mainScrollView.contentSize" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
-            [kvoKeyPaths addObject:@"bk_mainScrollView.contentSize"];
-        }
-        kvoModel.kvoKeyPaths = [kvoKeyPaths copy];
-        [self.subControllersKvos addObject:kvoModel];
-    }
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIViewController<BKPageControlViewController> * vc = self.childControllers[indexPath.item];
-    [self removeCurrentChildControllerKvoModelWithController:vc];
+    BKPageControlViewController * vc = self.childControllers[indexPath.item];
     [vc willMoveToParentViewController:nil];
     [vc removeFromParentViewController];
     [cell.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
@@ -498,80 +491,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         [self.delegate pageControlView:self switchIndex:self.displayIndex leaveIndex:self.leaveIndex];
     }
     [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-}
-
-#pragma mark - subControllersKvos
-
--(NSMutableArray<BKPageControlKVOModel *> *)subControllersKvos
-{
-    if (!_subControllersKvos) {
-        _subControllersKvos = [NSMutableArray array];
-    }
-    return _subControllersKvos;
-}
-
-/**
- 获取对应控制器的kvoModel
- */
--(BKPageControlKVOModel*)getCurrentChildControllerKvoModelWithController:(UIViewController*)controller
-{
-    __block BKPageControlKVOModel * kvoModel = nil;
-    [self.subControllersKvos enumerateObjectsUsingBlock:^(BKPageControlKVOModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (obj.childController == controller) {
-            kvoModel = obj;
-            *stop = YES;
-        }
-    }];
-    if (!kvoModel) {
-        kvoModel = [[BKPageControlKVOModel alloc] init];
-        kvoModel.childController = controller;
-    }else {
-        [kvoModel.kvoKeyPaths enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [kvoModel.childController removeObserver:self forKeyPath:obj];
-        }];
-        kvoModel.childController = nil;
-        kvoModel.kvoKeyPaths = nil;
-    }
-    return kvoModel;
-}
-
-/**
- 删除对应控制器的kvoModel
- */
--(void)removeCurrentChildControllerKvoModelWithController:(UIViewController*)controller
-{
-    BKPageControlKVOModel * kvoModel = [self getCurrentChildControllerKvoModelWithController:controller];
-    if (kvoModel) {
-        [kvoModel.kvoKeyPaths enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [kvoModel.childController removeObserver:self forKeyPath:obj];
-        }];
-        kvoModel.childController = nil;
-        kvoModel.kvoKeyPaths = nil;
-        [self.subControllersKvos removeObject:kvoModel];
-    }
-}
-
-#pragma mark - KVO
-
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"bk_mainScrollView"]) {
-        UIScrollView * o = change[@"old"];
-        UIScrollView * n = change[@"new"];
-        if (o != n) {
-            dispatch_async(dispatch_get_main_queue(), ^{//用线程使修改contentSize在滑动中生效
-                [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-            });
-        }
-    }else if ([keyPath isEqualToString:@"bk_mainScrollView.contentSize"]) {
-        CGSize o = [change[@"old"] CGSizeValue];
-        CGSize n = [change[@"new"] CGSizeValue];
-        if (!CGSizeEqualToSize(o, n)) {
-            dispatch_async(dispatch_get_main_queue(), ^{//用线程使修改contentSize在滑动中生效
-                [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-            });
-        }
-    }
 }
 
 #pragma mark - UIScrollDelegate
@@ -616,61 +535,63 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             [self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
         }
         
-        UIScrollView * scrollView = [self getFrontScrollViewWithNowIndex:self.displayIndex];
-        
-        CGFloat contentOffsetY = self.bgScrollView.contentOffset.y;
-        if (contentOffsetY > self.headerView.bk_height) {
-            self.contentView.bk_y = contentOffsetY;
-            if (scrollView) {
-                if (self.bgScrollView.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
-                    //如果需要重新计算主滚动视图的偏移量Y
-                    if (self.isNeedReCalcBgScrollViewContentOffsetY) {
-                        self.isNeedReCalcBgScrollViewContentOffsetY = NO;
-                        CGFloat calc_contentOffsetY = self.headerView.bk_height + scrollView.contentOffset.y;
-                        CGFloat max_contentOffsetY = self.bgScrollView.contentSize.height - self.bgScrollView.bk_height;
-                        calc_contentOffsetY = calc_contentOffsetY > max_contentOffsetY ? max_contentOffsetY : calc_contentOffsetY;
-                        if (self.bgScrollView.contentOffset.y < calc_contentOffsetY) {
-                            self.bgScrollView.contentOffset = CGPointMake(0, calc_contentOffsetY);
-                            return;
-                        }
-                    }
-                }
-                scrollView.contentOffset = CGPointMake(0, contentOffsetY - self.headerView.bk_height);
-            }
-        }else {
-            self.contentView.bk_y = CGRectGetMaxY(self.headerView.frame);
-            if (self.bgScrollView.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+        if (self.headerView || self.superLevelPageControlView) {
+            UIScrollView * scrollView = [self getMainScrollViewWithCorrespondingIndex:self.displayIndex];
+            
+            CGFloat contentOffsetY = self.bgScrollView.contentOffset.y;
+            if (contentOffsetY > self.headerView.bk_height) {
+                self.contentView.bk_y = contentOffsetY;
                 if (scrollView) {
-                    //在此处不需要重新计算主滚动视图的偏移量Y 但是得需要计算一下子控制器中的主滚动视图的偏移量Y 所以用isNeedReCalcBgScrollViewContentOffsetY这个参数替代判断了
-                    if (self.isNeedReCalcBgScrollViewContentOffsetY) {
-                        //当主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top) && 子控制器中的主滚动视图的偏移量Y大于0 需把偏移量Y传递
-                        if (self.bgScrollView.contentOffset.y < -self.bgScrollView.interiorContentInsets.top) {
-                            if (scrollView.contentOffset.y > 0) {
-                                if ([self.displayVC respondsToSelector:@selector(setBk_isFollowSuperScrollViewScrollDown:)]) {
-                                    if (!self.displayVC.bk_isFollowSuperScrollViewScrollDown) {
-                                        return;
-                                    }
-                                }
-                                //主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top)时 滑动速度会因scrollView橡皮筋效果影响 因此给主滚动视图添加一个top插入量
-                                self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsMake(self.bk_height, 0, 0, 0);
-                                //真正的偏移量 当有contentInset时 contentOffsetY会偏移个self.bgScrollView.contentInset.top
-                                CGFloat r_contentOffsetY = contentOffsetY + self.bgScrollView.interiorContentInsets.top;
-                                CGFloat calc_contentOffsetY = scrollView.contentOffset.y + r_contentOffsetY;
-                                scrollView.contentOffset = CGPointMake(0, calc_contentOffsetY < 0 ? 0 : calc_contentOffsetY);
-                                self.bgScrollView.contentOffset = CGPointMake(0, -self.bgScrollView.interiorContentInsets.top);
-                            }else {
-                                //当主滚动式图的偏移量Y小于0 && 子控制器中的主滚动视图的偏移量Y小于0 把插入量归0
-                                self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsZero;
+                    if (self.bgScrollView.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+                        //如果需要重新计算主滚动视图的偏移量Y
+                        if (self.isNeedReCalcBgScrollViewContentOffsetY) {
+                            self.isNeedReCalcBgScrollViewContentOffsetY = NO;
+                            CGFloat calc_contentOffsetY = self.headerView.bk_height + scrollView.contentOffset.y;
+                            CGFloat max_contentOffsetY = self.bgScrollView.contentSize.height - self.bgScrollView.bk_height;
+                            calc_contentOffsetY = calc_contentOffsetY > max_contentOffsetY ? max_contentOffsetY : calc_contentOffsetY;
+                            if (self.bgScrollView.contentOffset.y < calc_contentOffsetY) {
+                                self.bgScrollView.contentOffset = CGPointMake(0, calc_contentOffsetY);
+                                return;
                             }
                         }
-                    }else {
+                    }
+                    scrollView.contentOffset = CGPointMake(0, contentOffsetY - self.headerView.bk_height);
+                }
+            }else {
+                self.contentView.bk_y = CGRectGetMaxY(self.headerView.frame);
+                if (self.bgScrollView.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+                    if (scrollView) {
+                        //在此处不需要重新计算主滚动视图的偏移量Y 但是得需要计算一下子控制器中的主滚动视图的偏移量Y 所以用isNeedReCalcBgScrollViewContentOffsetY这个参数替代判断了
+                        if (self.isNeedReCalcBgScrollViewContentOffsetY) {
+                            //当主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top) && 子控制器中的主滚动视图的偏移量Y大于0 需把偏移量Y传递
+                            if (self.bgScrollView.contentOffset.y < -self.bgScrollView.interiorContentInsets.top) {
+                                if (scrollView.contentOffset.y > 0) {
+                                    if ([self.displayVC respondsToSelector:@selector(setBk_isFollowSuperScrollViewScrollDown:)]) {
+                                        if (!self.displayVC.bk_isFollowSuperScrollViewScrollDown) {
+                                            return;
+                                        }
+                                    }
+                                    //主滚动式图的偏移量Y小于0(有contentInset时应为-contentInset.top)时 滑动速度会因scrollView橡皮筋效果影响 因此给主滚动视图添加一个top插入量
+                                    self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsMake(self.bk_height, 0, 0, 0);
+                                    //真正的偏移量 当有contentInset时 contentOffsetY会偏移个self.bgScrollView.contentInset.top
+                                    CGFloat r_contentOffsetY = contentOffsetY + self.bgScrollView.interiorContentInsets.top;
+                                    CGFloat calc_contentOffsetY = scrollView.contentOffset.y + r_contentOffsetY;
+                                    scrollView.contentOffset = CGPointMake(0, calc_contentOffsetY < 0 ? 0 : calc_contentOffsetY);
+                                    self.bgScrollView.contentOffset = CGPointMake(0, -self.bgScrollView.interiorContentInsets.top);
+                                }else {
+                                    //当主滚动式图的偏移量Y小于0 && 子控制器中的主滚动视图的偏移量Y小于0 把插入量归0
+                                    self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsZero;
+                                }
+                            }
+                        }else {
+                            scrollView.contentOffset = CGPointZero;
+                        }
+                    }
+                    self.isNeedReCalcBgScrollViewContentOffsetY = YES;
+                }else {
+                    if (scrollView) {
                         scrollView.contentOffset = CGPointZero;
                     }
-                }
-                self.isNeedReCalcBgScrollViewContentOffsetY = YES;
-            }else {
-                if (scrollView) {
-                    scrollView.contentOffset = CGPointZero;
                 }
             }
         }

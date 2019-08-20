@@ -108,35 +108,42 @@
  初始化方法
  
  @param frame 坐标大小
- @param childControllers 展示的子控制器数组 必须遵循代理BKPageControlViewController (子控制器的标题就是目录中的标题)
+ @param childControllers 展示的子控制器数组 (子控制器的标题就是目录中的标题)
  @param superVC 父视图 (用于保存子控制器)
  @return BKPageControlView
  */
--(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<UIViewController<BKPageControlViewController>*>*)childControllers superVC:(nonnull UIViewController*)superVC;
+-(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<BKPageControlViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
 
 /**
  初始化方法
 
  @param frame 坐标大小
  @param delegate 代理
- @param childControllers 展示的子控制器数组 必须遵循代理BKPageControlViewController (子控制器的标题就是目录中的标题)
+ @param childControllers 展示的子控制器数组 (子控制器的标题就是目录中的标题)
  @param superVC 父视图 (用于保存子控制器)
  @return BKPageControlView
  */
--(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<UIViewController<BKPageControlViewController>*>*)childControllers superVC:(nonnull UIViewController*)superVC;
+-(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<BKPageControlViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
 
 /**
  代理
  */
 @property (nonatomic,weak,nullable) id<BKPageControlViewDelegate> delegate;
 /**
- 展示的子控制器数组 必须遵循代理BKPageControlViewController (子控制器的标题就是目录中的标题)
+ 展示的子控制器数组 (子控制器的标题就是目录中的标题)
  */
-@property (nonatomic,copy,nullable) NSArray<UIViewController<BKPageControlViewController>*> * childControllers;
+@property (nonatomic,copy,nullable) NSArray<BKPageControlViewController*> * childControllers;
 /**
  父视图 (用于保存展示的子控制器)
  */
 @property (nonatomic,weak,readonly,nullable) UIViewController * superVC;
+
+#pragma mark - BKPageControlView嵌套
+
+/**
+ 上一级BKPageControlView
+ */
+@property (nonatomic,weak,nullable) BKPageControlView * superLevelPageControlView;
 
 #pragma mark - 索引
 
@@ -148,7 +155,7 @@
 /**
  当前选中索引显示的控制器
  */
-@property (nonatomic,nonnull,readonly) UIViewController<BKPageControlViewController> * displayVC;
+@property (nonatomic,nonnull,readonly) BKPageControlViewController * displayVC;
 
 #pragma mark - 主视图
 
@@ -156,6 +163,11 @@
  主视图（竖直滚动）
  */
 @property (nonatomic,strong,nonnull) BKPageControlBgScrollView * bgScrollView;
+
+/**
+ 是否需要重新计算主滚动视图的偏移量Y 仅self.bgScrollView.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView有效
+ */
+@property (nonatomic,assign) BOOL isNeedReCalcBgScrollViewContentOffsetY;
 
 #pragma mark - 第二级视图
 

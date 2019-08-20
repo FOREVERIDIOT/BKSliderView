@@ -26,8 +26,6 @@
 @end
 
 @implementation ExampleViewTController
-@synthesize bk_index = _bk_index;
-@synthesize bk_mainScrollView = _bk_mainScrollView;
 
 -(void)viewDidLoad {
     [super viewDidLoad];
