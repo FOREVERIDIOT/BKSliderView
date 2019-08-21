@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <BKPageControlView/BKPageControlView.h>
 
-@interface ExampleViewController : BKPageControlViewController
+@interface ExampleViewController : UIViewController
 
 @end

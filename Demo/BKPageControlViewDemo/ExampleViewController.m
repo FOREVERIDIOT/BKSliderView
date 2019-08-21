@@ -9,7 +9,7 @@
 #import "ExampleViewController.h"
 #import <MJRefresh/MJRefresh.h>
 
-@interface ExampleViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface ExampleViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic,strong) UITableView * tableView;
 @property (nonatomic,assign) NSUInteger totalCount;
@@ -17,19 +17,14 @@
 @end
 
 @implementation ExampleViewController
-@synthesize bk_index = _bk_index;
-
--(void)setBk_index:(NSUInteger)bk_index
-{
-    _bk_index = bk_index;
-    if (self.totalCount == 0) {
-        self.totalCount = (_bk_index + 1) * 5;
-    }
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    if (self.totalCount == 0) {
+        self.totalCount = (self.bk_index + 1) * 5;
+    }
     
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.tableView];

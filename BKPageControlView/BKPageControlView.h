@@ -9,6 +9,7 @@
 #import "BKPageControlViewController.h"
 #import "BKPageControlBgScrollView.h"
 #import "BKPageControlMenuView.h"
+#import "UIViewController+BKPageControlView.h"
 @class BKPageControlView;
 
 @protocol BKPageControlViewDelegate <NSObject>
@@ -112,7 +113,7 @@
  @param superVC 父视图 (用于保存子控制器)
  @return BKPageControlView
  */
--(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<BKPageControlViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
+-(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<UIViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
 
 /**
  初始化方法
@@ -123,7 +124,7 @@
  @param superVC 父视图 (用于保存子控制器)
  @return BKPageControlView
  */
--(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<BKPageControlViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
+-(nonnull instancetype)initWithFrame:(CGRect)frame delegate:(nullable id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<UIViewController*>*)childControllers superVC:(nonnull UIViewController*)superVC;
 
 /**
  代理
@@ -132,7 +133,7 @@
 /**
  展示的子控制器数组 (子控制器的标题就是目录中的标题)
  */
-@property (nonatomic,copy,nullable) NSArray<BKPageControlViewController*> * childControllers;
+@property (nonatomic,copy,nullable) NSArray<UIViewController*> * childControllers;
 /**
  父视图 (用于保存展示的子控制器)
  */
@@ -155,7 +156,7 @@
 /**
  当前选中索引显示的控制器
  */
-@property (nonatomic,nonnull,readonly) BKPageControlViewController * displayVC;
+@property (nonatomic,nonnull,readonly) UIViewController * displayVC;
 
 #pragma mark - 主视图
 

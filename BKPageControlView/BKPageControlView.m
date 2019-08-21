@@ -10,15 +10,17 @@
 
 #import "BKPageControlView.h"
 #import "UIView+BKPageControlView.h"
+#import "BKPCViewKVOChildControllerPModel.h"
 
 NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
-@interface BKPageControlView()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,BKPageControlMenuViewDelegate,UIGestureRecognizerDelegate>
+@interface BKPageControlView()<UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, BKPageControlMenuViewDelegate, UIGestureRecognizerDelegate>
 
 /**
- 是否需要在InLayoutSubviews方法中修改 collectionView的偏移量
+ KVO监听子控制器中的属性数组
  */
-@property (nonatomic,assign) BOOL isNeedEditCollectionViewContentOffsetInLayoutSubviews;
+@property (nonatomic,strong) NSMutableArray<BKPCViewKVOChildControllerPModel*> * kvoModels;
+
 /**
  离开的index
  */
@@ -45,23 +47,31 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 @synthesize superVC = _superVC;
 @synthesize displayVC = _displayVC;
 
+#pragma mark - KVO监听子控制器中的属性数组
+
+-(NSMutableArray<BKPCViewKVOChildControllerPModel *> *)kvoModels
+{//为啥要用这个数组监听 是因为直接监听数组中的对象的属性大部分没有走回调方法
+    if (!_kvoModels) {
+        _kvoModels = [NSMutableArray array];
+    }
+    return _kvoModels;
+}
+
 #pragma mark - 展示的vc数组
 
--(void)setChildControllers:(NSArray<BKPageControlViewController *> *)childControllers
+-(void)setChildControllers:(NSArray<UIViewController *> *)childControllers
 {
     _childControllers = childControllers;
     
     [self.superVC.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[BKPageControlViewController class]]) {
-            [obj willMoveToParentViewController:nil];
-            [obj removeFromParentViewController];
-        }
+        [obj willMoveToParentViewController:nil];
+        [obj removeFromParentViewController];
     }];
+    [self.kvoModels removeAllObjects];
     
     NSMutableArray * titles = [NSMutableArray array];
     for (int i = 0; i < [_childControllers count]; i++) {
-        BKPageControlViewController * vc = _childControllers[i];
-        NSAssert([vc isKindOfClass:[BKPageControlViewController class]], @"控制器必须继承BKPageControlViewController");
+        UIViewController * vc = _childControllers[i];
         vc.bk_index = i;
         vc.bk_pageControlView = self;
         vc.bk_isFollowSuperScrollViewScrollDown = YES;
@@ -74,6 +84,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         NSAssert(existCount == 1, @"已添加控制器不能重复添加");
         [titles addObject:vc.title];
+        
+        BKPCViewKVOChildControllerPModel * kvoModel = [[BKPCViewKVOChildControllerPModel alloc] initWithChildController:vc];
+        [self.kvoModels addObject:kvoModel];
     }
     [self.collectionView reloadData];
     self.menuView.titles = [titles copy];
@@ -91,7 +104,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     self.menuView.selectIndex = _displayIndex;
 }
 
--(BKPageControlViewController *)displayVC
+-(UIViewController *)displayVC
 {
     return self.childControllers[self.displayIndex];
 }
@@ -118,12 +131,12 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - init
 
--(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(NSArray<BKPageControlViewController *> *)childControllers superVC:(UIViewController *)superVC
+-(nonnull instancetype)initWithFrame:(CGRect)frame childControllers:(nullable NSArray<UIViewController *> *)childControllers superVC:(nonnull UIViewController *)superVC
 {
     return [self initWithFrame:frame delegate:nil childControllers:childControllers superVC:superVC];
 }
 
--(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKPageControlViewDelegate>)delegate childControllers:(NSArray<BKPageControlViewController *> *)childControllers superVC:(UIViewController *)superVC
+-(instancetype)initWithFrame:(CGRect)frame delegate:(id<BKPageControlViewDelegate>)delegate childControllers:(nullable NSArray<UIViewController *> *)childControllers superVC:(nonnull UIViewController *)superVC
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -333,18 +346,19 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
  */
 -(UIScrollView*)getMainScrollViewWithCorrespondingIndex:(NSInteger)index
 {
-    BKPageControlViewController * vc = self.childControllers[index];
-    if (!vc.bk_mainScrollView) {
-        [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([obj isKindOfClass:[UIScrollView class]]) {
-                vc.bk_mainScrollView = obj;
-                *stop = YES;
-            }else if ([obj isKindOfClass:[BKPageControlView class]]) {
-                vc.bk_mainScrollView = ((BKPageControlView*)obj).bgScrollView;
-                *stop = YES;
-            }
-        }];
+    UIViewController * vc = self.childControllers[index];
+    if (vc.bk_mainScrollView) {
+        return vc.bk_mainScrollView;
     }
+    [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[UIScrollView class]]) {
+            vc.bk_mainScrollView = obj;
+            *stop = YES;
+        }else if ([obj isKindOfClass:[BKPageControlView class]]) {
+            vc.bk_mainScrollView = ((BKPageControlView*)obj).bgScrollView;
+            *stop = YES;
+        }
+    }];
     return vc.bk_mainScrollView;
 }
 
@@ -463,7 +477,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    BKPageControlViewController * vc = self.childControllers[indexPath.item];
+    UIViewController * vc = self.childControllers[indexPath.item];
     vc.view.frame = CGRectMake(0, 0, cell.frame.size.width, cell.frame.size.height);
     [cell addSubview:vc.view];
     [self.superVC addChildViewController:vc];
@@ -474,7 +488,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    BKPageControlViewController * vc = self.childControllers[indexPath.item];
+    UIViewController * vc = self.childControllers[indexPath.item];
     [vc willMoveToParentViewController:nil];
     [vc removeFromParentViewController];
     [cell.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
@@ -513,7 +527,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_willBeginDraggingSuperBgScrollView:)]) {
-            [self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPageControlViewController>*)self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
         }
     }
 }
@@ -532,7 +546,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didScrollSuperBgScrollView:)]) {
-            [self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPageControlViewController>*)self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
         }
         
         if (self.headerView || self.superLevelPageControlView) {
@@ -606,7 +620,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_willEndDraggingSuperBgScrollView:withVelocity:targetContentOffset:)]) {
-            [self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+            [(UIViewController<BKPageControlViewController>*)self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
         }
     }
 }
@@ -629,7 +643,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didEndDraggingSuperBgScrollView:willDecelerate:)]) {
-            [self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
+            [(UIViewController<BKPageControlViewController>*)self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
         }
     }
 }
@@ -662,7 +676,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didEndDeceleratingSuperBgScrollView:)]) {
-            [self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPageControlViewController>*)self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
         }
     }
 }

@@ -2,43 +2,20 @@
 //  BKPageControlViewController.h
 //  DSCnliveShopSDK
 //
-//  Created by zhaolin on 2019/8/19.
+//  Created by zhaolin on 2019/8/20.
 //  Copyright © 2019 BIKE. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-@class BKPageControlView;
 @class BKPageControlBgScrollView;
 
-//修改主滚动视图 userInfo @{@"bk_index" : @(索引), @"bk_mainScrollView" : 主滚动视图UIScrollView}
-UIKIT_EXTERN NSString * _Nonnull const kBKPCViewChangeMainScrollViewNotification;
-//修改主滚动视图的contentSize userInfo @{@"bk_index" : @(索引), @"bk_mainScrollView" : 主滚动视图UIScrollView}
-UIKIT_EXTERN NSString * _Nonnull const kBKPCViewChangeMainScrollViewContentSizeNotification;
+#ifndef BKPageControlViewController_h
+#define BKPageControlViewController_h
 
-NS_ASSUME_NONNULL_BEGIN
+@protocol BKPageControlViewController <NSObject>
 
-@interface BKPageControlViewController : UIViewController
-
-#pragma mark - 属性
-
-/**
- 分页控制视图
- */
-@property (nonatomic,weak,nullable) BKPageControlView * bk_pageControlView;
-/**
- 所在索引
- */
-@property (nonatomic,assign) NSUInteger bk_index;
-/**
- 子控制器的主滚动视图(用于计算出BKPageControlView主视图的contentSize)
- 此属性会自动获取，也可以自己赋值更改。
- */
-@property (nonatomic,weak,nullable) UIScrollView * bk_mainScrollView;
-/**
- 子控制器主滚动视图是否跟随BKPageControlView主滚动视图一起向下滑动 (默认YES, 且BKPageControlView主滚动视图.scrollOrder == BKPageControlBgScrollViewScrollOrderFirstScrollContentView)
- 有一种情况 当滑动顺序为内容视图时 父滚动视图的contentOffsetY==0 子控制器主滚动视图contentOffsetY>0 此时向下划有特殊需求时可以使用该属性来禁止跟随
- */
-@property (nonatomic,assign) BOOL bk_isFollowSuperScrollViewScrollDown;
+@optional
 
 #pragma mark - 滑动主视图
 
@@ -82,4 +59,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-NS_ASSUME_NONNULL_END
+#endif /* BKPageControlViewController_h */
