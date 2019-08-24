@@ -4,7 +4,6 @@ inhibit_all_warnings!
 use_frameworks!
 
 workspace 'BKPageControlView.xcworkspace'
-project 'Demo/BKPageControlViewDemo.xcodeproj'
 
 target 'BKPageControlViewDemo' do
   project 'Demo/BKPageControlViewDemo.xcodeproj'
