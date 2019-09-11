@@ -17,14 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  标识符
  */
-@property (nonatomic,copy) NSString * identifier;
+@property (nonatomic,copy,readonly) NSString * identifier;
 /**
  创建menu
  
  @param identifier 标识符
  @return menu
  */
--(instancetype)initWithIdentifer:(NSString*)identifier;
+-(instancetype)initWithIdentifer:(nonnull NSString*)identifier;
 
 #pragma mark - 索引
 
@@ -33,36 +33,47 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,assign) NSInteger displayIndex;
 
-#pragma mark - 属性
+#pragma mark - 标题属性
 
 /**
  内容
  */
-@property (nonatomic,copy) NSString * text;
+@property (nonatomic,copy,readonly) NSString * text;
 /**
  内容颜色
  */
-@property (nonatomic,strong) UIColor * textColor;
+@property (nonatomic,strong,readonly) UIColor * textColor;
 /**
  内容字号
  */
-@property (nonatomic,strong) UIFont * font;
+@property (nonatomic,strong,readonly) UIFont * font;
 /**
  行数
  */
-@property (nonatomic,assign) NSUInteger numberOfLines;
+@property (nonatomic,assign,readonly) NSUInteger numberOfLines;
 /**
  行间距
  */
-@property (nonatomic,assign) CGFloat lineSpacing;
+@property (nonatomic,assign,readonly) CGFloat lineSpacing;
+
+/**
+ 标题赋值
+
+ @param title 内容
+ @param textColor 内容颜色
+ @param font 内容字号
+ @param numberOfLines 行数
+ @param lineSpacing 行间距
+ */
+-(void)assignTitle:(nullable NSString*)title textColor:(UIColor*)textColor font:(UIFont*)font numberOfLines:(NSUInteger)numberOfLines lineSpacing:(CGFloat)lineSpacing;
+
 /**
  内容插入量
  */
 @property (nonatomic,assign) UIEdgeInsets contentInset;
-/**
- 内容对齐方式
- */
-@property (nonatomic,assign) NSTextAlignment textAlignment;
+
+#pragma mark - 图片
+
 /**
  icon
  */
@@ -71,6 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
  选中的icon
  */
 @property (nonatomic,strong) UIImageView * sIconImageView;
+
+#pragma mark - 消息数
+
+/**
+ 消息数
+ */
+@property (nonatomic,strong) UILabel * messageCountLab;
 
 #pragma mark - 触发事件
 

@@ -13,11 +13,26 @@
 #import "UIView+BKPageControlView.h"
 #import "NSString+BKPageControlView.h"
 #import "BKPageControlMenuModel.h"
+#import "BKPageControlView.h"
+
+typedef NS_ENUM(NSUInteger, BKPageControlContentScrollDirection) {
+    BKPageControlContentScrollDirectionLeft = 0,
+    BKPageControlContentScrollDirectionRight
+};
 
 NSString * const kBKPageControlMenuID = @"kBKPageControlMenuID";
 const float kSelectViewAnimateTimeInterval = 0.25;
 
 @interface BKPageControlMenuView()<UIScrollViewDelegate>
+
+/**
+ 上一次内容滑动偏移量
+ */
+@property (nonatomic,assign) CGFloat lastContentOffsetX;
+/**
+ 滑动方向
+ */
+@property (nonatomic,assign) BKPageControlContentScrollDirection scrollDirection;
 
 /**
  保存的选中字体字号
@@ -35,7 +50,6 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 @end
 
 @implementation BKPageControlMenuView
-@synthesize isTapMenuSwitchingIndex = _isTapMenuSwitchingIndex;
 
 #pragma mark - 展示的vc数组
 
@@ -45,33 +59,44 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     [self reloadContentView];
 }
 
-#pragma mark - 选中的索引
+#pragma mark - 索引
 
 -(void)setSelectIndex:(NSUInteger)selectIndex
 {
-    if (selectIndex > [self.titles count] - 1) {
+    if (_selectIndex == selectIndex) {
+        return;
+    }else if (selectIndex > [self.titles count] - 1) {
         _selectIndex = [self.titles count] - 1;
     }else {
         _selectIndex = selectIndex;
     }
-   
-    if (![UIApplication sharedApplication].keyWindow.userInteractionEnabled) {
-        return;
-    }
-    [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
     
-    _isTapMenuSwitchingIndex = YES;
-    if ([self.delegate respondsToSelector:@selector(tapMenuSwitchSelectIndex:)]) {
-        [self.delegate tapMenuSwitchSelectIndex:_selectIndex];
+    [self reloadContentView];
+}
+
+/**
+ 修改当前选中索引
+ */
+-(void)setSelectIndex:(NSUInteger)selectIndex animated:(void (^)(void))animated completion:(void (^)(void))completion
+{
+    if (_selectIndex == selectIndex) {
+        return;
+    }else if (selectIndex > [self.titles count] - 1) {
+        _selectIndex = [self.titles count] - 1;
+    }else {
+        _selectIndex = selectIndex;
     }
     
     [self reloadContentView];
     
     [UIView animateWithDuration:kSelectViewAnimateTimeInterval animations:^{
-        
+        if (animated) {
+            animated();
+        }
     } completion:^(BOOL finished) {
-        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
-        self->_isTapMenuSwitchingIndex = NO;
+        if (completion) {
+            completion();
+        }
     }];
 }
 
@@ -191,10 +216,14 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 
 -(void)setFrame:(CGRect)frame
 {
+    if (CGRectEqualToRect(self.frame, frame)) {
+        return;
+    }
     [super setFrame:frame];
-    self.contentView.frame = self.bounds;
+    
+    self.contentView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height);
     self.bottomLine.bk_y = self.bk_height - self.bottomLine.bk_height;
-    self.selectView.bk_y = self.contentView.bk_height - self.selectView.bk_height;
+    self.selectView.bk_y = self.bk_height - self.selectView.bk_height - self.selectViewBottomMargin;
     
     if ([self.delegate respondsToSelector:@selector(changeMenuViewFrame)]) {
         [self.delegate changeMenuViewFrame];
@@ -250,9 +279,9 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 {
     [super layoutSubviews];
     
-    self.contentView.frame = self.bounds;
+    self.contentView.frame = CGRectMake(0, 0, self.bk_width, self.bk_height);
     self.bottomLine.frame = CGRectMake(0, self.bk_height - BK_ONE_PIXEL, self.bk_width, BK_ONE_PIXEL);
-    self.selectView.frame = CGRectMake(self.selectView.bk_x, self.contentView.bk_height - self.selectViewHeight - self.selectViewBottomMargin, self.selectView.bk_width, self.selectViewHeight);
+    self.selectView.frame = CGRectMake(self.selectView.bk_x, self.bk_height - self.selectViewHeight - self.selectViewBottomMargin, self.selectView.bk_width, self.selectViewHeight);
 }
 
 #pragma mark - 导航内容视图
@@ -260,7 +289,7 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 -(UIScrollView*)contentView
 {
     if (!_contentView) {
-        _contentView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        _contentView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.bk_width, self.bk_height)];
         _contentView.backgroundColor = [UIColor clearColor];
         _contentView.showsHorizontalScrollIndicator = NO;
         _contentView.showsVerticalScrollIndicator = NO;
@@ -345,12 +374,8 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 -(BKPageControlMenu*)createMenuWithReuseIdentifier:(NSString*)identifier
 {
     BKPageControlMenu * menu = [[BKPageControlMenu alloc] initWithIdentifer:identifier];
-    menu.textColor = self.menuNormalTitleColor;
-    menu.font = [self getMenuFontSize:self.menuNormalTitleFontSize];
-    menu.numberOfLines = self.menuNumberOfLines;
-    menu.lineSpacing = self.menuLineSpacing;
+    [menu assignTitle:nil textColor:self.menuNormalTitleColor font:[self getMenuFontSize:self.menuNormalTitleFontSize] numberOfLines:self.menuNumberOfLines lineSpacing:self.menuLineSpacing];
     menu.contentInset = self.menuContentInset;
-    menu.textAlignment = NSTextAlignmentCenter;
     menu.userInteractionEnabled = YES;
     __weak typeof(self) weakSelf = self;
     [menu setClickSelfCallBack:^(BKPageControlMenu * _Nonnull menu) {
@@ -358,7 +383,20 @@ const float kSelectViewAnimateTimeInterval = 0.25;
         if (weakSelf.selectIndex == menu.displayIndex) {
             return;
         }
+        NSUInteger leaveIndex = weakSelf.selectIndex;
         weakSelf.selectIndex = menu.displayIndex;
+        
+        if ([weakSelf.delegate respondsToSelector:@selector(menuView:willLeaveIndex:)]) {
+            [weakSelf.delegate menuView:weakSelf willLeaveIndex:leaveIndex];
+        }
+        
+        if ([weakSelf.delegate respondsToSelector:@selector(menuView:switchingSelectIndex:leavingIndex:percentage:)]) {
+            [weakSelf.delegate menuView:weakSelf switchingSelectIndex:weakSelf.selectIndex leavingIndex:leaveIndex percentage:1];
+        }
+        
+        if ([weakSelf.delegate respondsToSelector:@selector(menuView:switchIndex:)]) {
+            [weakSelf.delegate menuView:weakSelf switchIndex:weakSelf.selectIndex];
+        }
     }];
     return menu;
 }
@@ -394,21 +432,17 @@ const float kSelectViewAnimateTimeInterval = 0.25;
  @param menu 标题
  @param index 索引
  */
--(void)assignDataForMenu:(BKPageControlMenu*)menu index:(NSInteger)index
+-(void)assignDataForMenu:(BKPageControlMenu*)menu index:(NSUInteger)index
 {
     BKPageControlMenuPropertyModel * model = self.menuModel.total[index];
     
     menu.displayIndex = index;
     menu.frame = model.rect;
-    menu.text = self.titles[index];
-    menu.textColor = model.color;
-    menu.font = model.font;
-    menu.numberOfLines = self.menuNumberOfLines;
-    menu.lineSpacing = self.menuLineSpacing;
+    [menu assignTitle:self.titles[index] textColor:model.color font:model.font numberOfLines:self.menuNumberOfLines lineSpacing:self.menuLineSpacing];
     menu.contentInset = self.menuContentInset;
     
-    if ([self.delegate respondsToSelector:@selector(menu:settingIconImageView:selectIconImageView:atIndex:)]) {
-        [self.delegate menu:menu settingIconImageView:menu.iconImageView selectIconImageView:menu.sIconImageView atIndex:index];
+    if ([self.delegate respondsToSelector:@selector(menu:atIndex:)]) {
+        [self.delegate menu:menu atIndex:index];
     }
 }
 
@@ -580,39 +614,72 @@ const float kSelectViewAnimateTimeInterval = 0.25;
 
 #pragma mark - 滑动pageControlView的方法
 
--(void)scrollCollectionView:(UICollectionView*)collectionView
+-(void)collectionViewDidScroll:(UICollectionView*)collectionView
 {
-    CGFloat offsetX = collectionView.contentOffset.x;
-    NSInteger item = 0;
-    //一页滑动的百分比
-    CGFloat page_offsetX = 0;
-    CGFloat percentage = 0;
+    CGFloat offsetX = collectionView.contentOffset.x;//滑动偏移量x
+    if (self.lastContentOffsetX == offsetX) {
+        return;
+    }
+    NSUInteger displayIndex = 0;//当前主要显示的index
+    NSUInteger item = 0;//collectionView最左边所在的item
+    CGFloat page_offsetX = 0;//当页滑动的偏移量x
+    CGFloat percentage = 0;//一页滑动的百分比
     if (collectionView.bk_width != 0) {
         item = offsetX / collectionView.bk_width;
-        page_offsetX = (CGFloat)((NSInteger)offsetX % (NSInteger)collectionView.bk_width);
+        displayIndex = (offsetX + collectionView.bk_width/2) / collectionView.bk_width;
+        page_offsetX = (CGFloat)((NSUInteger)offsetX % (NSUInteger)collectionView.bk_width);
         percentage = page_offsetX / collectionView.bk_width;
     }
-    //往左滑
-    NSInteger fromIndex = item;
-    NSInteger toIndex;
-    if (collectionView.contentOffset.x < 0) {//偏移量<0肯定是往右滑
-        toIndex = -1;
+    
+    if (self.lastContentOffsetX > collectionView.contentOffset.x) {//上一次偏移量x > 目前偏移量 说明往右划
+        self.scrollDirection = BKPageControlContentScrollDirectionRight;
+    }else if (self.lastContentOffsetX < collectionView.contentOffset.x) {//上一次偏移量x < 目前偏移量 说明往左划
+        self.scrollDirection = BKPageControlContentScrollDirectionLeft;
+    }//上一次偏移量x == 目前偏移量 继续保持上一次
+    
+    //初始化开始索引 和 目标索引
+    NSUInteger fromIndex, toIndex;
+    if (percentage == 0) {
+        if (self.scrollDirection == BKPageControlContentScrollDirectionRight) {
+            toIndex = item;
+            fromIndex = toIndex + 1;
+        }else {
+            toIndex = item;
+            fromIndex = toIndex - 1;
+        }
+        percentage = 1;
     }else {
-        toIndex = item + 1;
-    }
-    //往右滑
-    if (self.selectIndex == toIndex) {
-        percentage = 1 - percentage;
-        NSInteger tempIndex = fromIndex;
-        fromIndex = toIndex;
-        toIndex = tempIndex;
+        if (self.scrollDirection == BKPageControlContentScrollDirectionRight) {
+            toIndex = item;
+            fromIndex = toIndex + 1;
+            percentage = 1 - percentage;
+        }else {
+            fromIndex = item;
+            toIndex = fromIndex + 1;
+        }
     }
     
     [self changeSelectPropertyWithFromIndex:fromIndex toIndex:toIndex percentage:percentage normalFontSize:self.menuNormalTitleFontSize selectFontSize:self.menuSelectTitleFontSize normalColor:self.menuNormalTitleColor selectColor:self.menuSelectTitleColor];
     [self calcScrollContentOffsetAccordingToSelectViewPosition];
     
-    if ([self.delegate respondsToSelector:@selector(switchingSelectIndex:leavingIndex:percentage:)]) {
-        [self.delegate switchingSelectIndex:toIndex leavingIndex:fromIndex percentage:percentage];
+    if ([self.delegate respondsToSelector:@selector(menuView:switchingSelectIndex:leavingIndex:percentage:)]) {
+        [self.delegate menuView:self switchingSelectIndex:toIndex leavingIndex:fromIndex percentage:percentage];
+    }
+    
+    self.lastContentOffsetX = collectionView.contentOffset.x;
+}
+
+-(void)collectionViewDidEndDecelerating:(UICollectionView*)collectionView
+{
+    CGFloat offsetX = collectionView.contentOffset.x;
+    NSUInteger displayIndex = 0;
+    if (collectionView.bk_width != 0) {
+        displayIndex = (offsetX + collectionView.bk_width/2) / collectionView.bk_width;
+    }
+    self.selectIndex = displayIndex;
+    
+    if ([self.delegate respondsToSelector:@selector(menuView:switchIndex:)]) {
+        [self.delegate menuView:self switchIndex:self.selectIndex];
     }
 }
 
@@ -629,10 +696,10 @@ const float kSelectViewAnimateTimeInterval = 0.25;
  @param normalColor 默认颜色
  @param selectColor 选中颜色
  */
--(void)changeSelectPropertyWithFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex percentage:(CGFloat)percentage normalFontSize:(CGFloat)normalFontSize selectFontSize:(CGFloat)selectFontSize normalColor:(UIColor*)normalColor selectColor:(UIColor*)selectColor
+-(void)changeSelectPropertyWithFromIndex:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex percentage:(CGFloat)percentage normalFontSize:(CGFloat)normalFontSize selectFontSize:(CGFloat)selectFontSize normalColor:(UIColor*)normalColor selectColor:(UIColor*)selectColor
 {
-    //数组越界return 或者 isnan(percentage)
-    if (toIndex < 0 || toIndex > [self.menuModel.total count] - 1 || isnan(percentage)) {
+    //没有数据 数组越界return 或者 isnan(percentage)
+    if ([self.titles count] == 0 || fromIndex > [self.menuModel.total count] - 1 || toIndex > [self.menuModel.total count] - 1 || isnan(percentage)) {
         return;
     }
     
@@ -693,8 +760,7 @@ const float kSelectViewAnimateTimeInterval = 0.25;
     [self.menuModel.visible enumerateObjectsUsingBlock:^(BKPageControlMenu * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         BKPageControlMenuPropertyModel * model = self.menuModel.total[obj.displayIndex];
         obj.frame = model.rect;
-        obj.font = model.font;
-        obj.textColor = model.color;
+        [obj assignTitle:obj.text textColor:model.color font:model.font numberOfLines:obj.numberOfLines lineSpacing:obj.lineSpacing];
     }];
     
     //修改menu属性后新的model 用于修改选中线的位置

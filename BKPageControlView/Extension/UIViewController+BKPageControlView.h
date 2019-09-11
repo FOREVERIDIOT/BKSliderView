@@ -23,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic,weak,nullable) UIScrollView * bk_mainScrollView;
 /**
+ 该索引下子控制器的主滚动视图是否能滑动(默认不允许滑动, 该属性在有头视图、有多层BKPageControlView时有效)
+ */
+@property (nonatomic,assign) BOOL bk_MSVScrollEnable;
+/**
  分页控制视图
  */
 @property (nonatomic,weak,nullable) BKPageControlView * bk_pageControlView;

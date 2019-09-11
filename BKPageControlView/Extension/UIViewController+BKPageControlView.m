@@ -13,8 +13,8 @@
 
 -(NSUInteger)bk_index
 {
-    NSUInteger page = [objc_getAssociatedObject(self, @"bk_pageCotrolView_index") integerValue];
-    return page;
+    NSUInteger index = [objc_getAssociatedObject(self, @"bk_pageCotrolView_index") integerValue];
+    return index;
 }
 
 -(void)setBk_index:(NSUInteger)bk_index
@@ -31,6 +31,17 @@
 -(void)setBk_mainScrollView:(UIScrollView *)bk_mainScrollView
 {
     objc_setAssociatedObject(self, @"bk_pageCotrolView_mainScrollView", bk_mainScrollView, OBJC_ASSOCIATION_ASSIGN);
+}
+
+-(BOOL)bk_MSVScrollEnable
+{
+    BOOL scrollEnable = [objc_getAssociatedObject(self, @"bk_pageCotrolView_scrollEnable") boolValue];
+    return scrollEnable;
+}
+
+-(void)setBk_MSVScrollEnable:(BOOL)bk_MSVScrollEnable
+{
+    objc_setAssociatedObject(self, @"bk_pageCotrolView_scrollEnable", @(bk_MSVScrollEnable), OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 -(BKPageControlView *)bk_pageControlView

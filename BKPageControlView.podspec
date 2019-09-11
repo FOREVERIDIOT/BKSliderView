@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
 s.name             = 'BKPageControlView'
-s.version          = '2.1.0'
+s.version          = '2.1.1'
 s.summary          = 'a simple page control view'
 s.homepage         = 'https://github.com/MMDDZ/BKPageControlView'
 s.license          = { :type => 'MIT', :file => 'LICENSE' }

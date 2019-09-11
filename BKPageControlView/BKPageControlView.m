@@ -14,17 +14,13 @@
 
 NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
-@interface BKPageControlView()<UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, BKPageControlMenuViewDelegate, UIGestureRecognizerDelegate>
+@interface BKPageControlView()<UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, BKPageControlMenuViewDelegate>
+//UIGestureRecognizerDelegate
 
 /**
  KVO监听子控制器中的属性数组
  */
 @property (nonatomic,strong) NSMutableArray<BKPCViewKVOChildControllerPModel*> * kvoModels;
-
-/**
- 离开的index
- */
-@property (nonatomic,assign) NSInteger leaveIndex;
 
 /**
  主视图是否正在滚动中
@@ -38,12 +34,12 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 /**
  panGesture定时器
  */
-@property (nonatomic,strong) NSTimer * panGestureTimer;
+@property (nonatomic,strong) NSTimer * panGestureTimer DEPRECATED_MSG_ATTRIBUTE("废弃了 已经用alwaysBounceHorizontal=NO + [super setContentOffset:CGPointMake(0, contentOffset.y)];实现需求效果了");
 
 @end
 
 @implementation BKPageControlView
-@synthesize csCollectionViewPanGesture = _csCollectionViewPanGesture;
+//@synthesize csCollectionViewPanGesture = _csCollectionViewPanGesture;
 @synthesize superVC = _superVC;
 @synthesize displayVC = _displayVC;
 
@@ -96,12 +92,46 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)setDisplayIndex:(NSUInteger)displayIndex
 {
-    if (displayIndex > [self.childControllers count] - 1) {
+    if (_displayIndex == displayIndex) {
+        return;
+    }else if (displayIndex > [self.childControllers count] - 1) {
         _displayIndex = [self.childControllers count] - 1;
     }else {
         _displayIndex = displayIndex;
     }
-    self.menuView.selectIndex = _displayIndex;
+    
+    if (self.menuView.selectIndex != _displayIndex) {
+        self.menuView.selectIndex = _displayIndex;
+    }
+    
+    CGFloat rollLength = self.collectionView.bk_width * _displayIndex;
+    [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+}
+
+-(void)setDisplayIndex:(NSUInteger)displayIndex animated:(nullable void (^)(void))animated completion:(nullable void(^)(void))completion
+{
+    if (_displayIndex == displayIndex) {
+        return;
+    }else if (displayIndex > [self.childControllers count] - 1) {
+        _displayIndex = [self.childControllers count] - 1;
+    }else {
+        _displayIndex = displayIndex;
+    }
+    
+    if (self.menuView.selectIndex != _displayIndex) {
+        [self.menuView setSelectIndex:_displayIndex animated:^{
+            if (animated) {
+                animated();
+            }
+        } completion:^{
+            if (completion) {
+                completion();
+            }
+        }];
+    }
+    
+    CGFloat rollLength = self.collectionView.bk_width * _displayIndex;
+    [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
 }
 
 -(UIViewController *)displayVC
@@ -183,12 +213,14 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
     }
     self.menuView.frame = CGRectMake(0, 0, self.contentView.bk_width, self.menuView.bk_height);
+    
+    CGRect lastCollectionViewRect = self.collectionView.frame;
     self.collectionView.frame = CGRectMake(self.contentLrInsets, CGRectGetMaxY(self.menuView.frame), self.contentView.bk_width - self.contentLrInsets*2, self.contentView.bk_height - CGRectGetMaxY(self.menuView.frame));
-    if (self.isNeedReCalcBgScrollViewContentOffsetY) {
-        self.isNeedReCalcBgScrollViewContentOffsetY = NO;
-        CGFloat rollLength = self.collectionView.bk_width * self.displayIndex;
-        [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+    if (!CGSizeEqualToSize(lastCollectionViewRect.size, self.collectionView.frame.size)) {
+        [self.collectionView reloadData];
     }
+    CGFloat rollLength = self.collectionView.bk_width * self.displayIndex;
+    [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
 }
 
 -(void)dealloc
@@ -203,9 +235,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 {
     NSUInteger correspondingIndex = [notification.userInfo[@"bk_index"] integerValue];
     if (correspondingIndex == self.displayIndex) {
-        dispatch_async(dispatch_get_main_queue(), ^{//用线程使修改contentSize在滑动中生效
-            [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-        });
+        [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
     }
 }
 
@@ -213,9 +243,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 {
     NSUInteger correspondingIndex = [notification.userInfo[@"bk_index"] integerValue];
     if (correspondingIndex == self.displayIndex) {
-        dispatch_async(dispatch_get_main_queue(), ^{//用线程使修改contentSize在滑动中生效
-            [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-        });
+        [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
     }
 }
 
@@ -247,13 +275,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 {
     if (!_bgScrollView) {
         _bgScrollView = [[BKPageControlBgScrollView alloc] initWithFrame:CGRectMake(0, 0, self.bk_width, self.bk_height)];
-        _bgScrollView.backgroundColor = [UIColor clearColor];
-        _bgScrollView.showsHorizontalScrollIndicator = NO;
-        _bgScrollView.showsVerticalScrollIndicator = NO;
         _bgScrollView.delegate = self;
-        if (@available(iOS 11.0, *)) {
-            _bgScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
     }
     return _bgScrollView;
 }
@@ -263,8 +285,11 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)setHeaderView:(UIView *)headerView
 {
+    if (_headerView != headerView) {
+        [_headerView removeFromSuperview];
+        _headerView = nil;
+    }
     _headerView = headerView;
-    
     [self.bgScrollView addSubview:_headerView];
     self.contentView.bk_y = CGRectGetMaxY(_headerView.frame);
     
@@ -278,65 +303,89 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
  */
 -(void)changeBgScrollContentSizeWithNowIndex:(NSInteger)index
 {
-    if (self.headerView || self.superLevelPageControlView) {
-        //获取当前详情内容视图内的滚动视图
-        UIScrollView * scrollView = [self getMainScrollViewWithCorrespondingIndex:index];
-        //如果详情内容视图中包含滚动视图 禁止滚动视图滑动能力
-        if (scrollView) {//有滚动视图
-            scrollView.scrollEnabled = NO;
-            //滚动视图的contentSize.height > 滚动视图自身height
-            if (scrollView.contentSize.height > scrollView.bk_height) {
-                //算出滚动式图在父视图上少的高度
-                CGFloat scrollView_top_bottom_supperH = self.displayVC.view.bk_height - scrollView.bk_height;
-                //所有内容高度 = 头视图高度 + 导航视图高度 + 滚动视图的内容高度
-                CGFloat contentSizeHeight = self.headerView.bk_height + self.menuView.bk_height + scrollView_top_bottom_supperH + scrollView.contentSize.height;
-                //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
-                if (contentSizeHeight > self.bgScrollView.contentSize.height) {
-                    self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
-                }
-                
-                if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
-                    if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
-                        //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
-                        scrollView.contentOffset = CGPointZero;
-                    }
+    //用线程使修改contentSize在滑动中生效
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.headerView || self.superLevelPageControlView) {
+            //获取当前详情内容视图内的滚动视图
+            UIScrollView * scrollView = [self getMainScrollViewWithCorrespondingIndex:index];
+            //如果详情内容视图中包含滚动视图 禁止滚动视图滑动能力
+            if (scrollView) {//有滚动视图
+                UIViewController * displayVC = self.childControllers[index];
+                //判断主滚动视图允不允许滑动
+                if (displayVC.bk_MSVScrollEnable) {
+                    scrollView.scrollEnabled = YES;
+                    return;
                 }else {
-                    //如果主视图滑动高度 > 头视图高度 根据滚动视图的滑动高度修改主视图滑动高度
-                    if (index == self.displayIndex) {
-                        self.bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + self.headerView.bk_height);
+                    scrollView.scrollEnabled = NO;
+                }
+                //滚动视图的contentSize.height > 滚动视图自身height
+                if (scrollView.contentSize.height > scrollView.bk_height) {
+                    //算出滚动式图在父视图上少的高度
+                    CGFloat scrollView_top_bottom_supperH = self.displayVC.view.bk_height - scrollView.bk_height;
+                    //所有内容高度 = 头视图高度 + 导航视图高度 + 滚动视图的内容高度
+                    CGFloat contentSizeHeight = self.headerView.bk_height + self.menuView.bk_height + scrollView_top_bottom_supperH + scrollView.contentSize.height;
+                    //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
+                    if (contentSizeHeight > self.bgScrollView.contentSize.height) {
+                        self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.contentSize.width, contentSizeHeight);
                     }
+                    
+                    if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
+                        if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+                            //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
+                            scrollView.contentOffset = CGPointZero;
+                        }
+                    }else {
+                        //如果主视图滑动高度 > 头视图高度 根据滚动视图的滑动高度修改主视图滑动高度
+                        if (index == self.displayIndex) {
+                            self.bgScrollView.contentOffset = CGPointMake(0, scrollView.contentOffset.y + self.headerView.bk_height);
+                            //修改主视图偏移量需要把内容视图的y值修改对应高度
+                            if (self.bgScrollView.contentOffset.y > self.headerView.bk_height) {
+                                self.contentView.bk_y = self.bgScrollView.contentOffset.y;
+                            }else {
+                                self.contentView.bk_y = CGRectGetMaxY(self.headerView.frame);
+                            }
+                        }
+                    }
+                    //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
+                    if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
+                        self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.contentSize.width, contentSizeHeight);
+                    }
+                    return;
                 }
-                //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
-                if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
-                    self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
+            }else {
+                UIViewController * displayVC = self.childControllers[index];
+                //判断主滚动视图允不允许滑动
+                if (displayVC.bk_MSVScrollEnable) {
+                    return;//不允许滑动return
                 }
-                return;
+            }
+            //有滚动视图 || 滚动视图的contentSize.height < 滚动视图自身height
+            //所有内容高度 = 头视图高度 + 详情内容视图高度
+            CGFloat contentSizeHeight = self.headerView.bk_height + self.contentView.bk_height;
+            //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
+            if (contentSizeHeight > self.bgScrollView.contentSize.height) {
+                self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.contentSize.width, contentSizeHeight);
+            }
+            
+            if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
+                if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
+                    //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
+                    scrollView.contentOffset = CGPointZero;
+                }
+            }else{
+                //如果主视图滑动高度 > 头视图高度 修改主视图滑动高度
+                if (index == self.displayIndex) {
+                    self.bgScrollView.contentOffset = CGPointMake(0, self.headerView.bk_height);
+                    //修改主视图偏移量需要把内容视图的y值修改对应高度
+                    self.contentView.bk_y = CGRectGetMaxY(self.headerView.frame);
+                }
+            }
+            //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
+            if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
+                self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.contentSize.width, contentSizeHeight);
             }
         }
-        //有滚动视图 || 滚动视图的contentSize.height < 滚动视图自身height
-        //所有内容高度 = 头视图高度 + 详情内容视图高度
-        CGFloat contentSizeHeight = self.headerView.bk_height + self.contentView.bk_height;
-        //当 所有内容高度 > 当前主视图内容高度 时 修改主视图内容高度
-        if (contentSizeHeight > self.bgScrollView.contentSize.height) {
-            self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
-        }
-        
-        if (self.bgScrollView.contentOffset.y < self.headerView.bk_height) {
-            if (self.bgScrollView.scrollOrder != BKPageControlBgScrollViewScrollOrderFirstScrollContentView) {
-                //如果主视图滑动高度 < 头视图高度 修改主视图滑动高度为0
-                scrollView.contentOffset = CGPointZero;
-            }
-        }else{
-            //如果主视图滑动高度 > 头视图高度 修改主视图滑动高度
-            if (index == self.displayIndex) {
-                self.bgScrollView.contentOffset = CGPointMake(0, self.headerView.bk_height);
-            }
-        }
-        //如果停止详情内容视图横向滑动 && 所有内容高度 != 当前主视图内容高度 时 修改主视图内容高度
-        if (!self.collectionViewIsScrolling && contentSizeHeight != self.bgScrollView.contentSize.height) {
-            self.bgScrollView.contentSize = CGSizeMake(self.bgScrollView.bk_width, contentSizeHeight);
-        }
-    }
+    });
 }
 
 /**
@@ -381,6 +430,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     if (!_menuView) {
         _menuView = [[BKPageControlMenuView alloc] initWithFrame:CGRectMake(0, 0, self.contentView.bk_width, 45)];
         _menuView.delegate = self;
+        _menuView.pageControlView = self;
     }
     return _menuView;
 }
@@ -394,7 +444,14 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     [self.collectionView reloadData];
 }
 
--(void)switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
+-(void)menuView:(nonnull BKPageControlMenuView*)menuView willLeaveIndex:(NSUInteger)leaveIndex
+{
+    if ([self.delegate respondsToSelector:@selector(pageControlView:willLeaveIndex:)]) {
+        [self.delegate pageControlView:self willLeaveIndex:leaveIndex];
+    }
+}
+
+-(void)menuView:(BKPageControlMenuView*)menuView switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
 {
     if (switchingIndex > [self.childControllers count] - 1 || switchingIndex < 0 || leavingIndex > [self.childControllers count] - 1 || leavingIndex < 0) {
         return;
@@ -404,30 +461,23 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     }
 }
 
--(void)tapMenuSwitchSelectIndex:(NSUInteger)selectIndex
+-(void)menuView:(BKPageControlMenuView*)menuView switchIndex:(NSUInteger)switchIndex
 {
-    if (self.collectionView.bk_width == 0 || self.collectionView.contentSize.width == 0) {
-        self.isNeedReCalcBgScrollViewContentOffsetY = YES;
-    }else {
-        CGFloat rollLength = self.collectionView.bk_width * selectIndex;
-        [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+    NSUInteger leaveIndex = self.displayIndex;
+    self.displayIndex = switchIndex;
+    
+    self.bgScrollView.scrollEnabled = !self.displayVC.bk_MSVScrollEnable;
+    
+    if ([self.delegate respondsToSelector:@selector(pageControlView:switchIndex:leaveIndex:)]) {
+        [self.delegate pageControlView:self switchIndex:self.displayIndex leaveIndex:leaveIndex];
     }
-    //即将离开代理
-    if ([self.delegate respondsToSelector:@selector(pageControlView:willLeaveIndex:)]) {
-        [self.delegate pageControlView:self willLeaveIndex:self.displayIndex];
-    }
-    //离开中代理
-    if ([self.delegate respondsToSelector:@selector(pageControlView:switchingIndex:leavingIndex:percentage:)]) {
-        [self.delegate pageControlView:self switchingIndex:selectIndex leavingIndex:self.displayIndex percentage:1];
-    }
-    //已经离开
-    [self switchDisplayIndex:selectIndex];
+    [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
 }
 
--(void)menu:(BKPageControlMenu*)menu settingIconImageView:(UIImageView*)iconImageView selectIconImageView:(UIImageView*)selectIconImageView atIndex:(NSUInteger)index
+-(void)menu:(BKPageControlMenu*)menu atIndex:(NSUInteger)index
 {
-    if ([self.delegate respondsToSelector:@selector(pageControlView:menu:settingIconImageView:selectIconImageView:atIndex:)]) {
-        [self.delegate pageControlView:self menu:menu settingIconImageView:iconImageView selectIconImageView:selectIconImageView atIndex:index];
+    if ([self.delegate respondsToSelector:@selector(pageControlView:menu:atIndex:)]) {
+        [self.delegate pageControlView:self menu:menu atIndex:index];
     }
 }
 
@@ -494,19 +544,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     [cell.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 }
 
-#pragma mark - 切换index
-
--(void)switchDisplayIndex:(NSUInteger)displayIndex
-{
-    self.leaveIndex = self.displayIndex;
-    self.displayIndex = displayIndex;
-    
-    if ([self.delegate respondsToSelector:@selector(pageControlView:switchIndex:leaveIndex:)]) {
-        [self.delegate pageControlView:self switchIndex:self.displayIndex leaveIndex:self.leaveIndex];
-    }
-    [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-}
-
 #pragma mark - UIScrollDelegate
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -518,6 +555,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             [self.delegate pageControlView:self willLeaveIndex:self.displayIndex];
         }
     }else if (scrollView == self.bgScrollView) {
+        if (self.displayVC.bk_MSVScrollEnable) {
+            return;
+        }
+        
         self.bgScrollViewIsScrolling = YES;
         
         [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
@@ -535,12 +576,14 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == self.collectionView) {
-        if (self.menuView.isTapMenuSwitchingIndex) {
+        
+        [self.menuView collectionViewDidScroll:self.collectionView];
+        
+    }else if (scrollView == self.bgScrollView) {
+        if (self.displayVC.bk_MSVScrollEnable) {
             return;
         }
         
-        [self.menuView scrollCollectionView:self.collectionView];
-    }else if (scrollView == self.bgScrollView) {
         if ([self.delegate respondsToSelector:@selector(pageControlView:didScrollBgScrollView:)]) {
             [self.delegate pageControlView:self didScrollBgScrollView:self.bgScrollView];
         }
@@ -615,6 +658,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
     if (scrollView == self.bgScrollView) {
+        if (self.displayVC.bk_MSVScrollEnable) {
+            return;
+        }
+        
         if ([self.delegate respondsToSelector:@selector(pageControlView:willEndDraggingBgScrollView:withVelocity:targetContentOffset:)]) {
             [self.delegate pageControlView:self willEndDraggingBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
         }
@@ -632,6 +679,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             self.collectionViewIsScrolling = NO;
         }
     }else if (scrollView == self.bgScrollView) {
+        if (self.displayVC.bk_MSVScrollEnable) {
+            return;
+        }
+        
         if (!decelerate) {
             self.bgScrollViewIsScrolling = NO;
             //当主滚动式图惯性结束后把插入量归0
@@ -653,20 +704,13 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     if (scrollView == self.collectionView) {
         self.collectionViewIsScrolling = NO;
         
-        if (self.menuView.isTapMenuSwitchingIndex) {
-            return;
-        }
-
-        CGPoint convertPoint = CGPointMake(self.contentLrInsets + self.collectionView.bk_centerX, self.menuView.bk_height + self.collectionView.bk_height/2);
-        CGPoint point = [self.contentView convertPoint:convertPoint toView:self.collectionView];
-        NSIndexPath * indexPath = [self.collectionView indexPathForItemAtPoint:point];
-        NSInteger item = indexPath.item;
-        
-        self.menuView.selectIndex = item;
-        
-        [self switchDisplayIndex:item];
+        [self.menuView collectionViewDidEndDecelerating:self.collectionView];
         
     }else if (scrollView == self.bgScrollView) {
+        if (self.displayVC.bk_MSVScrollEnable) {
+            return;
+        }
+        
         self.bgScrollViewIsScrolling = NO;
         //当主滚动式图惯性结束后把插入量归0
         self.bgScrollView.interiorAddContentInsets = UIEdgeInsetsZero;
@@ -681,142 +725,134 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     }
 }
 
-#pragma mark - UIPanGestureRecognizer
-
--(void)setUseCsPanGestureOnCollectionView:(BOOL)useCsPanGestureOnCollectionView
-{
-    _useCsPanGestureOnCollectionView = useCsPanGestureOnCollectionView;
-    if (useCsPanGestureOnCollectionView) {
-        self.collectionView.scrollEnabled = NO;
-        [self.collectionView addGestureRecognizer:self.csCollectionViewPanGesture];
-    }else {
-        self.collectionView.scrollEnabled = YES;
-        [self.collectionView removeGestureRecognizer:self.csCollectionViewPanGesture];
-        self.csCollectionViewPanGesture = nil;
-    }
-}
-
--(UIPanGestureRecognizer *)csCollectionViewPanGesture
-{
-    if (!_csCollectionViewPanGesture) {
-        _csCollectionViewPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(csCollectionViewPanGesture:)];
-        _csCollectionViewPanGesture.delegate = self;
-    }
-    return _csCollectionViewPanGesture;
-}
-
--(void)setCsCollectionViewPanGesture:(UIPanGestureRecognizer *)csCollectionViewPanGesture
-{
-    _csCollectionViewPanGesture = csCollectionViewPanGesture;
-}
-
--(void)csCollectionViewPanGesture:(UIPanGestureRecognizer*)panGesture
-{
-    if (!panGesture.enabled) {
-        return;
-    }
-    
-    UICollectionView * collectionView = (UICollectionView*)panGesture.view;
-    CGPoint tPoint = [panGesture translationInView:collectionView];
-    switch (panGesture.state) {
-        case UIGestureRecognizerStateBegan:
-        {
-            [self.panGestureTimer invalidate];
-            self.panGestureTimer = nil;
-            
-            [[collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                obj.userInteractionEnabled = NO;
-            }];
-            
-            [self scrollViewWillBeginDragging:collectionView];
-        }
-            break;
-        case UIGestureRecognizerStateChanged:
-        {
-            CGFloat contentOffsetX = collectionView.contentOffset.x - tPoint.x;
-            if (contentOffsetX < 0) {
-                contentOffsetX = 0;
-            }else if (contentOffsetX > collectionView.contentSize.width - collectionView.bk_width) {
-                contentOffsetX = collectionView.contentSize.width - collectionView.bk_width;
-            }
-            [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y)];
-        }
-            break;
-        case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed:
-        case UIGestureRecognizerStatePossible:
-        {
-            CGPoint velocity = [panGesture velocityInView:panGesture.view];
-            NSInteger item;
-            if (velocity.x > 0) {
-                item = ceil(collectionView.contentOffset.x / collectionView.bk_width - 1);
-            }else if (velocity.x < 0) {
-                item = floor(collectionView.contentOffset.x / collectionView.bk_width + 1);
-            }else {
-                item = round(collectionView.contentOffset.x / collectionView.bk_width);
-            }
-            if (item < 0) {
-                item = 0;
-            }else if (item > [self.childControllers count] - 1) {
-                item = [self.childControllers count] - 1;
-            }
-            CGFloat contentOffsetX = item * collectionView.bk_width;
-            [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y) animated:YES];
-            
-            self.panGestureTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(panGestureTimerMethod) userInfo:nil repeats:NO];
-            [[NSRunLoop mainRunLoop] addTimer:self.panGestureTimer forMode:NSRunLoopCommonModes];
-        }
-            break;
-        default:
-            break;
-    }
-    
-    [panGesture setTranslation:CGPointZero inView:collectionView];
-}
-
--(void)panGestureTimerMethod
-{
-    [[self.collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        obj.userInteractionEnabled = YES;
-    }];
-    [self scrollViewDidEndDecelerating:self.collectionView];
-}
-
-#pragma mark - UIGestureRecognizerDelegate
-
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    if (!self.bgScrollViewIsScrolling && self.csCollectionViewPanGesture == gestureRecognizer) {
-        //如果collectionView滑动中禁止其他所有手势
-        if (gestureRecognizer.state == UIGestureRecognizerStateChanged || gestureRecognizer.state == UIGestureRecognizerStateEnded || gestureRecognizer.state == UIGestureRecognizerStateCancelled || gestureRecognizer.state == UIGestureRecognizerStateFailed) {
-            return NO;
-        }
-        UIPanGestureRecognizer * panGesture = (UIPanGestureRecognizer *)gestureRecognizer;
-        CGPoint tPoint = [panGesture translationInView:panGesture.view];
-        if (fabs(tPoint.x) > fabs(tPoint.y)) {
-            UICollectionView * collectionView = (UICollectionView*)panGesture.view;
-            CGFloat contentOffsetX = collectionView.contentOffset.x - tPoint.x;
-            if (contentOffsetX >= 0 && contentOffsetX <= collectionView.contentSize.width - collectionView.bk_width) {
-                return NO;
-            }
-        }
-    }
-    
-    self.csCollectionViewPanGesture.enabled = NO;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.csCollectionViewPanGesture.enabled = YES;
-    });
-    
-    return YES;
-}
-
-#pragma mark - hitTest:withEvent:
-
--(UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
-    return [super hitTest:point withEvent:event];
-}
+//#pragma mark - UIPanGestureRecognizer
+//
+//-(void)setUseCsPanGestureOnCollectionView:(BOOL)useCsPanGestureOnCollectionView
+//{
+//    _useCsPanGestureOnCollectionView = useCsPanGestureOnCollectionView;
+//    if (useCsPanGestureOnCollectionView) {
+//        self.collectionView.scrollEnabled = NO;
+//        [self.collectionView addGestureRecognizer:self.csCollectionViewPanGesture];
+//    }else {
+//        self.collectionView.scrollEnabled = YES;
+//        [self.collectionView removeGestureRecognizer:self.csCollectionViewPanGesture];
+//        self.csCollectionViewPanGesture = nil;
+//    }
+//}
+//
+//-(UIPanGestureRecognizer *)csCollectionViewPanGesture
+//{
+//    if (!_csCollectionViewPanGesture) {
+//        _csCollectionViewPanGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(csCollectionViewPanGesture:)];
+//        _csCollectionViewPanGesture.delegate = self;
+//    }
+//    return _csCollectionViewPanGesture;
+//}
+//
+//-(void)setCsCollectionViewPanGesture:(UIPanGestureRecognizer *)csCollectionViewPanGesture
+//{
+//    _csCollectionViewPanGesture = csCollectionViewPanGesture;
+//}
+//
+//-(void)csCollectionViewPanGesture:(UIPanGestureRecognizer*)panGesture
+//{
+//    if (!panGesture.enabled) {
+//        return;
+//    }
+//
+//    UICollectionView * collectionView = (UICollectionView*)panGesture.view;
+//    CGPoint tPoint = [panGesture translationInView:collectionView];
+//    switch (panGesture.state) {
+//        case UIGestureRecognizerStateBegan:
+//        {
+//            [self.panGestureTimer invalidate];
+//            self.panGestureTimer = nil;
+//
+//            [[collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                obj.userInteractionEnabled = NO;
+//            }];
+//
+//            [self scrollViewWillBeginDragging:collectionView];
+//        }
+//            break;
+//        case UIGestureRecognizerStateChanged:
+//        {
+//            CGFloat contentOffsetX = collectionView.contentOffset.x - tPoint.x;
+//            if (contentOffsetX < 0) {
+//                contentOffsetX = 0;
+//            }else if (contentOffsetX > collectionView.contentSize.width - collectionView.bk_width) {
+//                contentOffsetX = collectionView.contentSize.width - collectionView.bk_width;
+//            }
+//            [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y)];
+//        }
+//            break;
+//        case UIGestureRecognizerStateEnded:
+//        case UIGestureRecognizerStateCancelled:
+//        case UIGestureRecognizerStateFailed:
+//        case UIGestureRecognizerStatePossible:
+//        {
+//            CGPoint velocity = [panGesture velocityInView:panGesture.view];
+//            NSInteger item;
+//            if (velocity.x > 0) {
+//                item = ceil(collectionView.contentOffset.x / collectionView.bk_width - 1);
+//            }else if (velocity.x < 0) {
+//                item = floor(collectionView.contentOffset.x / collectionView.bk_width + 1);
+//            }else {
+//                item = round(collectionView.contentOffset.x / collectionView.bk_width);
+//            }
+//            if (item < 0) {
+//                item = 0;
+//            }else if (item > [self.childControllers count] - 1) {
+//                item = [self.childControllers count] - 1;
+//            }
+//            CGFloat contentOffsetX = item * collectionView.bk_width;
+//            [collectionView setContentOffset:CGPointMake(contentOffsetX, collectionView.contentOffset.y) animated:YES];
+//
+//            self.panGestureTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(panGestureTimerMethod) userInfo:nil repeats:NO];
+//            [[NSRunLoop mainRunLoop] addTimer:self.panGestureTimer forMode:NSRunLoopCommonModes];
+//        }
+//            break;
+//        default:
+//            break;
+//    }
+//
+//    [panGesture setTranslation:CGPointZero inView:collectionView];
+//}
+//
+//-(void)panGestureTimerMethod
+//{
+//    [[self.collectionView subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//        obj.userInteractionEnabled = YES;
+//    }];
+//    [self scrollViewDidEndDecelerating:self.collectionView];
+//}
+//
+//#pragma mark - UIGestureRecognizerDelegate
+//
+//-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//    if (!self.bgScrollViewIsScrolling && self.csCollectionViewPanGesture == gestureRecognizer) {
+//        //如果collectionView滑动中禁止其他所有手势
+//        if (gestureRecognizer.state == UIGestureRecognizerStateChanged || gestureRecognizer.state == UIGestureRecognizerStateEnded || gestureRecognizer.state == UIGestureRecognizerStateCancelled || gestureRecognizer.state == UIGestureRecognizerStateFailed) {
+//            return NO;
+//        }
+//        UIPanGestureRecognizer * panGesture = (UIPanGestureRecognizer *)gestureRecognizer;
+//        CGPoint tPoint = [panGesture translationInView:panGesture.view];
+//        if (fabs(tPoint.x) > fabs(tPoint.y)) {
+//            UICollectionView * collectionView = (UICollectionView*)panGesture.view;
+//            CGFloat contentOffsetX = collectionView.contentOffset.x - tPoint.x;
+//            if (contentOffsetX >= 0 && contentOffsetX <= collectionView.contentSize.width - collectionView.bk_width) {
+//                return NO;
+//            }
+//        }
+//    }
+//
+//    self.csCollectionViewPanGesture.enabled = NO;
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        self.csCollectionViewPanGesture.enabled = YES;
+//    });
+//
+//    return YES;
+//}
 
 @end

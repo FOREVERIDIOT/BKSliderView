@@ -10,6 +10,7 @@
 #import "BKPageControlMenu.h"
 #import "BKPageControlMenuPropertyModel.h"
 @class BKPageControlMenuView;
+@class BKPageControlView;
 
 typedef NS_OPTIONS(NSUInteger, BKPageControlMenuSelectStyle) {
     BKPageControlMenuSelectStyleNone = 0,                    //无效果
@@ -39,30 +40,38 @@ typedef NS_ENUM(NSUInteger, BKPageControlMenuSelectViewStyle) {
 -(void)changeMenuViewFrame;
 
 /**
+ 准备离开index
+ 
+ @param menuView 目录
+ @param leaveIndex 离开的index
+ */
+-(void)menuView:(nonnull BKPageControlMenuView*)menuView willLeaveIndex:(NSUInteger)leaveIndex;
+
+/**
  切换index中
 
+ @param menuView 目录
  @param switchingIndex 切换中的index
  @param leavingIndex 离开中的index
  @param percentage 百分比
  */
--(void)switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
+-(void)menuView:(nonnull BKPageControlMenuView*)menuView switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
 
 /**
- 点击menu切换index
+ 切换index
 
- @param selectIndex 切换的index
+ @param menuView 目录
+ @param switchIndex 切换的index
  */
--(void)tapMenuSwitchSelectIndex:(NSUInteger)selectIndex;
+-(void)menuView:(nonnull BKPageControlMenuView*)menuView switchIndex:(NSUInteger)switchIndex;
 
 /**
- 设置menu上的icon和选中的icon
+ 设置menu上的UI
 
  @param menu menu
- @param iconImageView icon
- @param selectIconImageView 选中的icon
  @param index 索引
  */
--(void)menu:(BKPageControlMenu * _Nonnull)menu settingIconImageView:(nullable UIImageView*)iconImageView selectIconImageView:(nullable UIImageView*)selectIconImageView atIndex:(NSUInteger)index;
+-(void)menu:(BKPageControlMenu * _Nonnull)menu atIndex:(NSUInteger)index;
 
 @end
 
@@ -71,6 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BKPageControlMenuView : UIView
 
 /**
+ 主滚动视图
+ */
+@property (nonatomic,weak) BKPageControlView * pageControlView;
+/**
  代理
  */
 @property (nonatomic,weak) id<BKPageControlMenuViewDelegate> delegate;
@@ -78,15 +91,25 @@ NS_ASSUME_NONNULL_BEGIN
  导航标题数组
  */
 @property (nonatomic,copy) NSArray * titles;
+
+#pragma mark - 索引
+
 /**
  当前选中索引 从0开始
  (selectIndex >= [titles count] - 1 时 selectIndex = [titles count] - 1)
  */
 @property (nonatomic,assign) NSUInteger selectIndex;
+
 /**
- 是否是点击menu切换index(进行时)
+ 修改当前选中索引 从0开始
+ (selectIndex >= [titles count] - 1 时 selectIndex = [titles count] - 1)
+
+ @param selectIndex 当前选中索引 从0开始
+ (selectIndex >= [titles count] - 1 时 selectIndex = [titles count] - 1)
+ @param animated 动画回调
+ @param completion 完成回调
  */
-@property (nonatomic,assign,readonly) BOOL isTapMenuSwitchingIndex;
+-(void)setSelectIndex:(NSUInteger)selectIndex animated:(void (^)(void))animated completion:(void (^)(void))completion;
 
 #pragma mark - 导航视图
 
@@ -111,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign) BKPageControlMenuSelectViewStyle selectViewStyle;
 /**
  菜单标题底部的线恒定宽 默认15
- 当menuSelectViewStyle == BKPageControlMenuSelectViewStyleConstantWidth有效
+ 当selectViewStyle == BKPageControlMenuSelectViewStyleConstantWidth有效
  */
 @property (nonatomic,assign) CGFloat selectViewConstantW;
 /**
@@ -180,11 +203,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 滑动pageControlView的方法
 
 /**
- 滚动pageControlView
+ 滚动collectionView
 
- @param collectionView pageControlView
+ @param collectionView collectionView
  */
--(void)scrollCollectionView:(UICollectionView*)collectionView;
+-(void)collectionViewDidScroll:(UICollectionView*)collectionView;
+
+/**
+ 结束滚动collectionView
+
+ @param collectionView collectionView
+ */
+-(void)collectionViewDidEndDecelerating:(UICollectionView*)collectionView;
 
 #pragma mark - 获取可见的menu
 

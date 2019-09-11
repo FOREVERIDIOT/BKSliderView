@@ -90,14 +90,13 @@
 #pragma mark - 导航
 
 /**
- 设置导航视图中menu上的icon和选中的icon
+ 设置导航视图中menu上的UI
  
+ @param pageControlView BKPageControlView
  @param menu menu
- @param iconImageView icon
- @param selectIconImageView 选中的icon
  @param index 索引
  */
--(void)pageControlView:(nonnull BKPageControlView *)pageControlView menu:(nonnull BKPageControlMenu*)menu settingIconImageView:(nonnull UIImageView*)iconImageView selectIconImageView:(nonnull UIImageView*)selectIconImageView atIndex:(NSUInteger)index;
+-(void)pageControlView:(nonnull BKPageControlView *)pageControlView menu:(nonnull BKPageControlMenu*)menu atIndex:(NSUInteger)index;
 
 @end
 
@@ -153,6 +152,17 @@
  (displayIndex >= [viewControllers count] - 1 时 displayIndex = [viewControllers count] - 1)
  */
 @property (nonatomic,assign) NSUInteger displayIndex;
+
+/**
+ 修改选中索引
+
+ @param displayIndex 选中索引 从0开始
+ (displayIndex >= [viewControllers count] - 1 时 displayIndex = [viewControllers count] - 1)
+ @param animated 动画中
+ @param completion 完成
+ */
+-(void)setDisplayIndex:(NSUInteger)displayIndex animated:(nullable void (^)(void))animated completion:(nullable void(^)(void))completion;
+
 /**
  当前选中索引显示的控制器
  */
@@ -203,11 +213,11 @@
 /**
  用自定义的滑动手势代替系统的滑动手势(因项目需求需要嵌套两层pageControlView，并且两层都需要使用左右滑动，所以这个属性诞生了)
  */
-@property (nonatomic,assign) BOOL useCsPanGestureOnCollectionView;
+@property (nonatomic,assign) BOOL useCsPanGestureOnCollectionView DEPRECATED_MSG_ATTRIBUTE("废弃了 已经用alwaysBounceHorizontal=NO + [super setContentOffset:CGPointMake(0, contentOffset.y)];实现需求效果了");
 /**
  自定义滑动手势
  */
-@property (nonatomic,strong,readonly,nullable) UIPanGestureRecognizer * csCollectionViewPanGesture;
+@property (nonatomic,strong,readonly,nullable) UIPanGestureRecognizer * csCollectionViewPanGesture DEPRECATED_MSG_ATTRIBUTE("废弃了 已经用alwaysBounceHorizontal=NO + [super setContentOffset:CGPointMake(0, contentOffset.y)];实现需求效果了");
 
 @end
 

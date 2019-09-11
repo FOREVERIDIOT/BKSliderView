@@ -34,7 +34,6 @@
     }
     
     self.pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectZero childControllers:viewControllers superVC:self];
-    self.pageControlView.useCsPanGestureOnCollectionView = YES;
     [self.view addSubview:self.pageControlView];
     
     UIView * redColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];

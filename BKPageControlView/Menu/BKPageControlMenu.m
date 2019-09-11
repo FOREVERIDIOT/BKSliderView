@@ -10,10 +10,16 @@
 #import "NSAttributedString+BKPageControlView.h"
 #import "UIView+BKPageControlView.h"
 
+@interface BKPageControlMenu()
+
+/**
+ 标题
+ */
+@property (nonatomic,strong) UILabel * titleLab;
+
+@end
+
 @implementation BKPageControlMenu
-@synthesize text = _text;
-@synthesize textColor = _textColor;
-@synthesize font = _font;
 
 #pragma mark - init
 
@@ -21,10 +27,11 @@
 {
     self = [super init];
     if (self) {
-        self.identifier = identifier;
+        _identifier = identifier;
         self.displayIndex = -1;
-        self.numberOfLines = 1;
         self.backgroundColor = [UIColor clearColor];
+        self.clipsToBounds = NO;
+        [self initUI];
         
         UITapGestureRecognizer * selfTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selfTap)];
         [self addGestureRecognizer:selfTap];
@@ -32,139 +39,32 @@
     return self;
 }
 
-#pragma mark - 属性
-
--(void)setFrame:(CGRect)frame
+-(void)layoutSubviews
 {
-    [super setFrame:frame];
-    [self setNeedsDisplay];
+    [super layoutSubviews];
+    self.titleLab.frame = CGRectMake(self.contentInset.left, self.contentInset.top, self.bk_width - self.contentInset.left - self.contentInset.right, self.bk_height - self.contentInset.top - self.contentInset.bottom);
 }
 
--(NSString*)text
-{
-    if (!_text) {
-        _text = @"";
-    }
-    return _text;
-}
+#pragma mark - initUI
 
--(void)setText:(NSString *)text
+-(void)initUI
 {
-    _text = text;
-    [self setNeedsDisplay];
-}
-
--(UIColor*)textColor
-{
-    if (!_textColor) {
-        _textColor = [UIColor blackColor];
-    }
-    return _textColor;
-}
-
--(void)setTextColor:(UIColor *)textColor
-{
-    _textColor = textColor;
-    [self setNeedsDisplay];
-}
-
--(UIFont*)font
-{
-    if (!_font) {
-        _font = [UIFont systemFontOfSize:17];
-    }
-    return _font;
-}
-
--(void)setFont:(UIFont *)font
-{
-    _font = font;
-    [self setNeedsDisplay];
-}
-
--(void)setNumberOfLines:(NSUInteger)numberOfLines
-{
-    _numberOfLines = numberOfLines;
-    [self setNeedsDisplay];
-}
-
--(void)setLineSpacing:(CGFloat)lineSpacing
-{
-    _lineSpacing = lineSpacing;
-    [self setNeedsDisplay];
-}
-
--(void)setContentInset:(UIEdgeInsets)contentInset
-{
-    _contentInset = contentInset;
-    [self setNeedsDisplay];
-}
-
--(void)setTextAlignment:(NSTextAlignment)textAlignment
-{
-    _textAlignment = textAlignment;
-    [self setNeedsDisplay];
-}
-
--(UIImageView*)iconImageView
-{
-    if (!_iconImageView) {
-        _iconImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-        _iconImageView.clipsToBounds = YES;
-        [self insertSubview:_iconImageView belowSubview:self.sIconImageView];
-    }
-    return _iconImageView;
-}
-
--(UIImageView*)sIconImageView
-{
-    if (!_sIconImageView) {
-        _sIconImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-        _sIconImageView.clipsToBounds = YES;
-        [self insertSubview:_sIconImageView aboveSubview:self.iconImageView];
-    }
-    return _iconImageView;
-}
-
-#pragma mark - drawRect
-
--(void)drawRect:(CGRect)rect
-{
-    [super drawRect:rect];
+    self.titleLab = [[UILabel alloc] init];
+    self.titleLab.textAlignment = NSTextAlignmentCenter;
+    [self addSubview:self.titleLab];
     
-    NSMutableParagraphStyle * para = [[NSMutableParagraphStyle alloc] init];
-    para.alignment = self.textAlignment;
-    para.lineBreakMode = NSLineBreakByTruncatingTail;
-    para.lineSpacing = self.lineSpacing;
+    self.iconImageView = [[UIImageView alloc] init];
+    self.iconImageView.clipsToBounds = YES;
+    self.iconImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self addSubview:self.iconImageView];
     
-    NSDictionary * attributes = @{NSFontAttributeName:self.font,
-                     NSForegroundColorAttributeName:self.textColor,
-                     NSParagraphStyleAttributeName:para
-                     };
+    self.sIconImageView = [[UIImageView alloc] init];
+    self.sIconImageView.clipsToBounds = YES;
+    self.sIconImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self addSubview:self.sIconImageView];
     
-    NSAttributedString * string = [[NSAttributedString alloc] initWithString:self.text attributes:attributes];
-    
-    CGFloat height = 0;
-    if (self.numberOfLines == 0) {
-        height = [string calculateHeightWithUIWidth:MAXFLOAT];
-    }else {
-        NSInteger lineCount = [[self.text componentsSeparatedByString:@"\n"] count];
-        if (self.numberOfLines < lineCount) {
-            lineCount = self.numberOfLines;
-        }
-        NSMutableString * tempString = [NSMutableString string];
-        [tempString appendString:@" "];
-        for (int i = 1; i < lineCount; i++) {
-            [tempString appendString:@"\n "];
-        }
-        NSAttributedString * tempAttrString = [[NSAttributedString alloc] initWithString:tempString attributes:attributes];
-        height = [tempAttrString calculateHeightWithUIWidth:MAXFLOAT];
-    }
-    
-    [string drawInRect:CGRectMake(self.contentInset.left,
-                                  (self.bk_height - height)/2 + self.contentInset.top - self.contentInset.bottom,
-                                  self.bk_width - self.contentInset.left - self.contentInset.right,
-                                  height)];
+    self.messageCountLab = [[UILabel alloc] init];
+    [self addSubview:self.messageCountLab];
 }
 
 #pragma mark - 触发事件
@@ -174,6 +74,41 @@
     if (self.clickSelfCallBack) {
         self.clickSelfCallBack(self);
     }
+}
+
+#pragma mark - 标题属性
+
+-(void)assignTitle:(NSString*)title textColor:(UIColor*)textColor font:(UIFont*)font numberOfLines:(NSUInteger)numberOfLines lineSpacing:(CGFloat)lineSpacing
+{
+    _text = title;
+    _textColor = textColor;
+    _font = font;
+    _numberOfLines = numberOfLines;
+    _lineSpacing = lineSpacing;
+    
+    if ([_text length] > 0) {
+        NSMutableParagraphStyle * para = [[NSMutableParagraphStyle alloc] init];
+        para.alignment = NSTextAlignmentCenter;
+        para.lineBreakMode = NSLineBreakByTruncatingTail;
+        para.lineSpacing = _lineSpacing;
+        
+        NSDictionary * attributes = @{NSFontAttributeName:_font,
+                                      NSForegroundColorAttributeName:_textColor,
+                                      NSParagraphStyleAttributeName:para
+                                      };
+        
+        NSAttributedString * string = [[NSAttributedString alloc] initWithString:_text attributes:attributes];
+        self.titleLab.attributedText = string;
+        self.titleLab.numberOfLines = _numberOfLines;
+    }else {
+        self.titleLab.attributedText = nil;
+    }
+}
+
+-(void)setContentInset:(UIEdgeInsets)contentInset
+{
+    _contentInset = contentInset;
+    [self layoutSubviews];
 }
 
 @end
