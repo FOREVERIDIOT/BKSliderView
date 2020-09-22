@@ -1,0 +1,18 @@
+platform :ios, '9.0'
+inhibit_all_warnings!
+
+use_frameworks!
+
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'BKPageControlView_Example' do
+  pod 'BKPageControlView', :path => '../'
+  
+  pod 'MJRefresh'
+  
+  target 'BKPageControlView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

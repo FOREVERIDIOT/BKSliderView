@@ -1,0 +1,6 @@
+framework module BKPageControlView {
+  umbrella header "BKPageControlView-umbrella.h"
+
+  export *
+  module * { export * }
+}

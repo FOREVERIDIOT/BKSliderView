@@ -1,0 +1,6 @@
+framework module Pods_BKPageControlView_Tests {
+  umbrella header "Pods-BKPageControlView_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,23 @@
+PODS:
+  - BKPageControlView (2.2.0)
+  - MJRefresh (3.5.0)
+
+DEPENDENCIES:
+  - BKPageControlView (from `../`)
+  - MJRefresh
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - MJRefresh
+
+EXTERNAL SOURCES:
+  BKPageControlView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  BKPageControlView: d42ec5e97e8981e5c6a82aeca70fcaf3d06db115
+  MJRefresh: 6afc955813966afb08305477dd7a0d9ad5e79a16
+
+PODFILE CHECKSUM: 3d12de5b66d376fffbe76c6a9135de3deebb1808
+
+COCOAPODS: 1.9.3

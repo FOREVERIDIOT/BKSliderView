@@ -1,27 +1,29 @@
+# BKPageControlView
 
-# BKSliderView 
+[![CI Status](https://img.shields.io/travis/毕珂/BKPageControlView.svg?style=flat)](https://travis-ci.org/毕珂/BKPageControlView)
+[![Version](https://img.shields.io/cocoapods/v/BKPageControlView.svg?style=flat)](https://cocoapods.org/pods/BKPageControlView)
+[![License](https://img.shields.io/cocoapods/l/BKPageControlView.svg?style=flat)](https://cocoapods.org/pods/BKPageControlView)
+[![Platform](https://img.shields.io/cocoapods/p/BKPageControlView.svg?style=flat)](https://cocoapods.org/pods/BKPageControlView)
 
-## 介绍
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+## Requirements
+
+## Installation
+
+BKPageControlView is available through [CocoaPods](https://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod 'BKPageControlView'
 ```
-很懒 就不介绍了 注释挺全 自己进项目里看吧
-```
 
-## 例图
-![image](https://github.com/FOREVERIDIOT/BKSliderView/blob/master/Images/r.gif)
-![image](https://github.com/FOREVERIDIOT/BKSliderView/blob/master/Images/r1.gif)
+## Author
 
-## 创建方法
+毕珂, bike@6.cn
 
-```objc
-1.创建viewController数组
-NSMutableArray * viewControllers = [NSMutableArray array];
-for (int i = 0; i<10; i++) {
-    UIViewController * vc = [[UIViewController alloc] init];
-    //title必须传
-    vc.title = [NSString stringWithFormat:@"第%d个",i];
-    [viewControllers addObject:vc];
-}
-2.创建BKSliderView并添加到view上
-BKSliderView * sliderView = [[BKPageControlView alloc] initWithFrame:(CGRect) delegate:(nullable id<BKPageControlViewDelegate>) childControllers:(nullable NSArray<UIViewController *> *) superVC:(nonnull UIViewController *)];
-[view addSubview:sliderView];
-```
+## License
+
+BKPageControlView is available under the MIT license. See the LICENSE file for more info.

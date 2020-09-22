@@ -1,0 +1,24 @@
+{
+  "name": "BKPageControlView",
+  "version": "2.2.0",
+  "summary": "a simple page control view",
+  "homepage": "https://github.com/MMDDZ/BKPageControlView",
+  "authors": {
+    "MMDDZ": "694092596@qq.com"
+  },
+  "license": "MIT",
+  "source": {
+    "git": "https://github.com/MMDDZ/BKPageControlView.git",
+    "tag": "2.2.0"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "BKPageControlView/Classes/*",
+  "frameworks": "Foundation",
+  "public_header_files": [
+    "BKPageControlView/Classes/*.h",
+    "Foundation",
+    "UIKit"
+  ]
+}
