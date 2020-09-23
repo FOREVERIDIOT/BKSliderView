@@ -17,7 +17,7 @@
 #import "BKPageControlMenuView.h"
 #import "BKPageControlSelectLine.h"
 #import "BKPageControlView.h"
-#import "BKPCViewKVOChildControllerPModel.h"
+#import "UIView+BKPageControlView.h"
 #import "UIViewController+BKPageControlView.h"
 
 FOUNDATION_EXPORT double BKPageControlViewVersionNumber;

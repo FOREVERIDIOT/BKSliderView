@@ -7,12 +7,23 @@
 //
 
 #import "BKAppDelegate.h"
+#import "FirstViewController.h"
 
 @implementation BKAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    
+    FirstViewController * VC = [[FirstViewController alloc]init];
+    UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:VC];
+    
+    self.window.rootViewController = nav;
+    
+    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 

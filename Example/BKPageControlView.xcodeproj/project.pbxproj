@@ -8,13 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		02CCA6197D98DFCEF40A5430 /* Pods_BKPageControlView_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08D63D67E16F9562447AB7F4 /* Pods_BKPageControlView_Example.framework */; };
+		2A4EE0BF251B1FBC00524D6A /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0B2251B1FBB00524D6A /* FirstViewController.m */; };
+		2A4EE0C0251B1FBC00524D6A /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0B3251B1FBB00524D6A /* ThirdViewController.m */; };
+		2A4EE0C1251B1FBC00524D6A /* UIView+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0B4251B1FBB00524D6A /* UIView+Extension.m */; };
+		2A4EE0C2251B1FBC00524D6A /* ExampleViewTController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0B5251B1FBB00524D6A /* ExampleViewTController.m */; };
+		2A4EE0C3251B1FBC00524D6A /* ExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0B8251B1FBC00524D6A /* ExampleViewController.m */; };
+		2A4EE0C4251B1FBC00524D6A /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0BA251B1FBC00524D6A /* SecondViewController.m */; };
+		2A4EE0C5251B1FBC00524D6A /* ExampleTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4EE0BD251B1FBC00524D6A /* ExampleTableView.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F598195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F596195388D20070C39A /* InfoPlist.strings */; };
 		6003F59A195388D20070C39A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F599195388D20070C39A /* main.m */; };
 		6003F59E195388D20070C39A /* BKAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F59D195388D20070C39A /* BKAppDelegate.m */; };
-		6003F5A7195388D20070C39A /* BKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5A6195388D20070C39A /* BKViewController.m */; };
 		6003F5A9195388D20070C39A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5A8195388D20070C39A /* Images.xcassets */; };
 		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
 		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
@@ -22,7 +28,6 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
-		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		F7E489DA2E740517EE29189A /* Pods_BKPageControlView_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 304A77A7D4603561A1E35FE8 /* Pods_BKPageControlView_Tests.framework */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +46,21 @@
 		08D63D67E16F9562447AB7F4 /* Pods_BKPageControlView_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BKPageControlView_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		15628FCD588E230FC40EF39B /* Pods-BKPageControlView_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BKPageControlView_Example.debug.xcconfig"; path = "Target Support Files/Pods-BKPageControlView_Example/Pods-BKPageControlView_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		177C91F919E5C259BF3FF9ED /* Pods-BKPageControlView_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BKPageControlView_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BKPageControlView_Tests/Pods-BKPageControlView_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		2A4EE0B0251B1FBB00524D6A /* ExampleViewTController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleViewTController.h; sourceTree = "<group>"; };
+		2A4EE0B1251B1FBB00524D6A /* ThirdViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
+		2A4EE0B2251B1FBB00524D6A /* FirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		2A4EE0B3251B1FBB00524D6A /* ThirdViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
+		2A4EE0B4251B1FBB00524D6A /* UIView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extension.m"; sourceTree = "<group>"; };
+		2A4EE0B5251B1FBB00524D6A /* ExampleViewTController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleViewTController.m; sourceTree = "<group>"; };
+		2A4EE0B6251B1FBB00524D6A /* ExampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleViewController.h; sourceTree = "<group>"; };
+		2A4EE0B7251B1FBC00524D6A /* ExampleTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleTableView.h; sourceTree = "<group>"; };
+		2A4EE0B8251B1FBC00524D6A /* ExampleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleViewController.m; sourceTree = "<group>"; };
+		2A4EE0B9251B1FBC00524D6A /* FirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
+		2A4EE0BA251B1FBC00524D6A /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		2A4EE0BB251B1FBC00524D6A /* UIView+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Extension.h"; sourceTree = "<group>"; };
+		2A4EE0BC251B1FBC00524D6A /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		2A4EE0BD251B1FBC00524D6A /* ExampleTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleTableView.m; sourceTree = "<group>"; };
+		2A4EE0BE251B1FBC00524D6A /* Inline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Inline.h; sourceTree = "<group>"; };
 		304A77A7D4603561A1E35FE8 /* Pods_BKPageControlView_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BKPageControlView_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E477112149D9EB85419A87 /* Pods-BKPageControlView_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BKPageControlView_Tests.release.xcconfig"; path = "Target Support Files/Pods-BKPageControlView_Tests/Pods-BKPageControlView_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* BKPageControlView_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BKPageControlView_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -53,8 +73,6 @@
 		6003F59B195388D20070C39A /* BKPageControlView-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BKPageControlView-Prefix.pch"; sourceTree = "<group>"; };
 		6003F59C195388D20070C39A /* BKAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKAppDelegate.h; sourceTree = "<group>"; };
 		6003F59D195388D20070C39A /* BKAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKAppDelegate.m; sourceTree = "<group>"; };
-		6003F5A5195388D20070C39A /* BKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKViewController.h; sourceTree = "<group>"; };
-		6003F5A6195388D20070C39A /* BKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKViewController.m; sourceTree = "<group>"; };
 		6003F5A8195388D20070C39A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6003F5AE195388D20070C39A /* BKPageControlView_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BKPageControlView_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F5AF195388D20070C39A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -65,7 +83,6 @@
 		66A544371848CF22E650F3CF /* BKPageControlView.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BKPageControlView.podspec; path = ../BKPageControlView.podspec; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8713994346647E5D1740181E /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		97085C77D67C3FE8BCF93C2D /* Pods-BKPageControlView_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BKPageControlView_Example.release.xcconfig"; path = "Target Support Files/Pods-BKPageControlView_Example/Pods-BKPageControlView_Example.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -134,9 +151,21 @@
 			children = (
 				6003F59C195388D20070C39A /* BKAppDelegate.h */,
 				6003F59D195388D20070C39A /* BKAppDelegate.m */,
-				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
-				6003F5A5195388D20070C39A /* BKViewController.h */,
-				6003F5A6195388D20070C39A /* BKViewController.m */,
+				2A4EE0B9251B1FBC00524D6A /* FirstViewController.h */,
+				2A4EE0B2251B1FBB00524D6A /* FirstViewController.m */,
+				2A4EE0BC251B1FBC00524D6A /* SecondViewController.h */,
+				2A4EE0BA251B1FBC00524D6A /* SecondViewController.m */,
+				2A4EE0B1251B1FBB00524D6A /* ThirdViewController.h */,
+				2A4EE0B3251B1FBB00524D6A /* ThirdViewController.m */,
+				2A4EE0B6251B1FBB00524D6A /* ExampleViewController.h */,
+				2A4EE0B8251B1FBC00524D6A /* ExampleViewController.m */,
+				2A4EE0B0251B1FBB00524D6A /* ExampleViewTController.h */,
+				2A4EE0B5251B1FBB00524D6A /* ExampleViewTController.m */,
+				2A4EE0B7251B1FBC00524D6A /* ExampleTableView.h */,
+				2A4EE0BD251B1FBC00524D6A /* ExampleTableView.m */,
+				2A4EE0BE251B1FBC00524D6A /* Inline.h */,
+				2A4EE0BB251B1FBC00524D6A /* UIView+Extension.h */,
+				2A4EE0B4251B1FBB00524D6A /* UIView+Extension.m */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -280,7 +309,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
@@ -369,8 +397,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A4EE0C1251B1FBC00524D6A /* UIView+Extension.m in Sources */,
 				6003F59E195388D20070C39A /* BKAppDelegate.m in Sources */,
-				6003F5A7195388D20070C39A /* BKViewController.m in Sources */,
+				2A4EE0BF251B1FBC00524D6A /* FirstViewController.m in Sources */,
+				2A4EE0C0251B1FBC00524D6A /* ThirdViewController.m in Sources */,
+				2A4EE0C4251B1FBC00524D6A /* SecondViewController.m in Sources */,
+				2A4EE0C5251B1FBC00524D6A /* ExampleTableView.m in Sources */,
+				2A4EE0C2251B1FBC00524D6A /* ExampleViewTController.m in Sources */,
+				2A4EE0C3251B1FBC00524D6A /* ExampleViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -533,6 +567,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "BKPageControlView/BKPageControlView-Prefix.pch";
 				INFOPLIST_FILE = "BKPageControlView/BKPageControlView-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -550,6 +585,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "BKPageControlView/BKPageControlView-Prefix.pch";
 				INFOPLIST_FILE = "BKPageControlView/BKPageControlView-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
