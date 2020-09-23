@@ -82,6 +82,10 @@
 /// 当前显示的视图
 @property (nonatomic,nullable,readonly) UIViewController * displayVC;
 
+/// 获取对应索引的视图 如果没有创建或者超出最大索引则返回nil
+/// @param index 索引
+-(nullable UIViewController*)getViewControllerAtIndex:(NSUInteger)index;
+
 #pragma mark - 主视图
 
 /// 主视图（竖直滚动）
