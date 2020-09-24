@@ -17,6 +17,7 @@
 #import "BKPageControlMenuView.h"
 #import "BKPageControlSelectLine.h"
 #import "BKPageControlView.h"
+#import "BKPCVBgScrollView.h"
 #import "UIView+BKPageControlView.h"
 #import "UIViewController+BKPageControlView.h"
 

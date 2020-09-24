@@ -10,7 +10,7 @@
 #import <BKPageControlView/UIViewController+BKPageControlView.h>
 #import <MJRefresh/MJRefresh.h>
 
-@interface ExampleViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface ExampleViewController ()<UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate>
 
 @property (nonatomic,strong) UITableView * tableView;
 @property (nonatomic,assign) NSUInteger totalCount;
@@ -117,6 +117,13 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
+}
+
+#pragma mark - UIScrollViewDelegate
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSLog(@"%@_%ld列表偏移量Y:%f", [self class], self.bk_pcv_index, scrollView.contentOffset.y);
 }
 
 @end

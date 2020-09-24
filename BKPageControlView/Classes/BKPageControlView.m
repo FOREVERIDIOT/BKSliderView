@@ -14,6 +14,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 @interface BKPageControlView() <UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, BKPageControlMenuViewDelegate>
 
+/// 竖向滚动视图是否在拖拽中
+@property (nonatomic,assign) BOOL bgScrollViewIsDragging;
+
 /// 内容视图是否正在滚动中
 @property (nonatomic,assign) BOOL collectionViewIsScrolling;
 /// 引起的内容视图动画滚动
@@ -290,7 +293,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.headerView || self.superLevelPageControlView) {
             //获取当前详情内容视图内的滚动视图
-            UIScrollView * scrollView = [self getMainScrollViewWithCorrespondingIndex:index];
+            UIScrollView * scrollView = [self getChildScrollViewAtIndex:index];
             //如果详情内容视图中包含滚动视图 禁止滚动视图滑动能力
             if (scrollView) {//有滚动视图
                 //滚动视图禁止滑动
@@ -359,9 +362,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     });
 }
 
-/// 获取对应索引视图内的scrollView
+/// 获取对应索引子视图内的scrollView
 /// @param index 索引
--(nullable UIScrollView*)getMainScrollViewWithCorrespondingIndex:(NSInteger)index
+-(nullable UIScrollView*)getChildScrollViewAtIndex:(NSInteger)index
 {
     if ([self.childControllers count] > index) {
         id obj = self.childControllers[index];
@@ -594,6 +597,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             [self.delegate pageControlView:self willLeaveIndex:self.displayIndex];
         }
     }else if (scrollView == self.bgScrollView) {
+        
+        self.bgScrollViewIsDragging = YES;
 
         [self changeBgScrollContentSizeWithNowIndex:self.displayIndex];
         
@@ -602,7 +607,13 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_willBeginDraggingSuperBgScrollView:)]) {
-            [(UIView<BKPCVBgScrollView>*)self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
+        }
+        
+        UIScrollView * childScrollView = [self getChildScrollViewAtIndex:self.displayIndex];
+        if (childScrollView) {
+            //配合mjRefresh不足一屏加载的判断 添加手势状态
+            childScrollView.panGestureRecognizer.state = UIGestureRecognizerStateBegan;
         }
     }
 }
@@ -623,23 +634,27 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didScrollSuperBgScrollView:)]) {
-            [(UIView<BKPCVBgScrollView>*)self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
         }
         
-        if (self.headerView || self.superLevelPageControlView) {
-            UIScrollView * scrollView = [self getMainScrollViewWithCorrespondingIndex:self.displayIndex];
-            
+        UIScrollView * childScrollView = [self getChildScrollViewAtIndex:self.displayIndex];
+        if (childScrollView) {
             CGFloat contentOffsetY = self.bgScrollView.contentOffset.y;
             if (contentOffsetY > self.headerView.height) {
                 self.contentView.y = contentOffsetY;
-                if (scrollView) {
-                    scrollView.contentOffset = CGPointMake(0, contentOffsetY - self.headerView.height);
-                }
+                childScrollView.contentOffset = CGPointMake(0, contentOffsetY - self.headerView.height);
             }else {
                 self.contentView.y = CGRectGetMaxY(self.headerView.frame);
-                if (scrollView) {
-                    scrollView.contentOffset = CGPointZero;
-                }
+                childScrollView.contentOffset = CGPointZero;
+            }
+            
+            if (self.bgScrollViewIsDragging) {
+                //配合mjRefresh不足一屏加载的判断 添加手势状态
+                childScrollView.panGestureRecognizer.state = UIGestureRecognizerStateChanged;
+            }
+            //让子视图的scrollView的scrollViewDidScroll代理执行
+            if ([childScrollView.delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+                [childScrollView.delegate scrollViewDidScroll:childScrollView];
             }
         }
     }
@@ -648,13 +663,23 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
     if (scrollView == self.bgScrollView) {
+        
+        self.bgScrollViewIsDragging = NO;
 
         if ([self.delegate respondsToSelector:@selector(pageControlView:willEndDraggingBgScrollView:withVelocity:targetContentOffset:)]) {
             [self.delegate pageControlView:self willEndDraggingBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_willEndDraggingSuperBgScrollView:withVelocity:targetContentOffset:)]) {
-            [(UIView<BKPCVBgScrollView>*)self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+        }
+        
+        UIScrollView * childScrollView = [self getChildScrollViewAtIndex:self.displayIndex];
+        if (childScrollView && (*targetContentOffset).y >= self.headerView.height) {
+            //配合mjRefresh不足一屏加载的判断 添加手势状态
+            childScrollView.panGestureRecognizer.state = UIGestureRecognizerStateEnded;
+        }else {
+            childScrollView.panGestureRecognizer.state = UIGestureRecognizerStateCancelled;
         }
     }
 }
@@ -672,7 +697,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didEndDraggingSuperBgScrollView:willDecelerate:)]) {
-            [(UIView<BKPCVBgScrollView>*)self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
+            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
         }
     }
 }
@@ -694,7 +719,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didEndDeceleratingSuperBgScrollView:)]) {
-            [(UIView<BKPCVBgScrollView>*)self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
         }
     }
 }
