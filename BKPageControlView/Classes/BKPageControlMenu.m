@@ -22,18 +22,14 @@
 
 #pragma mark - init
 
--(instancetype)initWithIdentifer:(NSString*)identifier
+-(instancetype)init
 {
     self = [super init];
     if (self) {
-        _identifier = identifier;
         self.displayIndex = -1;
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = NO;
         [self initUI];
-        
-        UITapGestureRecognizer * selfTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selfTap)];
-        [self addGestureRecognizer:selfTap];
     }
     return self;
 }
@@ -41,6 +37,7 @@
 -(void)layoutSubviews
 {
     [super layoutSubviews];
+    
     self.bgView.frame = CGRectMake(self.titleBgContentInset.left, self.titleBgContentInset.top, self.width - self.titleBgContentInset.left - self.titleBgContentInset.right, self.height - self.titleBgContentInset.top - self.titleBgContentInset.bottom);
     UIBezierPath * bgViewPath = [UIBezierPath bezierPathWithRoundedRect:self.bgView.bounds cornerRadius:self.titleBgAngle];
     CAShapeLayer * bgViewMaskLayer = [CAShapeLayer layer];
@@ -56,6 +53,7 @@
 -(void)initUI
 {
     self.bgView = [[UIView alloc] init];
+    self.bgView.userInteractionEnabled = NO;
     self.bgView.backgroundColor = [UIColor clearColor];
     [self addSubview:self.bgView];
     
@@ -77,16 +75,7 @@
     [self addSubview:self.messageCountLab];
 }
 
-#pragma mark - 触发事件
-
--(void)selfTap
-{
-    if (self.clickSelfCallBack) {
-        self.clickSelfCallBack(self);
-    }
-}
-
-#pragma mark - 标题属性
+#pragma mark - 属性
 
 -(void)assignTitle:(NSString*)title textColor:(UIColor*)textColor font:(UIFont*)font numberOfLines:(NSUInteger)numberOfLines lineSpacing:(CGFloat)lineSpacing
 {
@@ -120,8 +109,6 @@
     _contentInset = contentInset;
     [self layoutSubviews];
 }
-
-#pragma mark - 标题背景属性
 
 -(void)setTitleBgViewColor:(UIColor *)titleBgViewColor
 {

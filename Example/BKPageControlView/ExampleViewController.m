@@ -34,30 +34,30 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    NSLog(@"即将进入%@_%ld", [self class], self.bk_pcv_index);
+//    NSLog(@"即将进入%@_%ld", [self class], self.bk_pcv_index);
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    NSLog(@"已经进入%@_%ld", [self class], self.bk_pcv_index);
+//    NSLog(@"已经进入%@_%ld", [self class], self.bk_pcv_index);
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    NSLog(@"即将离开%@_%ld", [self class], self.bk_pcv_index);
+//    NSLog(@"即将离开%@_%ld", [self class], self.bk_pcv_index);
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    NSLog(@"已经离开%@_%ld", [self class], self.bk_pcv_index);
+//    NSLog(@"已经离开%@_%ld", [self class], self.bk_pcv_index);
 }
 
 -(void)dealloc
 {
-    NSLog(@"释放%@_%ld", [self class], self.bk_pcv_index);
+//    NSLog(@"释放%@_%ld", [self class], self.bk_pcv_index);
 }
 
 -(void)viewWillLayoutSubviews

@@ -25,33 +25,23 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 
 @interface BKPageControlMenuView()<UIScrollViewDelegate>
 
-/**
- 上一次内容滑动偏移量
- */
+/// 之前内容滑动偏移量
 @property (nonatomic,assign) CGFloat lastContentOffsetX;
-/**
- 滑动方向
- */
+/// 滑动方向
 @property (nonatomic,assign) BKPageControlContentScrollDirection scrollDirection;
 
-/**
- 保存的选中字体字号
- */
+/// 保存的选中字体字号
 @property (nonatomic,assign) CGFloat tempMenuSelectTitleFontSize;
-/**
- menu属性
- */
+/// menu属性
 @property (nonatomic,strong) BKPageControlMenuModel * menuModel;
-/**
- 选中menu底部的线
- */
-@property (nonatomic,strong) BKPageControlSelectLine * viewSelectLine;
+/// 选中menu底部的线
+@property (nonatomic,strong) BKPageControlSelectLine * selectLine;
 
 @end
 
 @implementation BKPageControlMenuView
 
-#pragma mark - 展示的vc数组
+#pragma mark - 属性
 
 -(void)setTitles:(NSArray *)titles
 {
@@ -59,7 +49,17 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     [self reloadContentView];
 }
 
-#pragma mark - 索引
+-(void)setLrInset:(CGFloat)lrInset
+{
+    _lrInset = lrInset;
+    [self reloadContentView];
+}
+
+-(void)setContentViewWidth:(CGFloat)contentViewWidth
+{
+    _contentViewWidth = contentViewWidth;
+    [self layoutSubviews];
+}
 
 -(void)setSelectIndex:(NSUInteger)selectIndex
 {
@@ -74,9 +74,6 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     [self reloadContentView];
 }
 
-/**
- 修改当前选中索引
- */
 -(void)setSelectIndex:(NSUInteger)selectIndex animated:(void (^)(void))animated completion:(void (^)(void))completion
 {
     [self setSelectIndex:selectIndex];
@@ -94,17 +91,21 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     });
 }
 
-#pragma mark - 导航视图
-
--(void)setContentViewWidth:(CGFloat)contentViewWidth
+-(void)setFrame:(CGRect)frame
 {
-    _contentViewWidth = contentViewWidth;
-    [self layoutSubviews];
-}
-
--(void)setLrInset:(CGFloat)lrInset
-{
-    _lrInset = lrInset;
+    if (CGRectEqualToRect(self.frame, frame)) {
+        return;
+    }
+    [super setFrame:frame];
+    
+    self.contentView.frame = CGRectMake(0, 0, self.width, self.height);
+    self.bottomLine.y = self.height - self.bottomLine.height;
+    self.selectLine.y = self.height - self.selectLine.height - self.selectLineBottomMargin;
+    
+    if ([self.delegate respondsToSelector:@selector(changeMenuViewFrame)]) {
+        [self.delegate changeMenuViewFrame];
+    }
+    
     [self reloadContentView];
 }
 
@@ -113,6 +114,40 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 -(void)setMenuEqualDivisionW:(CGFloat)menuEqualDivisionW
 {
     _menuEqualDivisionW = menuEqualDivisionW;
+    [self reloadContentView];
+}
+
+-(void)setMenuSelectStyle:(BKPageControlMenuSelectStyle)menuSelectStyle
+{
+    _menuSelectStyle = menuSelectStyle;
+    
+    if (_menuSelectStyle & BKPageControlMenuSelectStyleChangeColor) {
+        
+    }else {
+        self.menuSelectTitleColor = self.menuNormalTitleColor;
+    }
+    
+    if (_menuSelectStyle & BKPageControlMenuSelectStyleChangeFont) {
+        self.menuSelectTitleFontSize = self.tempMenuSelectTitleFontSize;
+    }else {
+        self.menuSelectTitleFontSize = self.menuNormalTitleFontSize;
+    }
+    
+    if (_menuSelectStyle & BKPageControlMenuSelectStyleDisplayLine) {
+        self.selectLine.hidden = NO;
+    }else {
+        self.selectLine.hidden = YES;
+    }
+    
+    if (_menuSelectStyle & BKPageControlMenuSelectStyleDisplayBgView) {
+        
+    }else {
+        self.menuNormalTitleBgColor = nil;
+        self.menuSelectTitleBgColor = nil;
+        self.menuTitleBgContentInset = UIEdgeInsetsZero;
+        self.menuTitleBgAngle = 0;
+    }
+    
     [self reloadContentView];
 }
 
@@ -137,40 +172,6 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 -(void)setMenuContentInset:(UIEdgeInsets)menuContentInset
 {
     _menuContentInset = menuContentInset;
-    [self reloadContentView];
-}
-
--(void)setMenuSelectStyle:(BKPageControlMenuSelectStyle)menuSelectStyle
-{
-    _menuSelectStyle = menuSelectStyle;
-    
-    if (_menuSelectStyle & BKPageControlMenuSelectStyleChangeColor) {
-        
-    }else {
-        self.menuSelectTitleColor = self.menuNormalTitleColor;
-    }
-    
-    if (_menuSelectStyle & BKPageControlMenuSelectStyleChangeFont) {
-        self.menuSelectTitleFontSize = self.tempMenuSelectTitleFontSize;
-    }else {
-        self.menuSelectTitleFontSize = self.menuNormalTitleFontSize;
-    }
-    
-    if (_menuSelectStyle & BKPageControlMenuSelectStyleDisplayLine) {
-        self.viewSelectLine.hidden = NO;
-    }else {
-        self.viewSelectLine.hidden = YES;
-    }
-    
-    if (_menuSelectStyle & BKPageControlMenuSelectStyleDisplayBgView) {
-        
-    }else {
-        self.menuNormalTitleBgColor = nil;
-        self.menuSelectTitleBgColor = nil;
-        self.menuTitleBgContentInset = UIEdgeInsetsZero;
-        self.menuTitleBgAngle = 0;
-    }
-    
     [self reloadContentView];
 }
 
@@ -263,24 +264,57 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     [self reloadContentView];
 }
 
-#pragma mark - 大小设置
+#pragma mark - 选中导航的线
 
--(void)setFrame:(CGRect)frame
+-(void)setSelectLineStyle:(BKPageControlMenuSelectLineStyle)selectLineStyle
 {
-    if (CGRectEqualToRect(self.frame, frame)) {
-        return;
+    _selectLineStyle = selectLineStyle;
+    if (_selectLine) {
+        [self adjustSelectLinePosition];
     }
-    [super setFrame:frame];
-    
-    self.contentView.frame = CGRectMake(0, 0, self.width, self.height);
-    self.bottomLine.y = self.height - self.bottomLine.height;
-    self.viewSelectLine.y = self.height - self.viewSelectLine.height - self.selectLineBottomMargin;
-    
-    if ([self.delegate respondsToSelector:@selector(changeMenuViewFrame)]) {
-        [self.delegate changeMenuViewFrame];
+}
+
+-(void)setSelectLineConstantW:(CGFloat)selectLineConstantW
+{
+    _selectLineConstantW = selectLineConstantW;
+    if (_selectLine) {
+        [self adjustSelectLinePosition];
     }
-    
-    [self reloadContentView];
+}
+
+-(void)setSelectLineHeight:(CGFloat)selectLineHeight
+{
+    _selectLineHeight = selectLineHeight;
+    if (_selectLine) {
+        _selectLine.height = _selectLineHeight;
+        _selectLine.layer.cornerRadius = _selectLine.height/2.0f;
+    }
+}
+
+-(void)setSelectLineBottomMargin:(CGFloat)selectLineBottomMargin
+{
+    _selectLineBottomMargin = selectLineBottomMargin;
+    if (_selectLine) {
+        _selectLine.y = self.height - _selectLine.height - _selectLineBottomMargin;
+    }
+}
+
+-(void)setSelectLineBgColor:(UIColor *)selectLineBgColor
+{
+    _selectLineBgColor = selectLineBgColor;
+    _selectLineBgGradientColor = nil;
+    if (_selectLine) {
+        _selectLine.bgColor = _selectLineBgColor;
+    }
+}
+
+-(void)setSelectLineBgGradientColor:(NSArray<UIColor *> *)selectLineBgGradientColor
+{
+    _selectLineBgGradientColor = selectLineBgGradientColor;
+    _selectLineBgColor = nil;
+    if (_selectLine) {
+        _selectLine.colors = _selectLineBgGradientColor;
+    }
 }
 
 #pragma mark - init
@@ -327,7 +361,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 {
     [self addSubview:self.contentView];
     [self addSubview:self.bottomLine];
-    [self.contentView addSubview:self.viewSelectLine];
+    [self.contentView addSubview:self.selectLine];
 }
 
 -(void)layoutSubviews
@@ -336,10 +370,10 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     
     self.contentView.frame = CGRectMake(0, 0, self.contentViewWidth > 0 ? self.contentViewWidth : self.width, self.height);
     self.bottomLine.frame = CGRectMake(0, self.height - BK_ONE_PIXEL, self.width, BK_ONE_PIXEL);
-    self.viewSelectLine.frame = CGRectMake(self.viewSelectLine.x, self.height - self.selectLineHeight - self.selectLineBottomMargin, self.viewSelectLine.width, self.selectLineHeight);
+    self.selectLine.frame = CGRectMake(self.selectLine.x, self.height - self.selectLineHeight - self.selectLineBottomMargin, self.selectLine.width, self.selectLineHeight);
 }
 
-#pragma mark - 导航内容视图
+#pragma mark - initUI
 
 -(UIScrollView*)contentView
 {
@@ -349,7 +383,6 @@ const float kSelectLineAnimateTimeInterval = 0.3;
         _contentView.showsHorizontalScrollIndicator = NO;
         _contentView.showsVerticalScrollIndicator = NO;
         _contentView.delegate = self;
-//        _contentView.bounces = NO;
         if (@available(iOS 11.0, *)) {
             _contentView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         }
@@ -357,64 +390,28 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     return _contentView;
 }
 
-/**
- 刷新contentView
- */
--(void)reloadContentView
+-(UIImageView*)bottomLine
 {
-    [self.menuModel.total removeAllObjects];
-    [self.menuModel.visibleIndexs removeAllObjects];
-    NSArray * visible = [self.menuModel.visible copy];
-    [visible enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(BKPageControlMenu * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self.menuModel.visible removeObject:obj];
-        [self.menuModel.cache addObject:obj];
-    }];
-    
-    CGRect lastRect = CGRectZero;
-    for (int i = 0; i < [self.titles count]; i++) {
-        NSString * title = self.titles[i];
-        UIFont * font = nil;
-        UIColor * color = nil;
-        UIColor * bgColor = nil;
-        if (self.selectIndex == i) {
-            font = [self getMenuFontSize:self.menuSelectTitleFontSize];
-            color = self.menuSelectTitleColor;
-            bgColor = self.menuSelectTitleBgColor;
-        }else {
-            font = [self getMenuFontSize:self.menuNormalTitleFontSize];
-            color = self.menuNormalTitleColor;
-            bgColor = self.menuNormalTitleBgColor;
-        }
-        CGFloat width = [self calculateString:title settingHeight:self.contentView.height font:font].width + self.menuContentInset.left + self.menuContentInset.right;
-        
-        BKPageControlMenuPropertyModel * model = [[BKPageControlMenuPropertyModel alloc] init];
-        model.color = color;
-        model.font = font;
-        model.titleWidth = width;
-        model.bgColor = bgColor;
-        if (self.menuEqualDivisionW == 0) {
-            CGFloat x = (i == 0 ? self.lrInset : CGRectGetMaxX(lastRect)) + self.menuSpace;
-            model.rect = CGRectMake(x, 0, width, self.contentView.height);
-        }else {
-            CGFloat x = i == 0 ? self.lrInset : CGRectGetMaxX(lastRect);
-            model.rect = CGRectMake(x, 0, self.menuEqualDivisionW, self.contentView.height);
-        }
-        [self.menuModel.total addObject:model];
-    
-        lastRect = model.rect;
+    if (!_bottomLine) {
+        _bottomLine = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.height - BK_ONE_PIXEL, self.width, BK_ONE_PIXEL)];
+        _bottomLine.backgroundColor = [UIColor colorWithRed:204/255.0f green:204/255.0f blue:204/255.0f alpha:1];
     }
-    self.contentView.contentSize = CGSizeMake(CGRectGetMaxX(lastRect) + self.lrInset + (self.menuEqualDivisionW == 0 ? self.menuSpace : 0), self.contentView.height);
-    
-    CGFloat maxOffsetX = self.contentView.contentSize.width - self.contentView.width;
-    if (maxOffsetX > 0 && self.contentView.contentOffset.x > maxOffsetX) {
-        self.contentView.contentOffset = CGPointMake(maxOffsetX, self.contentView.contentOffset.y);
-    }
-    
-    [self displayMenu];
-    [self adjustSelectLinePosition];
+    return _bottomLine;
 }
 
-#pragma mark - 导航内容视图中标题
+-(BKPageControlSelectLine*)selectLine
+{
+    if (!_selectLine) {
+        _selectLine = [[BKPageControlSelectLine alloc] initWithFrame:CGRectMake(0, self.contentView.height - self.selectLineHeight - self.selectLineBottomMargin, 0, self.selectLineHeight)];
+        _selectLine.hidden = YES;
+        _selectLine.bgColor = self.selectLineBgColor;
+        _selectLine.layer.cornerRadius = _selectLine.height/2.0f;
+        _selectLine.clipsToBounds = YES;
+    }
+    return _selectLine;
+}
+
+#pragma mark - 创建菜单
 
 -(BKPageControlMenuModel*)menuModel
 {
@@ -424,49 +421,40 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     return _menuModel;
 }
 
-/**
- 创建menu
- 
- @param identifier 标识符
- @return menu
- */
--(BKPageControlMenu*)createMenuWithReuseIdentifier:(NSString*)identifier
+-(BKPageControlMenu*)createMenu
 {
-    BKPageControlMenu * menu = [[BKPageControlMenu alloc] initWithIdentifer:identifier];
+    BKPageControlMenu * menu = [[BKPageControlMenu alloc] init];
     [menu assignTitle:nil textColor:self.menuNormalTitleColor font:[self getMenuFontSize:self.menuNormalTitleFontSize] numberOfLines:self.menuNumberOfLines lineSpacing:self.menuLineSpacing];
     menu.contentInset = self.menuContentInset;
-    menu.userInteractionEnabled = YES;
-    __weak typeof(self) weakSelf = self;
-    [menu setClickSelfCallBack:^(BKPageControlMenu * _Nonnull menu) {
-        [[[[UIApplication sharedApplication] delegate] window] endEditing:YES];
-        if (weakSelf.selectIndex == menu.displayIndex) {
-            return;
-        }
-        NSUInteger leaveIndex = weakSelf.selectIndex;
-        NSUInteger selectIndex = menu.displayIndex;
-        
-        if ([weakSelf.delegate respondsToSelector:@selector(menuView:willLeaveIndex:)]) {
-            [weakSelf.delegate menuView:weakSelf willLeaveIndex:leaveIndex];
-        }
-        
-        if ([weakSelf.delegate respondsToSelector:@selector(menuView:switchingSelectIndex:leavingIndex:percentage:)]) {
-            [weakSelf.delegate menuView:weakSelf switchingSelectIndex:selectIndex leavingIndex:leaveIndex percentage:1];
-        }
-        
-        if ([weakSelf.delegate respondsToSelector:@selector(menuView:switchIndex:)]) {
-            [weakSelf.delegate menuView:weakSelf switchIndex:selectIndex];
-        }
-    }];
+    [menu addTarget:self action:@selector(menuClick:) forControlEvents:UIControlEventTouchUpInside];
     return menu;
 }
 
-/**
- 复用menu
- 
- @param identifier 标识符
- @return menu
- */
--(BKPageControlMenu * _Nullable)dequeueReusableMenuWithReuseIdentifier:(NSString*)identifier forIndex:(NSUInteger)index
+-(void)menuClick:(BKPageControlMenu*)menu
+{
+    [[[[UIApplication sharedApplication] delegate] window] endEditing:YES];
+    
+    if (self.selectIndex == menu.displayIndex) {
+        return;
+    }
+    
+    NSUInteger leaveIndex = self.selectIndex;
+    NSUInteger selectIndex = menu.displayIndex;
+    
+    if ([self.delegate respondsToSelector:@selector(menuView:willLeaveIndex:)]) {
+        [self.delegate menuView:self willLeaveIndex:leaveIndex];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(menuView:switchingSelectIndex:leavingIndex:percentage:)]) {
+        [self.delegate menuView:self switchingSelectIndex:selectIndex leavingIndex:leaveIndex percentage:1];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(menuView:switchIndex:)]) {
+        [self.delegate menuView:self switchIndex:selectIndex];
+    }
+}
+
+-(BKPageControlMenu*)dequeueReusableMenuAtIndex:(NSUInteger)index
 {
     BKPageControlMenu * menu = nil;
     for (BKPageControlMenu * m in self.menuModel.visible) {
@@ -477,38 +465,13 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     //如果menu已经显示 则返回显示的menu 如果没有显示创建menu
     if (!menu) {
         if ([self.menuModel.cache count] == 0) {//没有则创建
-            menu = [self createMenuWithReuseIdentifier:identifier];
+            menu = [self createMenu];
         }else {//有则复用
             menu = [self.menuModel.cache firstObject];
         }
     }
     return menu;
 }
-
-/**
- 给menu赋值数据
-
- @param menu 标题
- @param index 索引
- */
--(void)assignDataForMenu:(BKPageControlMenu*)menu index:(NSUInteger)index
-{
-    BKPageControlMenuPropertyModel * model = self.menuModel.total[index];
-    
-    menu.displayIndex = index;
-    menu.frame = model.rect;
-    [menu assignTitle:self.titles[index] textColor:model.color font:model.font numberOfLines:self.menuNumberOfLines lineSpacing:self.menuLineSpacing];
-    menu.contentInset = self.menuContentInset;
-    menu.titleBgViewColor = model.bgColor;
-    menu.titleBgContentInset = self.menuTitleBgContentInset;
-    menu.titleBgAngle = self.menuTitleBgAngle;
-    
-    if ([self.delegate respondsToSelector:@selector(menu:atIndex:)]) {
-        [self.delegate menu:menu atIndex:index];
-    }
-}
-
-#pragma mark - menu标题font
 
 -(UIFont*)getMenuFontSize:(CGFloat)fontSize
 {
@@ -543,21 +506,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     }
 }
 
-#pragma mark - UIScrollViewDelegate
-
--(void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if (scrollView == self.contentView) {
-        //加一个异步回归主线程方法 防止重用view执行动画
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self displayMenu];
-        });
-    }
-}
-
-/**
- 显示可见的menu
- */
+/// 显示可见的menu
 -(void)displayMenu
 {
     //显示区域
@@ -575,7 +524,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     //滑入显示区域 添加
     [self.menuModel.total enumerateObjectsUsingBlock:^(BKPageControlMenuPropertyModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (CGRectIntersectsRect(obj.rect, displayRect) && ![self.menuModel.visibleIndexs containsObject:@(idx)]) {
-            BKPageControlMenu * menu = [self dequeueReusableMenuWithReuseIdentifier:kBKPageControlMenuID forIndex:idx];
+            BKPageControlMenu * menu = [self dequeueReusableMenuAtIndex:idx];
             [self assignDataForMenu:menu index:idx];
             [self.contentView addSubview:menu];
             [self.menuModel.visibleIndexs addObject:@(idx)];
@@ -589,80 +538,76 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     }];
 }
 
-#pragma mark - 底部分割线
-
--(UIImageView*)bottomLine
+-(void)assignDataForMenu:(BKPageControlMenu*)menu index:(NSUInteger)index
 {
-    if (!_bottomLine) {
-        _bottomLine = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.height - BK_ONE_PIXEL, self.width, BK_ONE_PIXEL)];
-        _bottomLine.backgroundColor = [UIColor colorWithRed:204/255.0f green:204/255.0f blue:204/255.0f alpha:1];
-    }
-    return _bottomLine;
-}
-
-#pragma mark - 选中导航的线
-
--(void)setSelectLineStyle:(BKPageControlMenuSelectLineStyle)selectLineStyle
-{
-    _selectLineStyle = selectLineStyle;
-    if (_viewSelectLine) {
-        [self adjustSelectLinePosition];
+    BKPageControlMenuPropertyModel * model = self.menuModel.total[index];
+    
+    menu.displayIndex = index;
+    menu.frame = model.rect;
+    [menu assignTitle:self.titles[index] textColor:model.color font:model.font numberOfLines:self.menuNumberOfLines lineSpacing:self.menuLineSpacing];
+    menu.contentInset = self.menuContentInset;
+    menu.titleBgViewColor = model.bgColor;
+    menu.titleBgContentInset = self.menuTitleBgContentInset;
+    menu.titleBgAngle = self.menuTitleBgAngle;
+    
+    if ([self.delegate respondsToSelector:@selector(menu:atIndex:)]) {
+        [self.delegate menu:menu atIndex:index];
     }
 }
 
--(void)setSelectLineConstantW:(CGFloat)selectLineConstantW
-{
-    _selectLineConstantW = selectLineConstantW;
-    if (_viewSelectLine) {
-        [self adjustSelectLinePosition];
-    }
-}
+#pragma mark - 刷新菜单
 
--(void)setSelectLineHeight:(CGFloat)selectLineHeight
+-(void)reloadContentView
 {
-    _selectLineHeight = selectLineHeight;
-    if (_viewSelectLine) {
-        _viewSelectLine.height = _selectLineHeight;
-        _viewSelectLine.layer.cornerRadius = _viewSelectLine.height/2.0f;
+    [self.menuModel.total removeAllObjects];
+    [self.menuModel.visibleIndexs removeAllObjects];
+    NSArray * visible = [self.menuModel.visible copy];
+    [visible enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(BKPageControlMenu * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.menuModel.visible removeObject:obj];
+        [self.menuModel.cache addObject:obj];
+    }];
+    
+    CGRect lastRect = CGRectZero;
+    for (int i = 0; i < [self.titles count]; i++) {
+        NSString * title = self.titles[i];
+        UIFont * font = nil;
+        UIColor * color = nil;
+        UIColor * bgColor = nil;
+        if (self.selectIndex == i) {
+            font = [self getMenuFontSize:self.menuSelectTitleFontSize];
+            color = self.menuSelectTitleColor;
+            bgColor = self.menuSelectTitleBgColor;
+        }else {
+            font = [self getMenuFontSize:self.menuNormalTitleFontSize];
+            color = self.menuNormalTitleColor;
+            bgColor = self.menuNormalTitleBgColor;
+        }
+        CGFloat width = [self calculateString:title settingHeight:self.contentView.height font:font].width + self.menuContentInset.left + self.menuContentInset.right;
+        
+        BKPageControlMenuPropertyModel * model = [[BKPageControlMenuPropertyModel alloc] init];
+        model.color = color;
+        model.font = font;
+        model.bgColor = bgColor;
+        if (self.menuEqualDivisionW == 0) {
+            CGFloat x = (i == 0 ? self.lrInset : CGRectGetMaxX(lastRect)) + self.menuSpace;
+            model.rect = CGRectMake(x, 0, width, self.contentView.height);
+        }else {
+            CGFloat x = i == 0 ? self.lrInset : CGRectGetMaxX(lastRect);
+            model.rect = CGRectMake(x, 0, self.menuEqualDivisionW, self.contentView.height);
+        }
+        [self.menuModel.total addObject:model];
+    
+        lastRect = model.rect;
     }
-}
-
--(void)setSelectLineBottomMargin:(CGFloat)selectLineBottomMargin
-{
-    _selectLineBottomMargin = selectLineBottomMargin;
-    if (_viewSelectLine) {
-        _viewSelectLine.y = self.height - _viewSelectLine.height - _selectLineBottomMargin;
+    self.contentView.contentSize = CGSizeMake(CGRectGetMaxX(lastRect) + self.lrInset + (self.menuEqualDivisionW == 0 ? self.menuSpace : 0), self.contentView.height);
+    
+    CGFloat maxOffsetX = self.contentView.contentSize.width - self.contentView.width;
+    if (maxOffsetX > 0 && self.contentView.contentOffset.x > maxOffsetX) {
+        self.contentView.contentOffset = CGPointMake(maxOffsetX, self.contentView.contentOffset.y);
     }
-}
-
--(void)setSelectLineBgColor:(UIColor *)selectLineBgColor
-{
-    _selectLineBgColor = selectLineBgColor;
-    _selectLineBgGradientColor = nil;
-    if (_viewSelectLine) {
-        _viewSelectLine.bgColor = _selectLineBgColor;
-    }
-}
-
--(void)setSelectLineBgGradientColor:(NSArray<UIColor *> *)selectLineBgGradientColor
-{
-    _selectLineBgGradientColor = selectLineBgGradientColor;
-    _selectLineBgColor = nil;
-    if (_viewSelectLine) {
-        _viewSelectLine.colors = _selectLineBgGradientColor;
-    }
-}
-
--(BKPageControlSelectLine*)viewSelectLine
-{
-    if (!_viewSelectLine) {
-        _viewSelectLine = [[BKPageControlSelectLine alloc] initWithFrame:CGRectMake(0, self.contentView.height - self.selectLineHeight - self.selectLineBottomMargin, 0, self.selectLineHeight)];
-        _viewSelectLine.hidden = YES;
-        _viewSelectLine.bgColor = self.selectLineBgColor;
-        _viewSelectLine.layer.cornerRadius = _viewSelectLine.height/2.0f;
-        _viewSelectLine.clipsToBounds = YES;
-    }
-    return _viewSelectLine;
+    
+    [self displayMenu];
+    [self adjustSelectLinePosition];
 }
 
 -(void)adjustSelectLinePosition
@@ -672,11 +617,11 @@ const float kSelectLineAnimateTimeInterval = 0.3;
             [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
                 BKPageControlMenuPropertyModel * model = self.menuModel.total[obj.displayIndex];
                 if (self.selectLineStyle == BKPageControlMenuSelectLineStyleFollowMenuTitleWidth) {
-                    self.viewSelectLine.width = model.titleWidth;
+                    self.selectLine.width = model.rect.size.width;
                 }else {
-                    self.viewSelectLine.width = self.selectLineConstantW;
+                    self.selectLine.width = self.selectLineConstantW;
                 }
-                self.viewSelectLine.centerX = obj.centerX;
+                self.selectLine.centerX = obj.centerX;
                 //修改了selectLine的位置后 修改menuView的偏移量
                 [self calcScrollContentOffsetAccordingToSelectLinePosition];
             }];
@@ -684,7 +629,19 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     }];
 }
 
-#pragma mark - 滑动pageControlView的方法
+#pragma mark - UIScrollViewDelegate
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (scrollView == self.contentView) {
+        //加一个异步回归主线程方法 防止重用view执行动画
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self displayMenu];
+        });
+    }
+}
+
+#pragma mark - 内容视图滑动的方法
 
 -(void)collectionViewDidScroll:(UICollectionView*)collectionView
 {
@@ -732,7 +689,9 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     }
     
     [self changeSelectPropertyWithFromIndex:fromIndex toIndex:toIndex percentage:percentage];
-    [self calcScrollContentOffsetAccordingToSelectLinePosition];
+    [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
+        [self calcScrollContentOffsetAccordingToSelectLinePosition];
+    }];
     
     if ([self.delegate respondsToSelector:@selector(menuView:switchingSelectIndex:leavingIndex:percentage:)]) {
         [self.delegate menuView:self switchingSelectIndex:toIndex leavingIndex:fromIndex percentage:percentage];
@@ -802,7 +761,6 @@ const float kSelectLineAnimateTimeInterval = 0.3;
         BKPageControlMenuPropertyModel * model = self.menuModel.total[i];
         //大小
         CGFloat width = [self calculateString:title settingHeight:self.contentView.height font:model.font].width + self.menuContentInset.left + self.menuContentInset.right;
-        model.titleWidth = width;
         if (self.menuEqualDivisionW == 0) {
             CGFloat x = (i == 0 ? self.lrInset : CGRectGetMaxX(lastRect)) + self.menuSpace;
             model.rect = CGRectMake(x, 0, width, self.contentView.height);
@@ -828,19 +786,17 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     BKPageControlMenuPropertyModel * new_toModel = self.menuModel.total[toIndex];
     
     CGFloat fromCenterX = CGRectGetMidX(new_fromModel.rect);
-    CGFloat fromWidth = new_fromModel.titleWidth;
+    CGFloat fromWidth = new_fromModel.rect.size.width;
     CGFloat toCenterX = CGRectGetMidX(new_toModel.rect);
-    CGFloat toWidth = new_toModel.titleWidth;
+    CGFloat toWidth = new_toModel.rect.size.width;
     
     if (self.selectLineStyle == BKPageControlMenuSelectLineStyleFollowMenuTitleWidth) {
-        self.viewSelectLine.width = (toWidth - fromWidth) * percentage + fromWidth;
+        self.selectLine.width = (toWidth - fromWidth) * percentage + fromWidth;
     }else {
-        self.viewSelectLine.width = self.selectLineConstantW;
+        self.selectLine.width = self.selectLineConstantW;
     }
-    self.viewSelectLine.centerX = fromCenterX + (toCenterX - fromCenterX) * percentage;
+    self.selectLine.centerX = fromCenterX + (toCenterX - fromCenterX) * percentage;
 }
-
-#pragma mark - 计算颜色变化
 
 /// 计算颜色变化
 /// @param fromColor 变换前的颜色
@@ -873,8 +829,6 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     return resultColor;
 }
 
-#pragma mark - 根据选中线的位置计算滑动偏移量
-
 /**
  根据选中线的位置计算滑动偏移量(中心)
  */
@@ -885,35 +839,21 @@ const float kSelectLineAnimateTimeInterval = 0.3;
         return;
     }
     
-    CGFloat selectLinePositionGaps = CGRectGetMaxX(self.viewSelectLine.frame) - self.contentView.contentOffset.x;
-    CGFloat left_right_Gap = (self.contentView.width - self.viewSelectLine.width)/2.0f;
+    CGFloat selectLinePositionGaps = CGRectGetMaxX(self.selectLine.frame) - self.contentView.contentOffset.x;
+    CGFloat left_right_Gap = (self.contentView.width - self.selectLine.width)/2.0f;
     if (selectLinePositionGaps > self.contentView.width - left_right_Gap) {
-        CGFloat move = self.viewSelectLine.x - left_right_Gap;
+        CGFloat move = self.selectLine.x - left_right_Gap;
         if (move > self.contentView.contentSize.width - self.contentView.width) {
             move = self.contentView.contentSize.width - self.contentView.width;
         }
         [self.contentView setContentOffset:CGPointMake(move, 0) animated:NO];
-    }else if (self.viewSelectLine.x - self.contentView.contentOffset.x < left_right_Gap) {
-        CGFloat move = self.viewSelectLine.x - left_right_Gap;
+    }else if (self.selectLine.x - self.contentView.contentOffset.x < left_right_Gap) {
+        CGFloat move = self.selectLine.x - left_right_Gap;
         if (move < 0) {
             move = 0;
         }
         [self.contentView setContentOffset:CGPointMake(move, 0) animated:NO];
     }
-}
-
-#pragma mark - 获取可见的menu
-
--(NSArray<BKPageControlMenu*> *)getVisibleMenu
-{
-    return [self.menuModel.visible copy];
-}
-
-#pragma mark - 获取全部的menu属性
-
--(NSArray<BKPageControlMenuPropertyModel*> *)getTotalMenuProperty
-{
-    return [self.menuModel.total copy];
 }
 
 #pragma mark - 文本计算
@@ -926,6 +866,18 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     
     CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height) options:NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : font} context:nil];
     return rect.size;
+}
+
+#pragma mark - 公开方法
+
+-(NSArray<BKPageControlMenu*> *)getVisibleMenu
+{
+    return [self.menuModel.visible copy];
+}
+
+-(NSArray<BKPageControlMenuPropertyModel*> *)getTotalMenuProperty
+{
+    return [self.menuModel.total copy];
 }
 
 @end

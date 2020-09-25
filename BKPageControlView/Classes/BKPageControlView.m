@@ -652,10 +652,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
                 //配合mjRefresh不足一屏加载的判断 添加手势状态
                 childScrollView.panGestureRecognizer.state = UIGestureRecognizerStateChanged;
             }
-            //让子视图的scrollView的scrollViewDidScroll代理执行
-            if ([childScrollView.delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
-                [childScrollView.delegate scrollViewDidScroll:childScrollView];
-            }
         }
     }
 }
