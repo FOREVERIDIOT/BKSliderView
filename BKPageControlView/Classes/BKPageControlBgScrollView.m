@@ -39,7 +39,6 @@
     self.backgroundColor = [UIColor clearColor];
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
-    //保证外层嵌套横向滑动scrollView时可以联动，但是有个bug 这个属性设置完后，竖向滑动时偏移量x也会变化，所以重写[super setContentOffset:CGPointMake(0, contentOffset.y)];
     self.alwaysBounceHorizontal = YES;
     if (@available(iOS 11.0, *)) {
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;

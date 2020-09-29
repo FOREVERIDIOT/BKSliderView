@@ -21,6 +21,8 @@
 		2636AC58FFB864367B2C7DA814440673 /* MJRefresh.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1AEC22104436818067ABD1ED2BF8AA5E /* MJRefresh.bundle */; };
 		2638000E553D7BBE784D6C9C592C7C08 /* MJRefreshFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C57B6605D3EA0775E9CF6CD3BCD450 /* MJRefreshFooter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2829A172CF7718DF92F11F74FC30808C /* MJRefreshConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 18EAB2C8BCA3E6A2B1CF9F561D70B473 /* MJRefreshConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2A6C3DA92521908800EA0650 /* BKPageControlContentCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A6C3DA72521908800EA0650 /* BKPageControlContentCollectionView.h */; };
+		2A6C3DAA2521908800EA0650 /* BKPageControlContentCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A6C3DA82521908800EA0650 /* BKPageControlContentCollectionView.m */; };
 		2D84CC49CF8696C5FC0B4F97183757BA /* MJRefreshStateTrailer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1343F5EDC26C7AFC75278CCAD48DF427 /* MJRefreshStateTrailer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2F44236F240D213E02C4BD3445600A18 /* UIScrollView+MJExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 35F7AB949A18F9EA9FB91F40B3427788 /* UIScrollView+MJExtension.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2FBD317342110359286E5C9CDA927EEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
@@ -130,12 +132,14 @@
 		1A8B6A6570FA5D6EF8AF340F420D5435 /* NSBundle+MJRefresh.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBundle+MJRefresh.m"; path = "MJRefresh/NSBundle+MJRefresh.m"; sourceTree = "<group>"; };
 		1AEC22104436818067ABD1ED2BF8AA5E /* MJRefresh.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = MJRefresh.bundle; path = MJRefresh/MJRefresh.bundle; sourceTree = "<group>"; };
 		1B765EC39E9375E697BD2A7D6E44B9F9 /* MJRefreshAutoGifFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshAutoGifFooter.h; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoGifFooter.h; sourceTree = "<group>"; };
-		1C6AC1E7A31E5AE433BB7A576634A0EE /* BKPageControlView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = BKPageControlView.framework; path = BKPageControlView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C6AC1E7A31E5AE433BB7A576634A0EE /* BKPageControlView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BKPageControlView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FCC5234616FC96B21D037FA5E6BE481 /* Pods-BKPageControlView_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BKPageControlView_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		23817D753C48626AEC0CDF36B2B7CBA6 /* MJRefresh-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MJRefresh-Info.plist"; sourceTree = "<group>"; };
-		241C111F183BFC36E16C298BF0F2BBE2 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		241C111F183BFC36E16C298BF0F2BBE2 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		248C48FE8B02051343512D498F3AE8A0 /* Pods-BKPageControlView_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BKPageControlView_Example-frameworks.sh"; sourceTree = "<group>"; };
 		278E22BFB16A9D1073D1875CEE8D3AD0 /* Pods-BKPageControlView_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BKPageControlView_Tests-Info.plist"; sourceTree = "<group>"; };
+		2A6C3DA72521908800EA0650 /* BKPageControlContentCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKPageControlContentCollectionView.h; sourceTree = "<group>"; };
+		2A6C3DA82521908800EA0650 /* BKPageControlContentCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKPageControlContentCollectionView.m; sourceTree = "<group>"; };
 		2FFF6C420F67A90B6F5E7952DF25B9AA /* MJRefreshNormalHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshNormalHeader.h; path = MJRefresh/Custom/Header/MJRefreshNormalHeader.h; sourceTree = "<group>"; };
 		301FF7BD4744AB97D033F59944BF1011 /* MJRefresh-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MJRefresh-umbrella.h"; sourceTree = "<group>"; };
 		31FE3A9F225CE4CF8B893DFE55469491 /* MJRefreshStateTrailer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshStateTrailer.m; path = MJRefresh/Custom/Trailer/MJRefreshStateTrailer.m; sourceTree = "<group>"; };
@@ -154,12 +158,12 @@
 		5DD25A08B8C6EA3670DD84BCFA28FB2D /* BKPageControlMenuView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = BKPageControlMenuView.m; path = BKPageControlView/Classes/BKPageControlMenuView.m; sourceTree = "<group>"; };
 		650EF41EA0F1F8FF80E7AAE72C9551CD /* UIView+MJExtension.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+MJExtension.h"; path = "MJRefresh/UIView+MJExtension.h"; sourceTree = "<group>"; };
 		66C1A9FA0B2B94A78A3AF1A9438D524F /* MJRefreshStateHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshStateHeader.h; path = MJRefresh/Custom/Header/MJRefreshStateHeader.h; sourceTree = "<group>"; };
-		68B067998680A74868FA7B41A378324A /* BKPageControlView.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = BKPageControlView.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		68B067998680A74868FA7B41A378324A /* BKPageControlView.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = BKPageControlView.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6A126AD3F56169459859AB7946786044 /* UIView+BKPageControlView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+BKPageControlView.h"; path = "BKPageControlView/Classes/UIView+BKPageControlView.h"; sourceTree = "<group>"; };
 		6C313B6AF7B8C0E5CFE61DD9544965D5 /* BKPageControlView-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BKPageControlView-dummy.m"; sourceTree = "<group>"; };
 		72E86725E4528BF0B294798B8012CC7A /* MJRefreshBackStateFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshBackStateFooter.h; path = MJRefresh/Custom/Footer/Back/MJRefreshBackStateFooter.h; sourceTree = "<group>"; };
 		72F8AC06A52DE235530716F04B43298B /* BKPageControlMenuView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BKPageControlMenuView.h; path = BKPageControlView/Classes/BKPageControlMenuView.h; sourceTree = "<group>"; };
-		74CB56EF4EF7F526E80001B3D576B9E0 /* Pods_BKPageControlView_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_BKPageControlView_Example.framework; path = "Pods-BKPageControlView_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		74CB56EF4EF7F526E80001B3D576B9E0 /* Pods_BKPageControlView_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BKPageControlView_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78EE30AD7F65A1981C4A6ABF5BDE79F9 /* BKPCVBgScrollView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BKPCVBgScrollView.h; path = BKPageControlView/Classes/BKPCVBgScrollView.h; sourceTree = "<group>"; };
 		7935FFDF49D307A29891FA4ED32EED8B /* MJRefreshBackFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackFooter.m; path = MJRefresh/Base/MJRefreshBackFooter.m; sourceTree = "<group>"; };
 		7ABFB026593E7260C84E4EE47D49163B /* MJRefreshNormalTrailer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshNormalTrailer.m; path = MJRefresh/Custom/Trailer/MJRefreshNormalTrailer.m; sourceTree = "<group>"; };
@@ -176,9 +180,9 @@
 		9003BB5EE5B856F06665EAF9DDB99F7E /* MJRefreshBackFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshBackFooter.h; path = MJRefresh/Base/MJRefreshBackFooter.h; sourceTree = "<group>"; };
 		905E8BCD3E016A74129EA100FA1E50F9 /* UIViewController+BKPageControlView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+BKPageControlView.h"; path = "BKPageControlView/Classes/UIViewController+BKPageControlView.h"; sourceTree = "<group>"; };
 		937F7D556E74B6A38AC5993E693BB88C /* UIViewController+BKPageControlView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+BKPageControlView.m"; path = "BKPageControlView/Classes/UIViewController+BKPageControlView.m"; sourceTree = "<group>"; };
-		97538C5F2C8CE505EBED4C9C359397A0 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		97538C5F2C8CE505EBED4C9C359397A0 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		9B652FD6D87B11405C41F143218EE028 /* MJRefresh-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MJRefresh-dummy.m"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9FDB18C2120470FC646B2697063E3E27 /* BKPageControlSelectLine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = BKPageControlSelectLine.m; path = BKPageControlView/Classes/BKPageControlSelectLine.m; sourceTree = "<group>"; };
 		A5E7ED993813DD91F38F0BC653137B9A /* Pods-BKPageControlView_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BKPageControlView_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		A7260AB949A8561F860F87899DFF9720 /* MJRefreshAutoFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshAutoFooter.h; path = MJRefresh/Base/MJRefreshAutoFooter.h; sourceTree = "<group>"; };
@@ -205,14 +209,14 @@
 		E0343C2DDCAC4DA13674EFB6FD0F1350 /* BKPageControlView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BKPageControlView.h; path = BKPageControlView/Classes/BKPageControlView.h; sourceTree = "<group>"; };
 		E1525BD01C5435CF54B3ADD71DEB3FCD /* BKPageControlView-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BKPageControlView-umbrella.h"; sourceTree = "<group>"; };
 		E1667E98EA1868CBB25B01A2E40F4ABE /* BKPageControlView.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = BKPageControlView.release.xcconfig; sourceTree = "<group>"; };
-		E49D6D248DD1CEE584E6776B9164A1B2 /* MJRefresh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MJRefresh.framework; path = MJRefresh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E49D6D248DD1CEE584E6776B9164A1B2 /* MJRefresh.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MJRefresh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB52EACF641B7653308550846BBAF18D /* Pods-BKPageControlView_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-BKPageControlView_Tests.modulemap"; sourceTree = "<group>"; };
 		EC2B773504A9AC949F425F7A957E4998 /* MJRefreshAutoFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoFooter.m; path = MJRefresh/Base/MJRefreshAutoFooter.m; sourceTree = "<group>"; };
 		EC31A219B753FAA7AEC063D329175429 /* MJRefresh.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefresh.h; path = MJRefresh/MJRefresh.h; sourceTree = "<group>"; };
 		EE4E870862B8266E93361CC2FBA36F19 /* MJRefreshStateHeader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshStateHeader.m; path = MJRefresh/Custom/Header/MJRefreshStateHeader.m; sourceTree = "<group>"; };
 		EE54EFC954C98125755EF5907426E7BA /* MJRefreshTrailer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshTrailer.m; path = MJRefresh/Base/MJRefreshTrailer.m; sourceTree = "<group>"; };
 		F2D517C6B44EF43FC0130A9E72506CB7 /* BKPageControlMenuPropertyModel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BKPageControlMenuPropertyModel.h; path = BKPageControlView/Classes/BKPageControlMenuPropertyModel.h; sourceTree = "<group>"; };
-		F71628AD7D966D4EE6A09309F7CB7DE6 /* Pods_BKPageControlView_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_BKPageControlView_Tests.framework; path = "Pods-BKPageControlView_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F71628AD7D966D4EE6A09309F7CB7DE6 /* Pods_BKPageControlView_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BKPageControlView_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7505D1A70025BAD1C8B7E1D27BFD329 /* Pods-BKPageControlView_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BKPageControlView_Example.release.xcconfig"; sourceTree = "<group>"; };
 		F8173214F4DB6CCD45CCBC98972C8990 /* MJRefreshComponent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshComponent.m; path = MJRefresh/Base/MJRefreshComponent.m; sourceTree = "<group>"; };
 		FAF31FEB6EC11456E35F60BA5078CAD5 /* MJRefreshConst.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshConst.m; path = MJRefresh/MJRefreshConst.m; sourceTree = "<group>"; };
@@ -326,7 +330,6 @@
 				8713EEE6845C7340012917DB4D33D1CC /* Resources */,
 				B0273062697ABDD7DF15AF74C1D1DD1F /* Support Files */,
 			);
-			name = MJRefresh;
 			path = MJRefresh;
 			sourceTree = "<group>";
 		};
@@ -367,6 +370,8 @@
 			children = (
 				FB97A30DEF77B97C3149AA2FFAAFB445 /* BKPageControlBgScrollView.h */,
 				C77757BBA8C9FE6BCD12ACE01CFEB200 /* BKPageControlBgScrollView.m */,
+				2A6C3DA72521908800EA0650 /* BKPageControlContentCollectionView.h */,
+				2A6C3DA82521908800EA0650 /* BKPageControlContentCollectionView.m */,
 				A887B4B228D156694E69FE731687C3DB /* BKPageControlMenu.h */,
 				0C0F7C8F3FE2C70A5B1FD2BFF17367F6 /* BKPageControlMenu.m */,
 				0083BC3225FACD6C8C637E96CD6D8E90 /* BKPageControlMenuModel.h */,
@@ -547,6 +552,7 @@
 				96F382BA6268F194214D9ACED4C27705 /* BKPageControlBgScrollView.h in Headers */,
 				A3BDFF09B9344502618E0FC632D4FCA4 /* BKPageControlMenu.h in Headers */,
 				780729D43388FD09C32DA9B2C0F16AD7 /* BKPageControlMenuModel.h in Headers */,
+				2A6C3DA92521908800EA0650 /* BKPageControlContentCollectionView.h in Headers */,
 				E9C42DA2871FC72AF4D51EAB3664EBB6 /* BKPageControlMenuPropertyModel.h in Headers */,
 				E5C53400D9BE52CC697F3C5F76B701EF /* BKPageControlMenuView.h in Headers */,
 				C29D028CBAC513223AB75E9729168408 /* BKPageControlSelectLine.h in Headers */,
@@ -744,6 +750,7 @@
 			files = (
 				AC14B0F8EF40EA0C310F6CBAC394E1E5 /* BKPageControlBgScrollView.m in Sources */,
 				34C46B662C3081884D650C037137EF3F /* BKPageControlMenu.m in Sources */,
+				2A6C3DAA2521908800EA0650 /* BKPageControlContentCollectionView.m in Sources */,
 				6333D9BDE71C45CD438C7413E77F7E5B /* BKPageControlMenuModel.m in Sources */,
 				8D5F113F1D22D66195337736D7FC4970 /* BKPageControlMenuPropertyModel.m in Sources */,
 				515574CFCFC910911A943595968C1169 /* BKPageControlMenuView.m in Sources */,
@@ -969,8 +976,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

@@ -22,22 +22,11 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 /// 引起的内容视图动画滚动
 @property (nonatomic,assign) BOOL collectionViewAnimateScrolling;
 
-/// 子视图数组 当未创建子视图时用@""代替
-@property (nonatomic,strong) NSMutableArray * childControllers;
-
 @end
 
 @implementation BKPageControlView
 @synthesize superVC = _superVC;
 @synthesize displayVC = _displayVC;
-
--(NSMutableArray *)childControllers
-{
-    if (!_childControllers) {
-        _childControllers = [NSMutableArray array];
-    }
-    return _childControllers;
-}
 
 #pragma mark - 索引
 
@@ -45,8 +34,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 {
     if (_displayIndex == displayIndex) {
         return;
-    }else if (displayIndex > [self.menuTitles count] - 1) {
-        _displayIndex = [self.menuTitles count] - 1;
+    }else if (displayIndex > [self.childControllers count] - 1) {
+        _displayIndex = [self.childControllers count] - 1;
     }else {
         _displayIndex = displayIndex;
     }
@@ -63,8 +52,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 {
     if (_displayIndex == displayIndex) {
         return;
-    }else if (displayIndex > [self.menuTitles count] - 1) {
-        _displayIndex = [self.menuTitles count] - 1;
+    }else if (displayIndex > [self.childControllers count] - 1) {
+        _displayIndex = [self.childControllers count] - 1;
     }else {
         _displayIndex = displayIndex;
     }
@@ -73,7 +62,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     
     __weak typeof(self) weakSelf = self;
     [self.menuView setSelectIndex:_displayIndex animated:^{
-        CGFloat rollLength = weakSelf.collectionView.width *    weakSelf.displayIndex;
+        CGFloat rollLength = weakSelf.collectionView.width * weakSelf.displayIndex;
         [weakSelf.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
         
         if (animated) {
@@ -128,27 +117,30 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - init
 
--(void)setMenuTitles:(NSArray<NSString *> *)menuTitles
+-(void)setChildControllers:(NSArray<UIViewController *> *)childControllers
 {
-    _menuTitles = menuTitles;
-    
     [self removeChildViewKVOForItem:self.displayIndex atCell:nil];
     [self setBgScrollViewScrollToTop];
-    [self.childControllers removeAllObjects];
     
-    for (NSString * title in _menuTitles) {
+    _childControllers = childControllers;
+    
+    NSMutableArray * titles = [NSMutableArray array];
+    for (UIViewController * childVC in _childControllers) {
+        NSAssert([childVC isKindOfClass:[UIViewController class]], @"子控制器不正确");
+        NSAssert([childVC.title isKindOfClass:[NSString class]], @"标题格式不正确");
+        NSAssert([childVC.title length] > 0, @"标题不能为空");
         NSUInteger existCount = 0;
-        for (NSString * t in _menuTitles) {
-            if ([t isEqualToString:title]) {
+        for (UIViewController * t in _childControllers) {
+            if ([t.title isEqualToString:childVC.title]) {
                 existCount++;
             }
         }
         NSAssert(existCount == 1, @"标题不能重复添加");
-        [self.childControllers addObject:@""];
+        [titles addObject:childVC.title];
     }
     [self.collectionView reloadData];
     
-    self.menuView.titles = [_menuTitles copy];
+    self.menuView.titles = [titles copy];
 }
 
 -(void)setSuperVC:(UIViewController *)superVC
@@ -164,20 +156,20 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC
 {
-    return [self initWithFrame:frame superVC:superVC menuTitles:nil];
+    return [self initWithFrame:frame superVC:superVC childControllers:nil];
 }
 
--(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC menuTitles:(NSArray<NSString *> *)menuTitles
+-(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC childControllers:(nullable NSArray<UIViewController *> *)childControllers
 {
-    return [self initWithFrame:frame superVC:superVC menuTitles:nil delegate:nil];
+    return [self initWithFrame:frame superVC:superVC childControllers:nil delegate:nil];
 }
 
--(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC menuTitles:(NSArray<NSString *> *)menuTitles delegate:(id<BKPageControlViewDelegate>)delegate
+-(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC childControllers:(nullable NSArray<UIViewController *> *)childControllers delegate:(nullable id<BKPageControlViewDelegate>)delegate
 {
     self = [super initWithFrame:frame];
     if (self) {
         self.superVC = superVC;
-        self.menuTitles = menuTitles;
+        self.childControllers = childControllers;
         self.delegate = delegate;
         
         [self initUI];
@@ -259,11 +251,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     self.bgScrollView.contentOffset = CGPointZero;
     
     for (UIViewController * vc in self.childControllers) {
-        if ([vc isKindOfClass:[UIViewController class]]) {
-            for (UIView * view in [vc.view subviews]) {
-                if ([view isKindOfClass:[UIScrollView class]]) {
-                    ((UIScrollView*)view).contentOffset = CGPointZero;
-                }
+        for (UIView * view in [vc.view subviews]) {
+            if ([view isKindOfClass:[UIScrollView class]]) {
+                ((UIScrollView*)view).contentOffset = CGPointZero;
             }
         }
     }
@@ -367,23 +357,20 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(nullable UIScrollView*)getChildScrollViewAtIndex:(NSInteger)index
 {
     if ([self.childControllers count] > index) {
-        id obj = self.childControllers[index];
-        if (obj) {
-            UIViewController * vc = (UIViewController*)obj;
-            if (vc.bk_pcv_mainScrollView) {
-                return vc.bk_pcv_mainScrollView;
-            }
-            [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if ([obj isKindOfClass:[UIScrollView class]]) {
-                    vc.bk_pcv_mainScrollView = obj;
-                    *stop = YES;
-                }else if ([obj isKindOfClass:[BKPageControlView class]]) {
-                    vc.bk_pcv_mainScrollView = ((BKPageControlView*)obj).bgScrollView;
-                    *stop = YES;
-                }
-            }];
+        UIViewController * vc = self.childControllers[index];
+        if (vc.bk_pcv_mainScrollView) {
             return vc.bk_pcv_mainScrollView;
         }
+        [[vc.view subviews] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isKindOfClass:[UIScrollView class]]) {
+                vc.bk_pcv_mainScrollView = obj;
+                *stop = YES;
+            }else if ([obj isKindOfClass:[BKPageControlView class]]) {
+                vc.bk_pcv_mainScrollView = ((BKPageControlView*)obj).bgScrollView;
+                *stop = YES;
+            }
+        }];
+        return vc.bk_pcv_mainScrollView;
     }
     return nil;
 }
@@ -462,7 +449,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - 内容视图
 
--(UICollectionView*)collectionView
+-(BKPageControlContentCollectionView*)collectionView
 {
     if (!_collectionView) {
         
@@ -471,17 +458,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         layout.minimumLineSpacing = 0;
         layout.minimumInteritemSpacing = 0;
         
-        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.menuView.frame), self.contentView.width, self.contentView.height - CGRectGetMaxY(self.menuView.frame)) collectionViewLayout:layout];
-        _collectionView.showsHorizontalScrollIndicator = NO;
-        _collectionView.showsVerticalScrollIndicator = NO;
+        _collectionView = [[BKPageControlContentCollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.menuView.frame), self.contentView.width, self.contentView.height - CGRectGetMaxY(self.menuView.frame)) collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor clearColor];
-        _collectionView.bounces = NO;
-        _collectionView.pagingEnabled = YES;
-        if (@available(iOS 11.0, *)) {
-            _collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
         [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:kBKPageControlViewCellID];
     }
     return _collectionView;
@@ -507,17 +486,9 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.item < [self.childControllers count]) {
-        id obj = self.childControllers[indexPath.item];
-        BOOL isVC = [obj isKindOfClass:[UIViewController class]];
-        if ((self.collectionViewAnimateScrolling && (isVC || self.displayIndex == indexPath.item)) ||
+        UIViewController * vc = self.childControllers[indexPath.item];
+        if ((self.collectionViewAnimateScrolling && (vc.isViewLoaded || self.displayIndex == indexPath.item)) ||
             !self.collectionViewAnimateScrolling) {
-            UIViewController * vc = nil;
-            if (isVC) {
-                vc = (UIViewController*)obj;
-            }else {
-                vc = [self.delegate pageControlView:self initializeIndex:indexPath.item];
-                [self.childControllers replaceObjectAtIndex:indexPath.item withObject:vc];
-            }
             vc.bk_pcv_index = indexPath.item;
             vc.bk_pcv_pageControlView = self;
             [self.superVC addChildViewController:vc];
@@ -544,9 +515,8 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(void)removeChildViewKVOForItem:(NSUInteger)item atCell:(nullable UICollectionViewCell*)cell
 {
     if (item < [self.childControllers count]) {
-        id obj = self.childControllers[item];
-        if ([obj isKindOfClass:[UIViewController class]]) {
-            UIViewController * vc = (UIViewController*)obj;
+        UIViewController * vc = self.childControllers[item];
+        if (vc.isViewLoaded) {
             [vc removeObserver:self forKeyPath:@"bk_pcv_mainScrollView" context:(__bridge void * _Nullable)(@(item))];
             [vc removeObserver:self forKeyPath:@"bk_pcv_mainScrollView.contentSize" context:(__bridge void * _Nullable)(@(item))];
             [vc willMoveToParentViewController:nil];

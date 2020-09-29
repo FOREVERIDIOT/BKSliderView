@@ -17,19 +17,10 @@
 @interface SecondViewController ()<BKPageControlViewDelegate>
 
 @property (nonatomic,strong) BKPageControlView * pageControlView;
-@property (nonatomic,strong) NSMutableArray * viewControllers;
 
 @end
 
 @implementation SecondViewController
-
--(NSMutableArray *)viewControllers
-{
-    if (!_viewControllers) {
-        _viewControllers = [NSMutableArray array];
-    }
-    return _viewControllers;
-}
 
 #pragma mark - viewDidLoad
 
@@ -90,7 +81,7 @@
 -(BKPageControlView*)pageControlView
 {
     if (!_pageControlView) {
-        NSMutableArray * titles = [NSMutableArray array];
+        NSMutableArray * childControlles = [NSMutableArray array];
         for (int i = 0 ; i < 10; i++) {
             NSString * title = nil;
             if (i == 0) {
@@ -102,11 +93,12 @@
             }else {
                 title = [NSString stringWithFormat:@"第%d个", i];
             }
-            [titles addObject:title];
-            [self.viewControllers addObject:@""];
+            ExampleViewController * vc = [[ExampleViewController alloc] init];
+            vc.title = title;
+            [childControlles addObject:vc];
         }
 
-        _pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectZero superVC:self menuTitles:[titles copy] delegate:self];
+        _pageControlView = [[BKPageControlView alloc] initWithFrame:CGRectZero superVC:self childControllers:[childControlles copy] delegate:self];
         _pageControlView.menuView.menuNumberOfLines = 2;
         _pageControlView.menuView.bk_height = 70;
         [self.view addSubview:_pageControlView];
@@ -119,29 +111,29 @@
                 break;
             case 2:
             {
-                UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+                UIView * yellowColorHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
                 yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
                 _pageControlView.headerView = yellowColorHeaderView;
             }
                 break;
             case 3:
             {
-                UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+                UIView * yellowColorHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
                 yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
                 _pageControlView.headerView = yellowColorHeaderView;
                 
-//                ThirdViewController * vc = [[ThirdViewController alloc] init];
-//                vc.title = @"测试pageControlView嵌套pageControlView";
-//                NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
-//                [childControllers insertObject:vc atIndex:1];
-//                self.pageControlView.childControllers = [childControllers copy];
+                ThirdViewController * vc = [[ThirdViewController alloc] init];
+                vc.title = @"测试pageControlView嵌套pageControlView";
+                NSMutableArray * mChildControllers = [_pageControlView.childControllers mutableCopy];
+                [mChildControllers insertObject:vc atIndex:1];
+                _pageControlView.childControllers = [mChildControllers copy];
             }
                 break;
             case 4:
             {
                 _pageControlView.bgScrollView.contentInset = UIEdgeInsetsMake(100, 0, 0, 0);
                 
-                UIView * yellowColorHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
+                UIView * yellowColorHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 300)];
                 yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
                 _pageControlView.headerView = yellowColorHeaderView;
                 
@@ -157,20 +149,6 @@
         }
     }
     return _pageControlView;
-}
-
-#pragma mark - BKPageControlViewDelegate
-
--(UIViewController*)pageControlView:(BKPageControlView *)pageControlView initializeIndex:(NSUInteger)index
-{
-    id obj = self.viewControllers[index];
-    if ([obj isKindOfClass:[UIViewController class]]) {
-        return (UIViewController*)obj;
-    }else {
-        ExampleViewController * vc = [[ExampleViewController alloc] init];
-        [self.viewControllers replaceObjectAtIndex:index withObject:vc];
-        return vc;
-    }
 }
 
 @end

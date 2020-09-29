@@ -8,16 +8,10 @@
 #import <UIKit/UIKit.h>
 #import "BKPageControlBgScrollView.h"
 #import "BKPageControlMenuView.h"
+#import "BKPageControlContentCollectionView.h"
 @class BKPageControlView;
 
 @protocol BKPageControlViewDelegate <NSObject>
-
-@required
-
-/// 初始化显示的视图
-/// @param pageControlView BKPageControlView
-/// @param index 索引
--(nonnull UIViewController*)pageControlView:(nonnull BKPageControlView*)pageControlView initializeIndex:(NSUInteger)index;
 
 @optional
 
@@ -54,14 +48,14 @@
 #pragma mark - 初始化方法
 
 @property (nonatomic,weak,readonly,nullable) UIViewController * superVC;
-/// 导航目录
-@property (nonatomic,copy,nullable) NSArray<NSString*> * menuTitles;
+/// 子控制器数组 目录是控制器title
+@property (nonatomic,copy,nullable) NSArray<UIViewController*> * childControllers;
 /// 代理
 @property (nonatomic,weak,nullable) id<BKPageControlViewDelegate> delegate;
 
 -(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC;
--(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC menuTitles:(nullable NSArray<NSString*>*)menuTitles;
--(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC menuTitles:(nullable NSArray<NSString*>*)menuTitles delegate:(nullable id<BKPageControlViewDelegate>)delegate;
+-(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC childControllers:(nullable NSArray<UIViewController*>*)childControllers;
+-(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC childControllers:(nullable NSArray<UIViewController*>*)childControllers delegate:(nullable id<BKPageControlViewDelegate>)delegate;
 
 #pragma mark - BKPageControlView嵌套
 
@@ -108,7 +102,7 @@
 #pragma mark - 内容视图（第三级）
 
 /// 详情内容视图
-@property (nonatomic,strong,nonnull) UICollectionView * collectionView;
+@property (nonatomic,strong,nonnull) BKPageControlContentCollectionView * collectionView;
 /// 详情内容视图左右插入量 默认0
 @property (nonatomic,assign) CGFloat contentLrInsets;
 
