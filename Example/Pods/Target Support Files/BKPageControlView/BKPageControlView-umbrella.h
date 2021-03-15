@@ -11,6 +11,7 @@
 #endif
 
 #import "BKPageControlBgScrollView.h"
+#import "BKPageControlContentCollectionView.h"
 #import "BKPageControlMenu.h"
 #import "BKPageControlMenuModel.h"
 #import "BKPageControlMenuPropertyModel.h"

@@ -87,12 +87,12 @@
             break;
         case 3:
         {
-            cell.textLabel.text = @"嵌套pageControlView用手势滑动演示Demo";
+            cell.textLabel.text = @"嵌套pageControlView演示Demo";
         }
             break;
         case 4:
         {
-            cell.textLabel.text = @"换子控制器mainScrollview演示Demo";
+            cell.textLabel.text = @"2s后插入新controller演示Demo";
         }
             break;
         default:

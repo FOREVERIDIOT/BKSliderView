@@ -12,7 +12,6 @@
 #import "ExampleViewController.h"
 #import "UIView+Extension.h"
 #import "ThirdViewController.h"
-#import "ExampleViewTController.h"
 
 @interface SecondViewController ()<BKPageControlViewDelegate>
 
@@ -49,12 +48,12 @@
             break;
         case 3:
         {
-            self.title = @"嵌套pageControlView用手势滑动演示Demo";
+            self.title = @"嵌套pageControlView演示Demo";
         }
             break;
         case 4:
         {
-            self.title = @"换子控制器mainScrollview演示Demo";
+            self.title = @"2s后插入新controller演示Demo";
         }
             break;
         default:
@@ -137,11 +136,13 @@
                 yellowColorHeaderView.backgroundColor = [UIColor yellowColor];
                 _pageControlView.headerView = yellowColorHeaderView;
                 
-//                ExampleViewTController * vc = [[ExampleViewTController alloc] init];
-//                vc.title = @"测试换子控制器mainScrollview";
-//                NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
-//                [childControllers insertObject:vc atIndex:1];
-//                self.pageControlView.childControllers = [childControllers copy];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    ExampleViewController * vc = [[ExampleViewController alloc] init];
+                    vc.title = @"新controller";
+                    NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
+                    [childControllers insertObject:vc atIndex:1];
+                    self.pageControlView.childControllers = [childControllers copy];
+                });
             }
                 break;
             default:

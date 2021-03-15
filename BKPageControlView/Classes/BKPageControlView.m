@@ -119,7 +119,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)setChildControllers:(NSArray<UIViewController *> *)childControllers
 {
-    [self removeChildViewKVOForItem:self.displayIndex atCell:nil];
     [self setBgScrollViewScrollToTop];
     
     _childControllers = childControllers;
