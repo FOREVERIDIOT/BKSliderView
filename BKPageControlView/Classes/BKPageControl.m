@@ -1,5 +1,5 @@
 //
-//  BKPageControlMenuView.m
+//  BKPageControl.m
 //  BKPageControlView
 //
 //  Created by BIKE on 2018/11/13.
@@ -9,7 +9,7 @@
 #define BK_POINTS_FROM_PIXELS(__PIXELS) (__PIXELS / [[UIScreen mainScreen] scale])
 #define BK_ONE_PIXEL BK_POINTS_FROM_PIXELS(1.0)
 
-#import "BKPageControlMenuView.h"
+#import "BKPageControl.h"
 #import "BKPageControlMenuModel.h"
 #import "BKPageControlView.h"
 #import "BKPageControlSelectLine.h"
@@ -23,7 +23,7 @@ typedef NS_ENUM(NSUInteger, BKPageControlContentScrollDirection) {
 NSString * const kBKPageControlMenuID = @"kBKPageControlMenuID";
 const float kSelectLineAnimateTimeInterval = 0.3;
 
-@interface BKPageControlMenuView()<UIScrollViewDelegate>
+@interface BKPageControl()<UIScrollViewDelegate>
 
 /// 之前内容滑动偏移量
 @property (nonatomic,assign) CGFloat lastContentOffsetX;
@@ -39,7 +39,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 
 @end
 
-@implementation BKPageControlMenuView
+@implementation BKPageControl
 
 #pragma mark - 属性
 

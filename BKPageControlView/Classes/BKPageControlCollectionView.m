@@ -1,18 +1,18 @@
 //
-//  BKPageControlContentCollectionView.m
+//  BKPageControlCollectionView.m
 //  BKPageControlView
 //
 //  Created by 毕珂 on 2020/9/28.
 //
 
-#import "BKPageControlContentCollectionView.h"
+#import "BKPageControlCollectionView.h"
 #import "UIView+BKPageControlView.h"
 
-@interface BKPageControlContentCollectionView() <UIGestureRecognizerDelegate>
+@interface BKPageControlCollectionView() <UIGestureRecognizerDelegate>
 
 @end
 
-@implementation BKPageControlContentCollectionView
+@implementation BKPageControlCollectionView
 
 -(instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout
 {

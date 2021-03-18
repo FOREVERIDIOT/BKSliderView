@@ -1,5 +1,5 @@
 //
-//  BKPageControlMenuView.h
+//  BKPageControl.h
 //  BKPageControlView
 //
 //  Created by BIKE on 2018/11/13.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BKPageControlMenu.h"
 #import "BKPageControlMenuPropertyModel.h"
-@class BKPageControlMenuView;
+@class BKPageControl;
 @class BKPageControlView;
 
 typedef NS_OPTIONS(NSUInteger, BKPageControlMenuSelectStyle) {
@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, BKPageControlMenuSelectLineStyle) {
     BKPageControlMenuSelectLineStyleConstantWidth              //恒定宽
 };
 
-@protocol BKPageControlMenuViewDelegate <NSObject>
+@protocol BKPageControlDelegate <NSObject>
 
 @optional
 
@@ -39,13 +39,13 @@ typedef NS_ENUM(NSUInteger, BKPageControlMenuSelectLineStyle) {
 -(void)changeMenuViewFrame;
 
 /// 开始即将离开index
--(void)menuView:(nonnull BKPageControlMenuView*)menuView willLeaveIndex:(NSUInteger)leaveIndex;
+-(void)menuView:(nonnull BKPageControl*)menuView willLeaveIndex:(NSUInteger)leaveIndex;
 
 /// 正在切换中index
--(void)menuView:(nonnull BKPageControlMenuView*)menuView switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
+-(void)menuView:(nonnull BKPageControl*)menuView switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage;
 
 /// 切换完成index
--(void)menuView:(nonnull BKPageControlMenuView*)menuView switchIndex:(NSUInteger)switchIndex;
+-(void)menuView:(nonnull BKPageControl*)menuView switchIndex:(NSUInteger)switchIndex;
 
 /// 设置menu上的UI
 -(void)menu:(nonnull BKPageControlMenu*)menu atIndex:(NSUInteger)index;
@@ -54,7 +54,7 @@ typedef NS_ENUM(NSUInteger, BKPageControlMenuSelectLineStyle) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BKPageControlMenuView : UIView
+@interface BKPageControl : UIView
 
 #pragma mark - UI
 
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - 属性
 
 /// 代理
-@property (nonatomic,weak) id<BKPageControlMenuViewDelegate> delegate;
+@property (nonatomic,weak) id<BKPageControlDelegate> delegate;
 /// 导航标题数组
 @property (nonatomic,copy) NSArray * titles;
 /// 导航内容视图左右插入间距 默认0

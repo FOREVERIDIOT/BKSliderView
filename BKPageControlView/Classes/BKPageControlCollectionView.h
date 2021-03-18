@@ -1,5 +1,5 @@
 //
-//  BKPageControlContentCollectionView.h
+//  BKPageControlCollectionView.h
 //  BKPageControlView
 //
 //  Created by 毕珂 on 2020/9/28.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BKPageControlContentCollectionView : UICollectionView
+@interface BKPageControlCollectionView : UICollectionView
 
 @end
 

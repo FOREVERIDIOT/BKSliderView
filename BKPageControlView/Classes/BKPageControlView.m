@@ -6,13 +6,13 @@
 //
 
 #import "BKPageControlView.h"
-#import "BKPCVBgScrollView.h"
+#import "BKPageControlScrollViewProtocol.h"
 #import "UIViewController+BKPageControlView.h"
 #import "UIView+BKPageControlView.h"
 
 NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
-@interface BKPageControlView() <UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, BKPageControlMenuViewDelegate>
+@interface BKPageControlView() <UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, BKPageControlDelegate>
 
 /// 竖向滚动视图是否在拖拽中
 @property (nonatomic,assign) BOOL bgScrollViewIsDragging;
@@ -235,10 +235,10 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - 主视图
 
--(BKPageControlBgScrollView*)bgScrollView
+-(BKPageControlScrollView*)bgScrollView
 {
     if (!_bgScrollView) {
-        _bgScrollView = [[BKPageControlBgScrollView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
+        _bgScrollView = [[BKPageControlScrollView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
         _bgScrollView.delegate = self;
     }
     return _bgScrollView;
@@ -388,17 +388,17 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 #pragma mark - 第三级视图
 #pragma mark - 导航视图
 
--(BKPageControlMenuView*)menuView
+-(BKPageControl*)menuView
 {
     if (!_menuView) {
-        _menuView = [[BKPageControlMenuView alloc] initWithFrame:CGRectMake(0, 0, self.contentView.width, 45)];
+        _menuView = [[BKPageControl alloc] initWithFrame:CGRectMake(0, 0, self.contentView.width, 45)];
         _menuView.delegate = self;
         _menuView.pageControlView = self;
     }
     return _menuView;
 }
 
-#pragma mark - BKPageControlMenuViewDelegate
+#pragma mark - BKPageControlDelegate
 
 -(void)changeMenuViewFrame
 {
@@ -407,14 +407,14 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     [self.collectionView reloadData];
 }
 
--(void)menuView:(nonnull BKPageControlMenuView*)menuView willLeaveIndex:(NSUInteger)leaveIndex
+-(void)menuView:(nonnull BKPageControl*)menuView willLeaveIndex:(NSUInteger)leaveIndex
 {
     if ([self.delegate respondsToSelector:@selector(pageControlView:willLeaveIndex:)]) {
         [self.delegate pageControlView:self willLeaveIndex:leaveIndex];
     }
 }
 
--(void)menuView:(BKPageControlMenuView*)menuView switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
+-(void)menuView:(BKPageControl*)menuView switchingSelectIndex:(NSUInteger)switchingIndex leavingIndex:(NSUInteger)leavingIndex percentage:(CGFloat)percentage
 {
     if (switchingIndex > [self.childControllers count] - 1 ||
         switchingIndex < 0 ||
@@ -427,7 +427,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     }
 }
 
--(void)menuView:(BKPageControlMenuView*)menuView switchIndex:(NSUInteger)switchIndex
+-(void)menuView:(BKPageControl*)menuView switchIndex:(NSUInteger)switchIndex
 {
     NSUInteger leaveIndex = self.displayIndex;
     __weak typeof(self) weakSelf = self;
@@ -448,7 +448,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - 内容视图
 
--(BKPageControlContentCollectionView*)collectionView
+-(BKPageControlCollectionView*)collectionView
 {
     if (!_collectionView) {
         
@@ -457,7 +457,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         layout.minimumLineSpacing = 0;
         layout.minimumInteritemSpacing = 0;
         
-        _collectionView = [[BKPageControlContentCollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.menuView.frame), self.contentView.width, self.contentView.height - CGRectGetMaxY(self.menuView.frame)) collectionViewLayout:layout];
+        _collectionView = [[BKPageControlCollectionView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.menuView.frame), self.contentView.width, self.contentView.height - CGRectGetMaxY(self.menuView.frame)) collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
         [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:kBKPageControlViewCellID];
@@ -576,7 +576,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_willBeginDraggingSuperBgScrollView:)]) {
-            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPageControlScrollViewProtocol>*)self.displayVC bk_willBeginDraggingSuperBgScrollView:self.bgScrollView];
         }
         
         UIScrollView * childScrollView = [self getChildScrollViewAtIndex:self.displayIndex];
@@ -603,7 +603,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didScrollSuperBgScrollView:)]) {
-            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPageControlScrollViewProtocol>*)self.displayVC bk_didScrollSuperBgScrollView:self.bgScrollView];
         }
         
         UIScrollView * childScrollView = [self getChildScrollViewAtIndex:self.displayIndex];
@@ -636,7 +636,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_willEndDraggingSuperBgScrollView:withVelocity:targetContentOffset:)]) {
-            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+            [(UIViewController<BKPageControlScrollViewProtocol>*)self.displayVC bk_willEndDraggingSuperBgScrollView:self.bgScrollView withVelocity:velocity targetContentOffset:targetContentOffset];
         }
         
         UIScrollView * childScrollView = [self getChildScrollViewAtIndex:self.displayIndex];
@@ -662,7 +662,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didEndDraggingSuperBgScrollView:willDecelerate:)]) {
-            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
+            [(UIViewController<BKPageControlScrollViewProtocol>*)self.displayVC bk_didEndDraggingSuperBgScrollView:self.bgScrollView willDecelerate:decelerate];
         }
     }
 }
@@ -684,7 +684,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         }
         
         if ([self.displayVC respondsToSelector:@selector(bk_didEndDeceleratingSuperBgScrollView:)]) {
-            [(UIViewController<BKPCVBgScrollView>*)self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
+            [(UIViewController<BKPageControlScrollViewProtocol>*)self.displayVC bk_didEndDeceleratingSuperBgScrollView:self.bgScrollView];
         }
     }
 }

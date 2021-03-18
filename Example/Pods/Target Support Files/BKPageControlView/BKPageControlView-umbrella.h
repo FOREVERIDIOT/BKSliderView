@@ -10,15 +10,15 @@
 #endif
 #endif
 
-#import "BKPageControlBgScrollView.h"
-#import "BKPageControlContentCollectionView.h"
+#import "BKPageControl.h"
+#import "BKPageControlCollectionView.h"
 #import "BKPageControlMenu.h"
 #import "BKPageControlMenuModel.h"
 #import "BKPageControlMenuPropertyModel.h"
-#import "BKPageControlMenuView.h"
+#import "BKPageControlScrollView.h"
+#import "BKPageControlScrollViewProtocol.h"
 #import "BKPageControlSelectLine.h"
 #import "BKPageControlView.h"
-#import "BKPCVBgScrollView.h"
 #import "UIView+BKPageControlView.h"
 #import "UIViewController+BKPageControlView.h"
 

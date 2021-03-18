@@ -6,9 +6,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BKPageControlBgScrollView.h"
-#import "BKPageControlMenuView.h"
-#import "BKPageControlContentCollectionView.h"
+#import "BKPageControlScrollView.h"
+#import "BKPageControl.h"
+#import "BKPageControlCollectionView.h"
 @class BKPageControlView;
 
 @protocol BKPageControlViewDelegate <NSObject>
@@ -26,15 +26,15 @@
 
 #pragma mark - 主视图滑动代理
 
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView didScrollBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didScrollBgScrollView:(nonnull BKPageControlScrollView*)bgScrollView;
 
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView willBeginDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView willBeginDraggingBgScrollView:(nonnull BKPageControlScrollView*)bgScrollView;
 
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView willEndDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView withVelocity:(CGPoint)velocity targetContentOffset:(nonnull inout CGPoint *)targetContentOffset;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView willEndDraggingBgScrollView:(nonnull BKPageControlScrollView*)bgScrollView withVelocity:(CGPoint)velocity targetContentOffset:(nonnull inout CGPoint *)targetContentOffset;
 
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDraggingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDraggingBgScrollView:(nonnull BKPageControlScrollView*)bgScrollView willDecelerate:(BOOL)decelerate;
 
--(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDeceleratingBgScrollView:(nonnull BKPageControlBgScrollView*)bgScrollView;
+-(void)pageControlView:(nonnull BKPageControlView*)pageControlView didEndDeceleratingBgScrollView:(nonnull BKPageControlScrollView*)bgScrollView;
 
 #pragma mark - 导航
 
@@ -83,7 +83,7 @@
 #pragma mark - 主视图
 
 /// 主视图（竖直滚动）
-@property (nonatomic,strong,nonnull) BKPageControlBgScrollView * bgScrollView;
+@property (nonatomic,strong,nonnull) BKPageControlScrollView * bgScrollView;
 /// 设置主视图滚动到最顶部
 -(void)setBgScrollViewScrollToTop;
 
@@ -97,12 +97,12 @@
 #pragma mark - 导航视图（第三级）
 
 /// 导航视图
-@property (nonatomic,strong,nonnull) BKPageControlMenuView * menuView;
+@property (nonatomic,strong,nonnull) BKPageControl * menuView;
 
 #pragma mark - 内容视图（第三级）
 
 /// 详情内容视图
-@property (nonatomic,strong,nonnull) BKPageControlContentCollectionView * collectionView;
+@property (nonatomic,strong,nonnull) BKPageControlCollectionView * collectionView;
 /// 详情内容视图左右插入量 默认0
 @property (nonatomic,assign) CGFloat contentLrInsets;
 

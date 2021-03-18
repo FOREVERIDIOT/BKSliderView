@@ -1,18 +1,18 @@
 //
-//  BKPageControlBgScrollView.m
+//  BKPageControlScrollView.m
 //  BKPageControlView
 //
 //  Created by BIKE on 2019/7/10.
 //  Copyright © 2019 BIKE. All rights reserved.
 //
 
-#import "BKPageControlBgScrollView.h"
+#import "BKPageControlScrollView.h"
 
-@interface BKPageControlBgScrollView()
+@interface BKPageControlScrollView()
 
 @end
 
-@implementation BKPageControlBgScrollView
+@implementation BKPageControlScrollView
 
 #pragma mark - init
 

@@ -1,5 +1,5 @@
 //
-//  BKPageControlBgScrollView.h
+//  BKPageControlScrollView.h
 //  BKPageControlView
 //
 //  Created by BIKE on 2019/7/10.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BKPageControlBgScrollView : UIScrollView
+@interface BKPageControlScrollView : UIScrollView
 
 @end
 
