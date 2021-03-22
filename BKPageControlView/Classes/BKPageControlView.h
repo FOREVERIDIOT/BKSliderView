@@ -65,13 +65,11 @@
 #pragma mark - 索引
 
 /// 选中索引
-@property (nonatomic,assign) NSUInteger displayIndex;
+@property (nonatomic,assign,readonly) NSUInteger displayIndex;
 
-/// 修改选中索引
-/// @param displayIndex 选中索引
-/// @param animated 动画
-/// @param completion 完成回调
--(void)setDisplayIndex:(NSUInteger)displayIndex animated:(nullable void (^)(void))animated completion:(nullable void(^)(void))completion;
+-(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated;
+-(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion;
+-(void)setDisplayIndex:(NSUInteger)displayIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion;
 
 /// 当前显示的视图
 @property (nonatomic,nullable,readonly) UIViewController * displayVC;

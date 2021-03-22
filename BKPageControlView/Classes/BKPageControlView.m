@@ -26,29 +26,24 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 @implementation BKPageControlView
 @synthesize superVC = _superVC;
+@synthesize displayIndex = _displayIndex;
 @synthesize displayVC = _displayVC;
 
 #pragma mark - 索引
 
--(void)setDisplayIndex:(NSUInteger)displayIndex
+-(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated
 {
-    if (_displayIndex == displayIndex) {
-        return;
-    }else if (displayIndex > [self.childControllers count] - 1) {
-        _displayIndex = [self.childControllers count] - 1;
-    }else {
-        _displayIndex = displayIndex;
-    }
-    
-    if (self.menuView.selectIndex != _displayIndex) {
-        self.menuView.selectIndex = _displayIndex;
-    }
-    
-    CGFloat rollLength = self.collectionView.width * _displayIndex;
-    [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+    [self setDisplayIndex:displayIndex animated:animated completion:nil];
 }
 
--(void)setDisplayIndex:(NSUInteger)displayIndex animated:(nullable void (^)(void))animated completion:(nullable void(^)(void))completion
+-(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion
+{
+    [self setDisplayIndex:displayIndex animation:^BOOL{
+        return animated;
+    } completion:completion];
+}
+
+-(void)setDisplayIndex:(NSUInteger)displayIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion
 {
     if (_displayIndex == displayIndex) {
         return;
@@ -58,24 +53,37 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         _displayIndex = displayIndex;
     }
     
-    self.collectionViewAnimateScrolling = YES;
-    
-    __weak typeof(self) weakSelf = self;
-    [self.menuView setSelectIndex:_displayIndex animated:^{
-        CGFloat rollLength = weakSelf.collectionView.width * weakSelf.displayIndex;
-        [weakSelf.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
+    if (animation && animation()) {
+        self.collectionViewAnimateScrolling = YES;
         
-        if (animated) {
-            animated();
-        }
-    } completion:^{
-        if (weakSelf.collectionViewAnimateScrolling) {
-            weakSelf.collectionViewAnimateScrolling = NO;
-            if (completion) {
-                completion();
+        __weak typeof(self) weakSelf = self;
+        [self.menuView setSelectIndex:_displayIndex animated:^{
+            CGFloat rollLength = weakSelf.collectionView.width * weakSelf.displayIndex;
+            [weakSelf.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
+            
+            if (animation) {
+                animation();
             }
+        } completion:^{
+            if (weakSelf.collectionViewAnimateScrolling) {
+                weakSelf.collectionViewAnimateScrolling = NO;
+                if (completion) {
+                    completion();
+                }
+            }
+        }];
+    }else {
+        if (self.menuView.selectIndex != _displayIndex) {
+            self.menuView.selectIndex = _displayIndex;
         }
-    }];
+        
+        CGFloat rollLength = self.collectionView.width * _displayIndex;
+        [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];
+        
+        if (completion) {
+            completion();
+        }
+    }
 }
 
 -(UIViewController *)displayVC

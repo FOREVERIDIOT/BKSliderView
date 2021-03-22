@@ -105,7 +105,7 @@
         switch (self.selectIndexPath.row) {
             case 1:
             {
-                _pageControlView.displayIndex = 5;
+                [_pageControlView setDisplayIndex:5 animated:NO];
             }
                 break;
             case 2:
