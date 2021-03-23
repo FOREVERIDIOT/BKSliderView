@@ -57,13 +57,17 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         self.collectionViewAnimateScrolling = YES;
         
         __weak typeof(self) weakSelf = self;
-        [self.menuView setSelectIndex:_displayIndex animated:^{
+        [self.menuView setSelectIndex:_displayIndex animation:^BOOL{
+            
             CGFloat rollLength = weakSelf.collectionView.width * weakSelf.displayIndex;
             [weakSelf.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
             
             if (animation) {
                 animation();
             }
+            
+            return YES;
+            
         } completion:^{
             if (weakSelf.collectionViewAnimateScrolling) {
                 weakSelf.collectionViewAnimateScrolling = NO;
@@ -73,9 +77,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             }
         }];
     }else {
-        if (self.menuView.selectIndex != _displayIndex) {
-            self.menuView.selectIndex = _displayIndex;
-        }
+        [self.menuView setSelectIndex:_displayIndex animated:NO];
         
         CGFloat rollLength = self.collectionView.width * _displayIndex;
         [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:NO];

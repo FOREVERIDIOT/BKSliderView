@@ -77,12 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign) CGFloat contentViewWidth;
 
 /// 当前选中索引
-@property (nonatomic,assign) NSUInteger selectIndex;
-/// 修改选中索引
-/// @param selectIndex 选中索引
-/// @param animated 动画
-/// @param completion 完成回调
--(void)setSelectIndex:(NSUInteger)selectIndex animated:(void (^)(void))animated completion:(void (^)(void))completion;
+@property (nonatomic,assign,readonly) NSUInteger selectIndex;
+-(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated;
+-(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion;
+-(void)setSelectIndex:(NSUInteger)selectIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion;
 
 #pragma mark - 菜单设置
 

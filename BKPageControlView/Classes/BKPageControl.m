@@ -40,6 +40,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 @end
 
 @implementation BKPageControl
+@synthesize selectIndex = _selectIndex;
 
 #pragma mark - 属性
 
@@ -61,7 +62,19 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     [self layoutSubviews];
 }
 
--(void)setSelectIndex:(NSUInteger)selectIndex
+-(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated
+{
+    [self setSelectIndex:selectIndex animated:animated completion:nil];
+}
+
+-(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion
+{
+    [self setSelectIndex:selectIndex animation:^BOOL{
+        return animated;
+    } completion:completion];
+}
+
+-(void)setSelectIndex:(NSUInteger)selectIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion
 {
     if (_selectIndex == selectIndex) {
         return;
@@ -72,23 +85,24 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     }
     
     [self reloadContentView];
-}
-
--(void)setSelectIndex:(NSUInteger)selectIndex animated:(void (^)(void))animated completion:(void (^)(void))completion
-{
-    [self setSelectIndex:selectIndex];
     
-    [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
-        if (animated) {
-            animated();
-        }
-    }];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kSelectLineAnimateTimeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    if (animation && animation()) {
+        [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
+            if (animation) {
+                animation();
+            }
+        }];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kSelectLineAnimateTimeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion();
+            }
+        });
+    }else {
         if (completion) {
             completion();
         }
-    });
+    }
 }
 
 -(void)setFrame:(CGRect)frame
@@ -707,7 +721,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     if (collectionView.width != 0) {
         displayIndex = (offsetX + collectionView.width/2) / collectionView.width;
     }
-    self.selectIndex = displayIndex;
+    [self setSelectIndex:displayIndex animated:NO];
     
     if ([self.delegate respondsToSelector:@selector(menuView:switchIndex:)]) {
         [self.delegate menuView:self switchIndex:self.selectIndex];
