@@ -27,8 +27,10 @@
         self.totalCount = (self.bk_pcv_index + 1) * 5;
     }
     
-    self.view.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.tableView];
+//    self.view.backgroundColor = [UIColor whiteColor];
+//    [self.view addSubview:self.tableView];
+    
+    self.view.backgroundColor = [UIColor colorWithRed:(arc4random()%255)/255.f green:(arc4random()%255)/255.f blue:(arc4random()%255)/255.f alpha:1];
 }
 
 -(void)viewWillAppear:(BOOL)animated

@@ -125,7 +125,12 @@
                 vc.title = @"测试pageControlView嵌套pageControlView";
                 NSMutableArray * mChildControllers = [_pageControlView.childControllers mutableCopy];
                 [mChildControllers insertObject:vc atIndex:1];
-                _pageControlView.childControllers = [mChildControllers copy];
+                
+                [_pageControlView replaceChildControllers:mChildControllers];
+
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.pageControlView setDisplayIndex:4 animated:YES completion:nil];
+                });
             }
                 break;
             case 4:
@@ -141,7 +146,7 @@
                     vc.title = @"新controller";
                     NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
                     [childControllers insertObject:vc atIndex:1];
-                    self.pageControlView.childControllers = [childControllers copy];
+                    [self.pageControlView replaceChildControllers:childControllers];
                 });
             }
                 break;

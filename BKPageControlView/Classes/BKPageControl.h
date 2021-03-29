@@ -12,6 +12,8 @@
 @class BKPageControl;
 @class BKPageControlView;
 
+UIKIT_EXTERN const float kSelectLineAnimateTimeInterval;
+
 typedef NS_OPTIONS(NSUInteger, BKPageControlMenuSelectStyle) {
     BKPageControlMenuSelectStyleNone = 0,                    //无效果
     BKPageControlMenuSelectStyleDisplayLine = 1 << 0,        //显示底部选中的线
@@ -80,7 +82,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign,readonly) NSUInteger selectIndex;
 -(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated;
 -(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion;
--(void)setSelectIndex:(NSUInteger)selectIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion;
 
 #pragma mark - 菜单设置
 

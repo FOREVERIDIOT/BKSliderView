@@ -26,6 +26,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 @implementation BKPageControlView
 @synthesize superVC = _superVC;
+@synthesize childControllers = _childControllers;
 @synthesize displayIndex = _displayIndex;
 @synthesize displayVC = _displayVC;
 
@@ -38,13 +39,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion
 {
-    [self setDisplayIndex:displayIndex animation:^BOOL{
-        return animated;
-    } completion:completion];
-}
-
--(void)setDisplayIndex:(NSUInteger)displayIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion
-{
     if (_displayIndex == displayIndex) {
         return;
     }else if (displayIndex > [self.childControllers count] - 1) {
@@ -53,22 +47,17 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         _displayIndex = displayIndex;
     }
     
-    if (animation && animation()) {
+    if (animated) {
         self.collectionViewAnimateScrolling = YES;
         
+        CGFloat rollLength = self.collectionView.width * self.displayIndex;
+//        [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
+//            self.collectionView.contentOffset = CGPointMake(rollLength, 0);
+//        }];
+            [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
+        
         __weak typeof(self) weakSelf = self;
-        [self.menuView setSelectIndex:_displayIndex animation:^BOOL{
-            
-            CGFloat rollLength = weakSelf.collectionView.width * weakSelf.displayIndex;
-            [weakSelf.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
-            
-            if (animation) {
-                animation();
-            }
-            
-            return YES;
-            
-        } completion:^{
+        [self.menuView setSelectIndex:_displayIndex animated:animated completion:^{
             if (weakSelf.collectionViewAnimateScrolling) {
                 weakSelf.collectionViewAnimateScrolling = NO;
                 if (completion) {
@@ -161,6 +150,15 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 -(UIViewController*)superVC
 {
     return _superVC;
+}
+
+-(void)replaceChildControllers:(NSArray<UIViewController*> *)childControllers
+{
+    NSMutableArray * temp = [NSMutableArray array];
+    for (int i = 0; i < [childControllers count]; i++) {
+        [temp addObject:childControllers[i]];
+    }
+    _childControllers = childControllers;
 }
 
 -(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC
@@ -681,9 +679,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 {
     if (scrollView == self.collectionView) {
         self.collectionViewIsScrolling = NO;
-        if (self.collectionViewAnimateScrolling) {
-            return;
-        }
         
         [self.menuView collectionViewDidEndDecelerating:self.collectionView];
         

@@ -49,13 +49,15 @@
 
 @property (nonatomic,weak,readonly,nullable) UIViewController * superVC;
 /// 子控制器数组 目录是控制器title
-@property (nonatomic,copy,nullable) NSArray<UIViewController*> * childControllers;
+@property (nonatomic,copy,readonly,nullable) NSArray<UIViewController*> * childControllers;
 /// 代理
 @property (nonatomic,weak,nullable) id<BKPageControlViewDelegate> delegate;
 
 -(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC;
 -(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC childControllers:(nullable NSArray<UIViewController*>*)childControllers;
 -(nonnull instancetype)initWithFrame:(CGRect)frame superVC:(nonnull UIViewController*)superVC childControllers:(nullable NSArray<UIViewController*>*)childControllers delegate:(nullable id<BKPageControlViewDelegate>)delegate;
+
+-(void)replaceChildControllers:(NSArray<UIViewController*> *)childControllers;
 
 #pragma mark - BKPageControlView嵌套
 
@@ -69,7 +71,6 @@
 
 -(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated;
 -(void)setDisplayIndex:(NSUInteger)displayIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion;
--(void)setDisplayIndex:(NSUInteger)displayIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion;
 
 /// 当前显示的视图
 @property (nonatomic,nullable,readonly) UIViewController * displayVC;

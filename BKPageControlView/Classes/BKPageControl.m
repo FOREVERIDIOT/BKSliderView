@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, BKPageControlContentScrollDirection) {
 };
 
 NSString * const kBKPageControlMenuID = @"kBKPageControlMenuID";
-const float kSelectLineAnimateTimeInterval = 0.3;
+const float kSelectLineAnimateTimeInterval = 0.25;
 
 @interface BKPageControl()<UIScrollViewDelegate>
 
@@ -69,13 +69,6 @@ const float kSelectLineAnimateTimeInterval = 0.3;
 
 -(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion
 {
-    [self setSelectIndex:selectIndex animation:^BOOL{
-        return animated;
-    } completion:completion];
-}
-
--(void)setSelectIndex:(NSUInteger)selectIndex animation:(nullable BOOL(^)(void))animation completion:(nullable void(^)(void))completion
-{
     if (_selectIndex == selectIndex) {
         return;
     }else if (selectIndex > [self.titles count] - 1) {
@@ -86,13 +79,7 @@ const float kSelectLineAnimateTimeInterval = 0.3;
     
     [self reloadContentView];
     
-    if (animation && animation()) {
-        [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
-            if (animation) {
-                animation();
-            }
-        }];
-        
+    if (animated) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kSelectLineAnimateTimeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if (completion) {
                 completion();
@@ -878,7 +865,12 @@ const float kSelectLineAnimateTimeInterval = 0.3;
         return CGSizeZero;
     }
     
-    CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height) options:NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : font} context:nil];
+    NSMutableParagraphStyle * para = [[NSMutableParagraphStyle alloc] init];
+    para.alignment = NSTextAlignmentCenter;
+    para.lineBreakMode = NSLineBreakByTruncatingTail;
+    para.lineSpacing = self.menuLineSpacing;
+    
+    CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height) options:NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : font, NSParagraphStyleAttributeName : para} context:nil];
     return rect.size;
 }
 
