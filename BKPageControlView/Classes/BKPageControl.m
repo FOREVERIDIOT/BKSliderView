@@ -37,6 +37,8 @@ const float kSelectLineAnimateTimeInterval = 0.25;
 /// 选中menu底部的线
 @property (nonatomic,strong) BKPageControlSelectLine * selectLine;
 
+@property (nonatomic,assign) CGRect scrollAnimateBounds;
+
 @end
 
 @implementation BKPageControl
@@ -69,6 +71,8 @@ const float kSelectLineAnimateTimeInterval = 0.25;
 
 -(void)setSelectIndex:(NSUInteger)selectIndex animated:(BOOL)animated completion:(nullable void(^)(void))completion
 {
+    NSUInteger fromIndex = _selectIndex;
+    
     if (_selectIndex == selectIndex) {
         return;
     }else if (selectIndex > [self.titles count] - 1) {
@@ -77,15 +81,51 @@ const float kSelectLineAnimateTimeInterval = 0.25;
         _selectIndex = selectIndex;
     }
     
-    [self reloadContentView];
-    
     if (animated) {
+        
+        CGFloat beginAnimateOffsetX = self.contentView.contentOffset.x;
+        
+        [UIView animateWithDuration:kSelectLineAnimateTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            
+            CGFloat currentIndexMenuCenterX = CGRectGetMidX(self.menuModel.total[self.selectIndex].rect);
+            CGFloat halfContentW = self.contentView.width/2.f;
+            CGFloat offsetX = currentIndexMenuCenterX - halfContentW;
+            if (offsetX < 0) {
+                offsetX = 0;
+            }else if (offsetX > self.contentView.contentSize.width - self.contentView.width) {
+                offsetX = self.contentView.contentSize.width - self.contentView.width;
+            }
+            
+            CGFloat minX, maxX;
+            if (beginAnimateOffsetX < offsetX) {
+                minX = beginAnimateOffsetX;
+                maxX = offsetX + self.contentView.width;
+            }else {
+                minX = offsetX;
+                maxX = beginAnimateOffsetX + self.contentView.width;
+            }
+            self.scrollAnimateBounds = CGRectMake(minX, 0, maxX, self.contentView.height);
+            
+            [self.contentView setContentOffset:CGPointMake(offsetX, 0)];
+            
+            [self changeSelectPropertyWithFromIndex:fromIndex toIndex:_selectIndex percentage:1];
+            
+        } completion:nil];
+        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kSelectLineAnimateTimeInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            self.scrollAnimateBounds = CGRectZero;
+            
+            [self reloadContentView];
+            
             if (completion) {
                 completion();
             }
         });
     }else {
+        
+        [self reloadContentView];
+        
         if (completion) {
             completion();
         }
@@ -511,7 +551,12 @@ const float kSelectLineAnimateTimeInterval = 0.25;
 -(void)displayMenu
 {
     //显示区域
-    CGRect displayRect = CGRectMake(self.contentView.contentOffset.x, 0, self.contentView.width, self.contentView.height);
+    CGRect displayRect;
+    if (CGRectEqualToRect(self.scrollAnimateBounds, CGRectZero)) {
+        displayRect = CGRectMake(self.contentView.contentOffset.x, 0, self.contentView.width, self.contentView.height);
+    }else {
+        displayRect = self.scrollAnimateBounds;
+    }
     //滑出显示区域 删除
     NSArray * visible = [self.menuModel.visible copy];
     [visible enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(BKPageControlMenu * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -632,6 +677,13 @@ const float kSelectLineAnimateTimeInterval = 0.25;
 
 #pragma mark - UIScrollViewDelegate
 
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    if (scrollView == self.contentView) {
+        self.scrollAnimateBounds = CGRectZero;
+    }
+}
+
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == self.contentView) {
@@ -639,6 +691,13 @@ const float kSelectLineAnimateTimeInterval = 0.25;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self displayMenu];
         });
+    }
+}
+
+-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (scrollView == self.contentView) {
+        self.scrollAnimateBounds = CGRectZero;
     }
 }
 

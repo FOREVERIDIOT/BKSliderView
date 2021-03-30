@@ -145,7 +145,7 @@
                     ExampleViewController * vc = [[ExampleViewController alloc] init];
                     vc.title = @"新controller";
                     NSMutableArray * childControllers = [self.pageControlView.childControllers mutableCopy];
-                    [childControllers insertObject:vc atIndex:1];
+                    [childControllers insertObject:vc atIndex:0];
                     [self.pageControlView replaceChildControllers:childControllers];
                 });
             }

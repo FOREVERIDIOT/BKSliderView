@@ -51,10 +51,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
         self.collectionViewAnimateScrolling = YES;
         
         CGFloat rollLength = self.collectionView.width * self.displayIndex;
-//        [UIView animateWithDuration:kSelectLineAnimateTimeInterval animations:^{
-//            self.collectionView.contentOffset = CGPointMake(rollLength, 0);
-//        }];
-            [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
+        [self.collectionView setContentOffset:CGPointMake(rollLength, 0) animated:YES];
         
         __weak typeof(self) weakSelf = self;
         [self.menuView setSelectIndex:_displayIndex animated:animated completion:^{
@@ -116,31 +113,6 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 #pragma mark - init
 
--(void)setChildControllers:(NSArray<UIViewController *> *)childControllers
-{
-    [self setBgScrollViewScrollToTop];
-    
-    _childControllers = childControllers;
-    
-    NSMutableArray * titles = [NSMutableArray array];
-    for (UIViewController * childVC in _childControllers) {
-        NSAssert([childVC isKindOfClass:[UIViewController class]], @"子控制器不正确");
-        NSAssert([childVC.title isKindOfClass:[NSString class]], @"标题格式不正确");
-        NSAssert([childVC.title length] > 0, @"标题不能为空");
-        NSUInteger existCount = 0;
-        for (UIViewController * t in _childControllers) {
-            if ([t.title isEqualToString:childVC.title]) {
-                existCount++;
-            }
-        }
-        NSAssert(existCount == 1, @"标题不能重复添加");
-        [titles addObject:childVC.title];
-    }
-    [self.collectionView reloadData];
-    
-    self.menuView.titles = [titles copy];
-}
-
 -(void)setSuperVC:(UIViewController *)superVC
 {
     _superVC = superVC;
@@ -154,11 +126,41 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
 
 -(void)replaceChildControllers:(NSArray<UIViewController*> *)childControllers
 {
-    NSMutableArray * temp = [NSMutableArray array];
-    for (int i = 0; i < [childControllers count]; i++) {
-        [temp addObject:childControllers[i]];
-    }
+    [self setBgScrollViewScrollToTop];
+    
+    NSString * originalSelectTitle = _childControllers[_displayIndex].title;
+    
+    _childControllers = nil;
+    [self.collectionView reloadData];
+    
     _childControllers = childControllers;
+    
+    NSUInteger displayIndex;
+    
+    NSMutableArray * titles = [NSMutableArray array];
+    for (int i = 0; i < [_childControllers count]; i++) {
+        UIViewController * childVC = _childControllers[i];
+        NSAssert([childVC isKindOfClass:[UIViewController class]], @"子控制器不正确");
+        NSAssert([childVC.title isKindOfClass:[NSString class]], @"标题格式不正确");
+        NSAssert([childVC.title length] > 0, @"标题不能为空");
+        NSUInteger existCount = 0;
+        for (UIViewController * t in _childControllers) {
+            if ([t.title isEqualToString:childVC.title]) {
+                existCount++;
+            }
+        }
+        NSAssert(existCount == 1, @"标题不能重复添加");
+        [titles addObject:childVC.title];
+        
+        if ([originalSelectTitle isEqualToString:childVC.title]) {
+            displayIndex = i;
+        }
+    }
+    
+    [self.collectionView reloadData];
+    
+    self.menuView.titles = [titles copy];
+    [self setDisplayIndex:displayIndex animated:NO];
 }
 
 -(instancetype)initWithFrame:(CGRect)frame superVC:(UIViewController *)superVC
@@ -176,7 +178,7 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     self = [super initWithFrame:frame];
     if (self) {
         self.superVC = superVC;
-        self.childControllers = childControllers;
+        [self replaceChildControllers:childControllers];
         self.delegate = delegate;
         
         [self initUI];
@@ -258,9 +260,11 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
     self.bgScrollView.contentOffset = CGPointZero;
     
     for (UIViewController * vc in self.childControllers) {
-        for (UIView * view in [vc.view subviews]) {
-            if ([view isKindOfClass:[UIScrollView class]]) {
-                ((UIScrollView*)view).contentOffset = CGPointZero;
+        if (vc.isViewLoaded) {
+            for (UIView * view in [vc.view subviews]) {
+                if ([view isKindOfClass:[UIScrollView class]]) {
+                    ((UIScrollView*)view).contentOffset = CGPointZero;
+                }
             }
         }
     }
