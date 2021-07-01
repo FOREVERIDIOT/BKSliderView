@@ -217,7 +217,11 @@ NSString * const kBKPageControlViewCellID = @"kBKPageControlViewCellID";
             self.contentView.frame = CGRectMake(0, CGRectGetMaxY(self.headerView.frame), self.bgScrollView.width, self.bgScrollView.height);
         }
     }
-    self.menuView.frame = CGRectMake(0, 0, self.contentView.width, self.menuView.height);
+//    为了能随意调整menuView的大小在此不做固定
+    //如果menuView宽为0则赋值初值
+    if (CGRectGetWidth(self.menuView.frame) == 0) {
+        self.menuView.frame = CGRectMake(0, 0, self.contentView.width, self.menuView.height);
+    }
     
     CGRect lastCollectionViewRect = self.collectionView.frame;
     self.collectionView.frame = CGRectMake(self.contentLrInsets, CGRectGetMaxY(self.menuView.frame), self.contentView.width - self.contentLrInsets*2, self.contentView.height - CGRectGetMaxY(self.menuView.frame));
