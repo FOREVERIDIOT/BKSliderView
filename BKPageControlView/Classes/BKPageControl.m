@@ -767,11 +767,12 @@ const float kSelectLineAnimateTimeInterval = 0.25;
     if (collectionView.width != 0) {
         displayIndex = (offsetX + collectionView.width/2) / collectionView.width;
     }
-    [self setSelectIndex:displayIndex animated:NO];
     
     if ([self.delegate respondsToSelector:@selector(menuView:switchIndex:)]) {
-        [self.delegate menuView:self switchIndex:self.selectIndex];
+        [self.delegate menuView:self switchIndex:displayIndex];
     }
+    
+    [self setSelectIndex:displayIndex animated:NO];
 }
 
 #pragma mark - 滑动改变属性
